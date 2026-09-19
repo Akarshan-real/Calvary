@@ -1,0 +1,51 @@
+[
+  {
+    "name": "India",
+    "flag": "🇮🇳",
+    "coords": [20.5937, 78.9629],
+    "dish": "Dum Gosht Biryani & Tandoor Hearth",
+    "region": "Old Delhi & Hyderabad"
+  },
+  {
+    "name": "Italy",
+    "flag": "🇮🇹",
+    "coords": [41.9028, 12.4964],
+    "dish": "Wood-Fired Pizzas & Pastas",
+    "region": "Naples & Modena"
+  },
+  {
+    "name": "France",
+    "flag": "🇫🇷",
+    "coords": [48.8566, 2.3522],
+    "dish": "Classical Pastries & Reductions",
+    "region": "Lyon & Paris"
+  },
+  {
+    "name": "Japan",
+    "flag": "🇯🇵",
+    "coords": [35.6762, 139.6503],
+    "dish": "Wagyu Prime & Fresh Scallops",
+    "region": "Hokkaido & Tokyo"
+  },
+  {
+    "name": "Spain",
+    "flag": "🇪🇸",
+    "coords": [40.4168, -3.7038],
+    "dish": "Mountain Saffron & Calamari",
+    "region": "Valencia & Basque Coast"
+  },
+  {
+    "name": "United States",
+    "flag": "🇺🇸",
+    "coords": [40.7128, -74.006],
+    "dish": "Artisanal Brioche Burgers",
+    "region": "New York City"
+  },
+  {
+    "name": "Mexico",
+    "flag": "🇲🇽",
+    "coords": [19.4326, -99.1332],
+    "dish": "Smoked Chipotle & Fire Spices",
+    "region": "Oaxaca"
+  }
+]

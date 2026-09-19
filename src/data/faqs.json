@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How does the table reservation lock work?",
+    "answer": "When you request a table through our interactive availability calendar, our restaurant manager reviews your party size and dining time. Once approved, you receive an instant confirmation email and your chosen table is strictly locked exclusively for your party."
+  },
+  {
+    "question": "Is there a grace period if our party is delayed?",
+    "answer": "Yes! We hold confirmed tables for up to 15 minutes past your reserved time slot. If you foresee a longer delay, please call our reception concierge directly so we can adjust our service schedule."
+  },
+  {
+    "question": "Can you cater to severe allergies and dietary requirements?",
+    "answer": "Absolutely. We offer dedicated vegetarian, vegan, and gluten-sensitive artisanal preparations. Please note your dietary requirements in the reservation form notes or notify your server upon seating."
+  },
+  {
+    "question": "What is Calvary's recommended dress code?",
+    "answer": "We recommend Smart Casual to upscale attire. We strive to provide an elevated, sophisticated atmosphere while ensuring our guests remain comfortable and relaxed."
+  },
+  {
+    "question": "Do you host private events or buyouts?",
+    "answer": "Yes. We host intimate wine dinners, corporate celebrations, and private buyouts. Visit our Contact Page or call our events coordinator for bespoke multi-course menus."
+  }
+]
