@@ -14,10 +14,6 @@ import {
   Check,
 } from "lucide-react";
 import type { ContactMessage } from "@/types/database";
-import {
-  updateContactMessageStatus,
-  deleteContactMessage,
-} from "@/app/actions/restaurant";
 
 interface AdminMessagesManagementProps {
   initialMessages: ContactMessage[];
@@ -49,8 +45,13 @@ export default function AdminMessagesManagement({
 
   const handleMarkStatus = (id: number, status: "UNREAD" | "READ") => {
     startTransition(async () => {
-      const res = await updateContactMessageStatus(id, status);
-      if (res.success) {
+      const res = await fetch("/api/contact", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      const data = await res.json();
+      if (data.success) {
         setMessages((prev) =>
           prev.map((m) => (m.id === id ? { ...m, status } : m))
         );
@@ -61,13 +62,16 @@ export default function AdminMessagesManagement({
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to delete this customer message?")) return;
     startTransition(async () => {
-      const res = await deleteContactMessage(id);
-      if (res.success) {
+      const res = await fetch(`/api/contact?id=${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
         setMessages((prev) => prev.filter((m) => m.id !== id));
         setStatusMsg({ type: "success", text: "Message removed from inbox." });
         setTimeout(() => setStatusMsg(null), 3000);
       } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to delete message." });
+        setStatusMsg({ type: "error", text: data.error || "Failed to delete message." });
       }
     });
   };

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import AuthSwitch from "@/components/ui/auth-switch";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getCurrentUser } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Sign In / Sign Up | Calvary Restaurant",
-  description: "Sign in or create your Calvary dining account with your phone number.",
+  description: "Sign in or create your Calvary dining account with your email address.",
 };
 
 export default async function LoginPage() {

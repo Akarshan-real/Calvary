@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Lock, Ban } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { DateOccupancyInfo } from "@/app/actions/restaurant";
+import type { DateOccupancyInfo } from "@/types/database";
 
 export interface ReservationCalendarProps {
   selectedDate?: string;
@@ -141,28 +141,28 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-[#0e1017]/95 p-4 sm:p-5 text-white backdrop-blur-md shadow-2xl space-y-4",
+        "rounded-2xl border border-white/10 bg-[#0e1017]/95 p-5 sm:p-7 text-white backdrop-blur-md shadow-2xl space-y-5",
         className
       )}
     >
       {/* Month & Year Header with Navigation */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-3">
-        <div className="space-y-0.5">
-          <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="space-y-1">
+          <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </h3>
-          <p className="text-[11px] font-semibold text-neutral-400">
+          <p className="text-xs font-semibold text-neutral-400">
             Select a highlighted dining date
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handlePrevMonth}
             disabled={isPrevDisabled}
             aria-label="Previous month"
-            className="w-8 h-8 rounded-lg flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 text-neutral-300" />
           </button>
@@ -172,7 +172,7 @@ export function Calendar({
             onClick={handleNextMonth}
             disabled={isNextDisabled}
             aria-label="Next month"
-            className="w-8 h-8 rounded-lg flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
           >
             <ChevronRight className="w-4 h-4 text-neutral-300" />
           </button>
@@ -180,11 +180,11 @@ export function Calendar({
       </div>
 
       {/* Days of week header */}
-      <div className="grid grid-cols-7 gap-1 text-center">
+      <div className="grid grid-cols-7 gap-2 text-center">
         {DAY_LABELS.map((dayName) => (
           <div
             key={dayName}
-            className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 py-1"
+            className="text-xs font-bold uppercase tracking-wider text-neutral-400 py-1.5"
           >
             {dayName}
           </div>
@@ -192,10 +192,10 @@ export function Calendar({
       </div>
 
       {/* Month Days Matrix */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+      <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
         {calendarCells.map((cell, idx) => {
           if (!cell.isCurrentMonth) {
-            return <div key={`empty-${idx}`} className="h-11 sm:h-12" />;
+            return <div key={`empty-${idx}`} className="h-12 sm:h-14" />;
           }
 
           const isSelected = selectedDate === cell.dateStr;
@@ -218,7 +218,7 @@ export function Calendar({
               onClick={() => cell.isSelectable && onSelectDate(cell.dateStr)}
               title={`${cell.dateStr}: ${statusLabel}`}
               className={cn(
-                "relative group/cell h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center transition-all duration-200",
+                "relative group/cell h-12 sm:h-14 rounded-xl flex flex-col items-center justify-center transition-all duration-200",
                 "border text-xs sm:text-sm font-bold select-none",
                 // Base state for disabled / unselectable
                 !cell.isSelectable &&

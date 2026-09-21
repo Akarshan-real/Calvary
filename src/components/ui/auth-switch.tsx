@@ -16,17 +16,17 @@ import {
   ShieldCheck,
   ChevronDown,
 } from "lucide-react";
-import { sendPhoneOtp, verifyPhoneOtp } from "@/app/actions/auth";
 import InputOtp9 from "@/components/input-otp-9";
+import { toast } from "sonner";
 
 interface SignInFormData {
-  phone: string;
+  email: string;
 }
 
 interface SignUpFormData {
   fullName: string;
-  phone: string;
-  email?: string;
+  email: string;
+  phone?: string;
   foodPreference: "all" | "veg" | "non-veg" | "vegan";
 }
 
@@ -37,29 +37,29 @@ interface OtpFormData {
 export default function AuthSwitch() {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
-  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [step, setStep] = useState<"email" | "otp">("email");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Stored registration context for OTP verification step
-  const [pendingPhone, setPendingPhone] = useState("");
-  const [pendingFullName, setPendingFullName] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
+  const [pendingFullName, setPendingFullName] = useState("");
+  const [pendingPhone, setPendingPhone] = useState("");
   const [pendingFoodPreference, setPendingFoodPreference] = useState<"all" | "veg" | "non-veg" | "vegan">("all");
 
   // React Hook Form instances with onChange mode for live validation
   const signInForm = useForm<SignInFormData>({
     mode: "onChange",
-    defaultValues: { phone: "" },
+    defaultValues: { email: "" },
   });
 
   const signUpForm = useForm<SignUpFormData>({
     mode: "onChange",
     defaultValues: {
       fullName: "",
-      phone: "",
       email: "",
+      phone: "",
       foodPreference: "all",
     },
   });
@@ -70,16 +70,16 @@ export default function AuthSwitch() {
   });
 
   // Watch inputs to disable Send OTP and submit buttons until all mandatory fields are valid
-  const signInPhone = signInForm.watch("phone") || "";
-  const isSignInValid = /^[6-9]\d{9}$/.test(signInPhone.trim());
+  const signInEmail = signInForm.watch("email") || "";
+  const isSignInValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signInEmail.trim());
 
   const signUpFullName = signUpForm.watch("fullName") || "";
-  const signUpPhone = signUpForm.watch("phone") || "";
   const signUpEmail = signUpForm.watch("email") || "";
+  const signUpPhone = signUpForm.watch("phone") || "";
   const isSignUpValid =
     signUpFullName.trim().length >= 2 &&
-    /^[6-9]\d{9}$/.test(signUpPhone.trim()) &&
-    (!signUpEmail.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signUpEmail.trim()));
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signUpEmail.trim()) &&
+    (!signUpPhone.trim() || /^[6-9]\d{9}$/.test(signUpPhone.trim().replace(/^(\+91|91|0)/, "")));
 
   const otpToken = otpForm.watch("token") || "";
   const isOtpValid = /^\d{6}$/.test(otpToken.trim());
@@ -87,7 +87,7 @@ export default function AuthSwitch() {
   // Switch between Sign In and Sign Up with clean state reset
   const handleModeSwitch = (toSignUp: boolean) => {
     setIsSignUp(toSignUp);
-    setStep("phone");
+    setStep("email");
     setError(null);
     setSuccessMsg(null);
     signInForm.reset();
@@ -95,87 +95,129 @@ export default function AuthSwitch() {
     otpForm.reset();
   };
 
-  // Sign In submit (Step 1)
+  // Sign In submit (Step 1: Check user & dispatch 6-digit email OTP)
   const onSignInSubmit = async (data: SignInFormData) => {
     setError(null);
     setSuccessMsg(null);
     setLoading(true);
 
     try {
-      const res = await sendPhoneOtp({
-        fullName: "Customer",
-        phone: data.phone,
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send-otp",
+          email: data.email,
+          fullName: "Customer",
+        }),
       });
+      const result = await res.json();
 
-      if (!res.success) {
-        setError(res.error || "Failed to send OTP.");
+      if (!result.success) {
+        const err = result.error || "Failed to send verification code.";
+        setError(err);
+        toast.error("Sign-in failed", { description: err });
       } else {
-        setPendingPhone(data.phone);
+        const clean = data.email.trim().toLowerCase();
+        setPendingEmail(clean);
         setPendingFullName("Customer");
         setStep("otp");
-        setSuccessMsg(`OTP sent to ${res.formattedPhone}`);
+        const msg = `A 6-digit code has been sent to ${clean}`;
+        setSuccessMsg(msg);
+        toast.success("Verification code sent!", {
+          description: `Please check your inbox at ${clean} (including spam).`,
+        });
       }
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+      const msg = err.message || "An unexpected error occurred.";
+      setError(msg);
+      toast.error("Error", { description: msg });
     } finally {
       setLoading(false);
     }
   };
 
-  // Sign Up submit (Step 1)
+  // Sign Up submit (Step 1: Register with name, mandatory email, optional phone & food pref)
   const onSignUpSubmit = async (data: SignUpFormData) => {
     setError(null);
     setSuccessMsg(null);
     setLoading(true);
 
     try {
-      const res = await sendPhoneOtp({
-        fullName: data.fullName,
-        phone: data.phone,
-        email: data.email,
-        foodPreference: data.foodPreference,
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send-otp",
+          email: data.email,
+          fullName: data.fullName,
+          phone: data.phone,
+          foodPreference: data.foodPreference,
+        }),
       });
+      const result = await res.json();
 
-      if (!res.success) {
-        setError(res.error || "Failed to send OTP.");
+      if (!result.success) {
+        const err = result.error || "Failed to send verification code.";
+        setError(err);
+        toast.error("Registration failed", { description: err });
       } else {
-        setPendingPhone(data.phone);
+        const clean = data.email.trim().toLowerCase();
+        setPendingEmail(clean);
         setPendingFullName(data.fullName);
-        setPendingEmail(data.email || "");
+        setPendingPhone(data.phone || "");
         setPendingFoodPreference(data.foodPreference);
         setStep("otp");
-        setSuccessMsg(`OTP sent to ${res.formattedPhone}`);
+        const msg = `A 6-digit code has been sent to ${clean}`;
+        setSuccessMsg(msg);
+        toast.success("Verification code sent!", {
+          description: `We've sent a 6-digit security code to ${clean}`,
+        });
       }
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+      const msg = err.message || "An unexpected error occurred.";
+      setError(msg);
+      toast.error("Error", { description: msg });
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify OTP submit (Step 2)
+  // Verify OTP submit (Step 2: Confirm 6-digit token)
   const onOtpSubmit = async (data: OtpFormData) => {
     setError(null);
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("phone", pendingPhone);
-      formData.append("token", data.token);
-      formData.append("fullName", pendingFullName || "Customer");
-      if (pendingEmail) formData.append("email", pendingEmail);
-      if (pendingFoodPreference) formData.append("foodPreference", pendingFoodPreference);
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "verify-otp",
+          email: pendingEmail,
+          token: data.token,
+          fullName: pendingFullName || "Customer",
+          phone: pendingPhone || undefined,
+          foodPreference: pendingFoodPreference || "all",
+        }),
+      });
+      const result = await res.json();
 
-      const res = await verifyPhoneOtp(formData);
-
-      if (!res.success) {
-        setError(res.error || "Invalid OTP code.");
+      if (!result.success) {
+        const err = result.error || "Invalid verification code.";
+        setError(err);
+        toast.error("Verification failed", { description: err });
       } else {
+        toast.success("Welcome to Calvary!", {
+          description: "Your account is verified and you are now logged in.",
+        });
         router.push("/");
         router.refresh();
       }
     } catch (err: any) {
-      setError(err.message || "Verification failed.");
+      const msg = err.message || "Verification failed.";
+      setError(msg);
+      toast.error("Verification failed", { description: msg });
     } finally {
       setLoading(false);
     }
@@ -737,54 +779,52 @@ export default function AuthSwitch() {
           <div className="signin-signup">
             
             {/* ======================================================== */}
-            {/* SIGN IN FORM (PHONE OTP) */}
+            {/* SIGN IN FORM (EMAIL OTP) */}
             {/* ======================================================== */}
             <div className="form-panel sign-in-form">
               <h2 className="form-title">Welcome Back</h2>
               <p className="form-subtitle">
-                {step === "phone"
-                  ? "Enter your mobile number to sign in to your account"
-                  : "Enter the 6-digit verification code sent to your phone"}
+                {step === "email"
+                  ? "Enter your email address to sign in to your account"
+                  : `Enter the 6-digit verification code sent to ${pendingEmail}`}
               </p>
 
               {error && <div className="error-banner">{error}</div>}
               {successMsg && <div className="success-banner">{successMsg}</div>}
 
-              {step === "phone" ? (
+              {step === "email" ? (
                 <form
                   onSubmit={signInForm.handleSubmit(onSignInSubmit)}
                   className="w-full flex flex-col items-center"
                 >
-                  {/* Phone Input with clear label and visual structure */}
+                  {/* Email Input */}
                   <div className="input-group">
                     <label className="input-label">
-                      <span>Mobile Number</span>
+                      <span>Email Address</span>
                       <span className="required-star">*</span>
                     </label>
                     <div
                       className={`input-field ${
-                        signInForm.formState.errors.phone ? "has-error" : ""
+                        signInForm.formState.errors.email ? "has-error" : ""
                       }`}
                     >
-                      <Phone className="icon w-4 h-4" />
-                      <span className="phone-badge">+91</span>
+                      <Mail className="icon w-4 h-4" />
                       <input
-                        type="tel"
-                        placeholder="Enter 10-digit mobile number"
-                        maxLength={10}
-                        autoComplete="tel"
-                        {...signInForm.register("phone", {
-                          required: "Mobile number is required",
+                        type="email"
+                        placeholder="name@example.com"
+                        autoComplete="email"
+                        {...signInForm.register("email", {
+                          required: "Email address is required",
                           pattern: {
-                            value: /^[6-9]\d{9}$/,
-                            message: "Enter a valid 10-digit mobile number starting with 6-9",
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Enter a valid email address",
                           },
                         })}
                       />
                     </div>
-                    {signInForm.formState.errors.phone && (
+                    {signInForm.formState.errors.email && (
                       <p className="field-error">
-                        {signInForm.formState.errors.phone.message}
+                        {signInForm.formState.errors.email.message}
                       </p>
                     )}
                   </div>
@@ -793,7 +833,7 @@ export default function AuthSwitch() {
                     {loading ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
                     ) : (
-                      <span>Send OTP</span>
+                      <span>Send Verification Code</span>
                     )}
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -809,7 +849,7 @@ export default function AuthSwitch() {
                       name="token"
                       control={otpForm.control}
                       rules={{
-                        required: "OTP is required",
+                        required: "Verification code is required",
                         minLength: { value: 6, message: "Must be 6 digits" },
                         maxLength: { value: 6, message: "Must be 6 digits" },
                       }}
@@ -835,6 +875,10 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
+                  <p className="text-[11px] text-neutral-400 mt-2 mb-4 text-center">
+                    Check your email inbox or spam folder for the 6-digit code.
+                  </p>
+
                   <button type="submit" className="btn-gold" disabled={loading || !isOtpValid}>
                     {loading ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -849,33 +893,33 @@ export default function AuthSwitch() {
                   <button
                     type="button"
                     onClick={() => {
-                      setStep("phone");
+                      setStep("email");
                       setError(null);
                       otpForm.reset();
                     }}
                     className="text-xs text-neutral-400 hover:text-white mt-4 underline transition-colors"
                   >
-                    Change phone number
+                    Change email address
                   </button>
                 </form>
               )}
             </div>
 
             {/* ======================================================== */}
-            {/* SIGN UP FORM (FULL NAME + PHONE + OPTIONAL EMAIL + FOOD PREF) */}
+            {/* SIGN UP FORM (FULL NAME + MANDATORY EMAIL + OPTIONAL PHONE + FOOD PREF) */}
             {/* ======================================================== */}
             <div className="form-panel sign-up-form">
               <h2 className="form-title">Join Calvary</h2>
               <p className="form-subtitle">
-                {step === "phone"
+                {step === "email"
                   ? "Create your dining account in seconds"
-                  : "Verify your phone number to complete account setup"}
+                  : `Enter the 6-digit verification code sent to ${pendingEmail}`}
               </p>
 
               {error && <div className="error-banner">{error}</div>}
               {successMsg && <div className="success-banner">{successMsg}</div>}
 
-              {step === "phone" ? (
+              {step === "email" ? (
                 <form
                   onSubmit={signUpForm.handleSubmit(onSignUpSubmit)}
                   className="w-full flex flex-col items-center"
@@ -909,11 +953,43 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
-                  {/* Mobile Number */}
+                  {/* Mandatory Email */}
+                  <div className="input-group">
+                    <label className="input-label">
+                      <span>Email Address</span>
+                      <span className="required-star">*</span>
+                    </label>
+                    <div
+                      className={`input-field ${
+                        signUpForm.formState.errors.email ? "has-error" : ""
+                      }`}
+                    >
+                      <Mail className="icon w-4 h-4" />
+                      <input
+                        type="email"
+                        placeholder="name@example.com"
+                        autoComplete="email"
+                        {...signUpForm.register("email", {
+                          required: "Email address is mandatory",
+                          pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Please enter a valid email address",
+                          },
+                        })}
+                      />
+                    </div>
+                    {signUpForm.formState.errors.email && (
+                      <p className="field-error">
+                        {signUpForm.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Optional Mobile Number */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Mobile Number</span>
-                      <span className="required-star">*</span>
+                      <span className="text-neutral-500 font-normal lowercase text-[10px]">(optional)</span>
                     </label>
                     <div
                       className={`input-field ${
@@ -928,7 +1004,6 @@ export default function AuthSwitch() {
                         maxLength={10}
                         autoComplete="tel"
                         {...signUpForm.register("phone", {
-                          required: "Mobile number is mandatory",
                           pattern: {
                             value: /^[6-9]\d{9}$/,
                             message: "Enter a valid 10-digit number starting with 6-9",
@@ -939,37 +1014,6 @@ export default function AuthSwitch() {
                     {signUpForm.formState.errors.phone && (
                       <p className="field-error">
                         {signUpForm.formState.errors.phone.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Optional Email */}
-                  <div className="input-group">
-                    <label className="input-label">
-                      <span>Email Address</span>
-                      <span className="text-neutral-500 font-normal lowercase text-[10px]">(optional)</span>
-                    </label>
-                    <div
-                      className={`input-field ${
-                        signUpForm.formState.errors.email ? "has-error" : ""
-                      }`}
-                    >
-                      <Mail className="icon w-4 h-4" />
-                      <input
-                        type="email"
-                        placeholder="name@example.com"
-                        autoComplete="email"
-                        {...signUpForm.register("email", {
-                          pattern: {
-                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                            message: "Please enter a valid email address",
-                          },
-                        })}
-                      />
-                    </div>
-                    {signUpForm.formState.errors.email && (
-                      <p className="field-error">
-                        {signUpForm.formState.errors.email.message}
                       </p>
                     )}
                   </div>
@@ -1014,7 +1058,7 @@ export default function AuthSwitch() {
                       name="token"
                       control={otpForm.control}
                       rules={{
-                        required: "OTP is required",
+                        required: "Verification code is required",
                         minLength: { value: 6, message: "Must be 6 digits" },
                         maxLength: { value: 6, message: "Must be 6 digits" },
                       }}
@@ -1040,6 +1084,10 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
+                  <p className="text-[11px] text-neutral-400 mt-2 mb-4 text-center">
+                    Check your email inbox or spam folder for the 6-digit code.
+                  </p>
+
                   <button type="submit" className="btn-gold" disabled={loading || !isOtpValid}>
                     {loading ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -1054,13 +1102,13 @@ export default function AuthSwitch() {
                   <button
                     type="button"
                     onClick={() => {
-                      setStep("phone");
+                      setStep("email");
                       setError(null);
                       otpForm.reset();
                     }}
                     className="text-xs text-neutral-400 hover:text-white mt-4 underline transition-colors"
                   >
-                    Edit details or resend code
+                    Change email or edit details
                   </button>
                 </form>
               )}
@@ -1091,7 +1139,7 @@ export default function AuthSwitch() {
             <div className="content">
               <h3>Already a Member?</h3>
               <p>
-                Sign in with your phone number to manage your table bookings and dining preferences.
+                Sign in with your email address to manage your table bookings and dining preferences.
               </p>
               <button
                 type="button"

@@ -18,13 +18,7 @@ import {
   X,
   SlidersHorizontal,
 } from "lucide-react";
-import type { GalleryItem } from "@/app/actions/gallery";
-import {
-  addGalleryPhoto,
-  addGalleryPhotoUrl,
-  updateGalleryPhoto,
-  deleteGalleryPhoto,
-} from "@/app/actions/gallery";
+import type { GalleryItem } from "@/types/database";
 import { motion, AnimatePresence } from "motion/react";
 
 interface AdminGalleryManagementProps {
@@ -123,15 +117,21 @@ export default function AdminGalleryManagement({
           setStatusMsg({ type: "success", text: "Gallery photo details updated!" });
           setModalOpen(false);
         } else {
-          const res = await updateGalleryPhoto(String(editingItem.id), {
-            title,
-            category,
-            tag,
-            imageUrl: imageUrl.trim() || undefined,
-            aspect,
+          const res = await fetch("/api/gallery", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: String(editingItem.id),
+              title,
+              category,
+              tag,
+              imageUrl: imageUrl.trim() || undefined,
+              aspect,
+            }),
           });
+          const resJson = await res.json();
 
-          if (res.success) {
+          if (resJson.success) {
             setItems((prev) =>
               prev.map((i) =>
                 i.id === editingItem.id
@@ -149,7 +149,7 @@ export default function AdminGalleryManagement({
             setStatusMsg({ type: "success", text: "Gallery photo updated successfully!" });
             setModalOpen(false);
           } else {
-            setStatusMsg({ type: "error", text: res.error || "Failed to update gallery photo." });
+            setStatusMsg({ type: "error", text: resJson.error || "Failed to update gallery photo." });
           }
         }
       } else {
@@ -162,19 +162,24 @@ export default function AdminGalleryManagement({
           }
           const formData = new FormData();
           formData.append("file", selectedFile);
+          formData.append("folder", "displayAssets");
           formData.append("fileName", title.trim() || selectedFile.name);
           formData.append(
             "altText",
             JSON.stringify({ category, tag: tag.trim() || "Artisanal Craft", aspect })
           );
 
-          const res = await addGalleryPhoto(formData);
-          if (res.success) {
+          const res = await fetch("/api/media", {
+            method: "POST",
+            body: formData,
+          });
+          const resJson = await res.json();
+          if (resJson.success) {
             setStatusMsg({ type: "success", text: "Photo uploaded to gallery successfully!" });
             setModalOpen(false);
             setTimeout(() => window.location.reload(), 1200);
           } else {
-            setStatusMsg({ type: "error", text: res.error || "Failed to upload photo." });
+            setStatusMsg({ type: "error", text: resJson.error || "Failed to upload photo." });
           }
         } else {
           if (!imageUrl.trim()) {
@@ -182,20 +187,25 @@ export default function AdminGalleryManagement({
             setUploading(false);
             return;
           }
-          const res = await addGalleryPhotoUrl({
-            title,
-            imageUrl: imageUrl.trim(),
-            category,
-            tag,
-            aspect,
+          const res = await fetch("/api/gallery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title,
+              imageUrl: imageUrl.trim(),
+              category,
+              tag,
+              aspect,
+            }),
           });
+          const result = await res.json();
 
-          if (res.success && res.data) {
-            setItems((prev) => [res.data!, ...prev]);
+          if (result.success && result.item) {
+            setItems((prev) => [result.item, ...prev]);
             setStatusMsg({ type: "success", text: "Image URL added to gallery successfully!" });
             setModalOpen(false);
           } else {
-            setStatusMsg({ type: "error", text: res.error || "Failed to add image URL." });
+            setStatusMsg({ type: "error", text: result.error || "Failed to add image URL." });
           }
         }
       }
@@ -218,13 +228,16 @@ export default function AdminGalleryManagement({
     if (!confirm("Are you sure you want to permanently delete this photo from the gallery?")) return;
 
     startTransition(async () => {
-      const res = await deleteGalleryPhoto(String(item.id));
-      if (res.success) {
+      const res = await fetch(`/api/gallery?id=${item.id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (result.success) {
         setItems((prev) => prev.filter((i) => i.id !== item.id));
         setStatusMsg({ type: "success", text: "Gallery photo deleted successfully." });
         setTimeout(() => setStatusMsg(null), 3000);
       } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to delete photo." });
+        setStatusMsg({ type: "error", text: result.error || "Failed to delete photo." });
       }
     });
   };

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Heart, Flame, AlertCircle, ArrowUpRight } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip-card";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 /**
  * Extracts clean weight (e.g., "250g", "160g", "350ml") from verbose portion strings
@@ -253,10 +254,20 @@ export default function FoodCard({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
+                const nextLiked = !isLiked;
                 if (onToggleFavorite) {
                   onToggleFavorite(item.id);
                 } else {
-                  setLocalIsLiked(!localIsLiked);
+                  setLocalIsLiked(nextLiked);
+                }
+                if (nextLiked) {
+                  toast.success(`Saved to Favorites`, {
+                    description: `${item.name} has been added to your favorites list.`,
+                  });
+                } else {
+                  toast.info(`Removed from Favorites`, {
+                    description: `${item.name} has been removed from favorites.`,
+                  });
                 }
               }}
               aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}

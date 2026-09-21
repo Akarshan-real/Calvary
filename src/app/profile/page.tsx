@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/app/actions/auth';
-import { getUserReservations } from '@/app/actions/user-reservations';
+import { getCurrentUser } from '@/lib/auth-server';
+import { getUserReservations } from '@/lib/db-server';
 import ProfileClientView from './ProfileClientView';
 
 export const metadata = {

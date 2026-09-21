@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Sparkles, Utensils, GlassWater, Building2, Flame, Maximize2, X } from "lucide-react";
 import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
-import type { GalleryItem } from "@/app/actions/gallery";
+import type { GalleryItem } from "@/types/database";
 import galleryData from "@/data/gallery.json";
 
 const defaultItems: GalleryItem[] = galleryData as GalleryItem[];

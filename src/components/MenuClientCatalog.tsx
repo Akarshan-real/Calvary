@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import FoodCard, { FoodItem } from "@/components/FoodCard";
 import { HighlightGrid } from "@/components/ui/highlight-grid";
 import { Search, X, Filter, Utensils, Heart } from "lucide-react";
+import { useMenu } from "@/hooks/api/use-menu";
 
 interface Category {
   id: number;
@@ -28,9 +29,13 @@ const FOOD_ACCENT_COLORS = [
 ];
 
 export default function MenuClientCatalog({
-  items,
-  categories,
+  items: initialItems,
+  categories: initialCategories,
 }: MenuClientCatalogProps) {
+  const { data: menuData } = useMenu({ items: initialItems as any, categories: initialCategories as any });
+  const items = (menuData?.items as FoodItem[]) || initialItems;
+  const categories = (menuData?.categories as Category[]) || initialCategories;
+
   const [selectedCategory, setSelectedCategory] = useState<number | "all" | "favorites">("all");
   const [selectedDiet, setSelectedDiet] = useState<"all" | "veg" | "non-veg">("all");
   const [searchQuery, setSearchQuery] = useState("");

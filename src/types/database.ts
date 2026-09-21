@@ -8,7 +8,7 @@ export interface Profile {
   id: string
   full_name: string | null
   phone: string | null
-  email: string | null
+  email: string
   avatar_url: string | null
   birthday: string | null
   food_preference: FoodPreference
@@ -53,6 +53,16 @@ export interface RestaurantTable {
   table_number: string
   capacity: number
   is_active: boolean
+  zone?: string | null
+  zone_slug?: string | null
+  description?: string | null
+  shape?: 'round' | 'rectangle' | 'booth' | 'square' | null
+  min_capacity?: number | null
+  is_vip?: boolean | null
+  sort_order?: number | null
+  floor?: string | null
+  created_at?: string
+  updated_at?: string
 }
 
 export interface ReservationSlot {
@@ -126,6 +136,7 @@ export interface Reservation {
   customer_email: string
   party_size: number
   special_request: string | null
+  cancellation_reason?: string | null
   status: ReservationStatus
   created_at: string
   updated_at: string
@@ -142,4 +153,61 @@ export interface ContactMessage {
   message: string
   status: MessageStatus
   created_at: string
+}
+
+export interface UserReservation {
+  id: string
+  user_id: string | null
+  table_id: number
+  slot_id: number
+  reservation_date: string
+  customer_name: string
+  customer_phone: string
+  customer_email: string
+  party_size: number
+  special_request: string | null
+  cancellation_reason?: string | null
+  feedback_rating?: number | null
+  feedback_comment?: string | null
+  status: ReservationStatus
+  created_at: string
+  updated_at: string
+  restaurant_tables?: {
+    id: number
+    table_number: string
+    capacity: number
+    zone?: string | null
+    zone_slug?: string | null
+    description?: string | null
+    shape?: string | null
+    min_capacity?: number | null
+    is_vip?: boolean | null
+    sort_order?: number | null
+    floor?: string | null
+  } | null
+  reservation_slots?: {
+    id: number
+    start_time: string
+    duration_minutes: number
+  } | null
+}
+
+export interface DateOccupancyInfo {
+  date: string
+  density: 'low' | 'medium' | 'high' | 'full' | 'closed'
+  bookedCount: number
+  maxCount: number
+  remainingTables: number
+  isClosed: boolean
+  reason?: string
+}
+
+export interface GalleryItem {
+  id: number
+  title: string
+  category: 'dishes' | 'ambiance' | 'cocktails' | 'kitchen'
+  image: string
+  aspect: string
+  tag: string
+  isCustom?: boolean
 }

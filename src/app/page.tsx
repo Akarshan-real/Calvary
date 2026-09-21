@@ -7,8 +7,8 @@ import FeaturedDishesSection from "@/components/sections/home/FeaturedDishesSect
 import HomeFaqSection from "@/components/sections/home/HomeFaqSection";
 import GoogleReviewsMarquee from "@/components/sections/home/GoogleReviewsMarquee";
 import HomeCtaBanner from "@/components/sections/home/HomeCtaBanner";
-import { getMenuItems, getRestaurantSettings } from "@/app/actions/restaurant";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getMenuItems, getRestaurantSettings } from "@/lib/db-server";
+import { getCurrentUser } from "@/lib/auth-server";
 
 /** Elegant gradient divider between sections */
 function SectionDivider({ variant = "default" }: { variant?: "default" | "red" | "gold" }) {

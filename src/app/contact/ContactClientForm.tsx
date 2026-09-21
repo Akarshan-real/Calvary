@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { submitContactMessage } from "@/app/actions/restaurant";
+import React, { useState, useEffect } from "react";
 import { Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import FuseButton from "@/components/FuseButton";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 interface ContactClientFormProps {
   initialUser: {
@@ -21,13 +22,63 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
     message: "",
   });
 
+  // Client-side fallback: Hydrate email / name from Supabase auth session if not passed via SSR
+  useEffect(() => {
+    // If SSR provided the values, update state
+    if (initialUser.email || initialUser.name || initialUser.phone) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || initialUser.name || "",
+        email: prev.email || initialUser.email || "",
+        phone: prev.phone || initialUser.phone || "",
+      }));
+    }
+
+    // Also check active browser session in case SSR cookies were stale or missing email
+    async function loadBrowserSessionUser() {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const userEmail = user.email || (user.user_metadata?.email as string) || "";
+          const userName = (user.user_metadata?.full_name as string) || "";
+          const userPhone = user.phone || (user.user_metadata?.phone as string) || "";
+
+          // Also check profile
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name, email, phone")
+            .eq("id", user.id)
+            .maybeSingle();
+
+          const resolvedEmail = profile?.email || userEmail;
+          const resolvedName = profile?.full_name || userName;
+          const resolvedPhone = profile?.phone || userPhone;
+
+          setFormData((prev) => ({
+            ...prev,
+            email: prev.email ? prev.email : resolvedEmail,
+            name: prev.name ? prev.name : resolvedName,
+            phone: prev.phone ? prev.phone : resolvedPhone,
+          }));
+        }
+      } catch (err) {
+        console.warn("Client session hydration for contact form:", err);
+      }
+    }
+
+    loadBrowserSessionUser();
+  }, [initialUser.email, initialUser.name, initialUser.phone]);
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const checkContactConstraints = (): boolean => {
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setError("Please complete all required fields (Name, Email, and Message).");
+      const msg = "Please complete all required fields (Name, Email, and Message).";
+      setError(msg);
+      toast.error("Required fields missing", { description: msg });
       return false;
     }
     setError(null);
@@ -41,14 +92,24 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
     setError(null);
 
     try {
-      const res = await submitContactMessage(formData);
-      if (!res.success) {
-        throw new Error(res.error || "Failed to send message.");
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to send message.");
       }
       setSuccess(true);
+      toast.success("Message sent successfully!", {
+        description: "Our concierge team will respond to your email shortly.",
+      });
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+      const msg = err.message || "An unexpected error occurred. Please try again.";
+      setError(msg);
+      toast.error("Message delivery error", { description: msg });
     } finally {
       setLoading(false);
     }

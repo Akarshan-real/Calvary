@@ -17,8 +17,7 @@ import {
   Sparkles,
   ExternalLink,
 } from "lucide-react";
-import type { MenuItem, MenuCategory, ContactMessage } from "@/types/database";
-import type { GalleryItem } from "@/app/actions/gallery";
+import type { MenuItem, MenuCategory, ContactMessage, GalleryItem } from "@/types/database";
 
 interface AdminDashboardClientProps {
   user: {

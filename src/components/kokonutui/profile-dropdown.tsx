@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { logout } from "@/app/actions/auth";
+import { toast } from "sonner";
 
 export interface Profile {
   name?: string | null;
@@ -67,7 +67,6 @@ export default function ProfileDropdown({
       ? [
           {
             label: "Admin Portal",
-            value: "ADMIN",
             href: "/admin",
             icon: <ShieldCheck className="h-4 w-4 text-[#ffbe33]" />,
           },
@@ -76,10 +75,16 @@ export default function ProfileDropdown({
   ];
 
   const handleSignOut = async () => {
+    toast.info("Signing out...", { description: "Ending your session." });
     if (onSignOut) {
       await onSignOut();
     } else {
-      await logout();
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "logout" }),
+      });
+      window.location.href = "/";
     }
   };
 

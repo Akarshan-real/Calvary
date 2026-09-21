@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# skills
+/.agents/
+/.kilo
+AGENTS.md
+
+# future
+futureWork.txt

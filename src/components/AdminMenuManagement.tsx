@@ -25,13 +25,6 @@ import {
   Search,
 } from "lucide-react";
 import type { MenuItem, MenuCategory, MenuItemNutrition } from "@/types/database";
-import {
-  upsertMenuItem,
-  deleteMenuItem,
-  toggleMenuItemAvailability,
-  upsertMenuItemNutrition,
-} from "@/app/actions/restaurant";
-import { uploadMediaAsset } from "@/app/actions/media";
 import { motion, AnimatePresence } from "motion/react";
 
 interface AdminMenuManagementProps {
@@ -111,11 +104,20 @@ export default function AdminMenuManagement({
 
   const handleToggleAvailability = (item: MenuItem) => {
     startTransition(async () => {
-      const res = await toggleMenuItemAvailability(item.id, !item.is_available);
-      if (res.success) {
-        setItems((prev) =>
-          prev.map((i) => (i.id === item.id ? { ...i, is_available: !i.is_available } : i))
-        );
+      try {
+        const res = await fetch("/api/menu", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: item.id, is_available: !item.is_available }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, is_available: !i.is_available } : i))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to toggle availability:", err);
       }
     });
   };
@@ -123,13 +125,18 @@ export default function AdminMenuManagement({
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to permanently delete this menu item?")) return;
     startTransition(async () => {
-      const res = await deleteMenuItem(id);
-      if (res.success) {
-        setItems((prev) => prev.filter((i) => i.id !== id));
-        setStatusMsg({ type: "success", text: "Menu dish deleted successfully." });
-        setTimeout(() => setStatusMsg(null), 3000);
-      } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to delete dish." });
+      try {
+        const res = await fetch(`/api/menu?id=${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.success) {
+          setItems((prev) => prev.filter((i) => i.id !== id));
+          setStatusMsg({ type: "success", text: "Menu dish deleted successfully." });
+          setTimeout(() => setStatusMsg(null), 3000);
+        } else {
+          setStatusMsg({ type: "error", text: data.error || "Failed to delete dish." });
+        }
+      } catch (err: any) {
+        setStatusMsg({ type: "error", text: err.message || "Failed to delete dish." });
       }
     });
   };
@@ -142,17 +149,22 @@ export default function AdminMenuManagement({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("folder", "items");
       formData.append("fileName", editingItem?.name || file.name);
 
-      const res = await uploadMediaAsset("items", formData);
-      if (res.success && res.data) {
+      const res = await fetch("/api/media", {
+        method: "POST",
+        body: formData,
+      });
+      const resJson = await res.json();
+      if (resJson.success && resJson.data) {
         setEditingItem((prev) => ({
           ...prev,
-          image_url: res.data!.public_url,
-          image_id: res.data!.id,
+          image_url: resJson.data.public_url,
+          image_id: resJson.data.id,
         }));
       } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to upload image." });
+        setStatusMsg({ type: "error", text: resJson.error || "Failed to upload image." });
       }
     } catch (err: any) {
       setStatusMsg({ type: "error", text: err.message || "Upload error." });
@@ -207,7 +219,22 @@ export default function AdminMenuManagement({
 
     startTransition(async () => {
       try {
-        const payload: Partial<MenuItem> = {
+        const allergensList = currentNut.allergens
+          ? currentNut.allergens
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+
+        const hasNutrition =
+          currentNut.calories ||
+          currentNut.protein_g ||
+          currentNut.carbs_g ||
+          currentNut.fat_g ||
+          currentNut.fiber_g ||
+          allergensList.length > 0;
+
+        const payload: any = {
           ...(currentItem.id ? { id: currentItem.id } : {}),
           name: currentItem.name!.trim(),
           description: currentItem.description?.trim() || null,
@@ -220,48 +247,29 @@ export default function AdminMenuManagement({
           is_available: currentItem.is_available ?? true,
         };
 
-        const res = await upsertMenuItem(payload);
-        if (res.success && res.data) {
-          const savedDish = res.data!;
-
-          // Save / Upsert Nutritional Macros & Micros if provided
-          const allergensList = currentNut.allergens
-            ? currentNut.allergens
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean)
-            : [];
-
-          let updatedNutrition: MenuItemNutrition | null = null;
-          if (
-            currentNut.calories ||
-            currentNut.protein_g ||
-            currentNut.carbs_g ||
-            currentNut.fat_g ||
-            currentNut.fiber_g ||
-            allergensList.length > 0
-          ) {
-            const nutRes = await upsertMenuItemNutrition({
-              item_id: savedDish.id,
-              calories: currentNut.calories ? parseFloat(currentNut.calories) : null,
-              protein_g: currentNut.protein_g ? parseFloat(currentNut.protein_g) : null,
-              carbs_g: currentNut.carbs_g ? parseFloat(currentNut.carbs_g) : null,
-              fat_g: currentNut.fat_g ? parseFloat(currentNut.fat_g) : null,
-              fiber_g: currentNut.fiber_g ? parseFloat(currentNut.fiber_g) : null,
-              allergens: allergensList,
-            });
-            if (nutRes.success && nutRes.data) {
-              updatedNutrition = nutRes.data as MenuItemNutrition;
-            }
-          }
-
-          const completeDish: MenuItem = {
-            ...savedDish,
-            menu_item_nutrition: updatedNutrition || currentItem.menu_item_nutrition || null,
+        if (hasNutrition) {
+          payload.nutrition = {
+            calories: currentNut.calories ? parseFloat(currentNut.calories) : null,
+            protein_g: currentNut.protein_g ? parseFloat(currentNut.protein_g) : null,
+            carbs_g: currentNut.carbs_g ? parseFloat(currentNut.carbs_g) : null,
+            fat_g: currentNut.fat_g ? parseFloat(currentNut.fat_g) : null,
+            fiber_g: currentNut.fiber_g ? parseFloat(currentNut.fiber_g) : null,
+            allergens: allergensList,
           };
+        }
+
+        const res = await fetch("/api/menu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const resJson = await res.json();
+        if (resJson.success && resJson.item) {
+          const completeDish: MenuItem = resJson.item;
 
           if (editingItem.id) {
-            setItems((prev) => prev.map((i) => (i.id === savedDish.id ? { ...i, ...completeDish } : i)));
+            setItems((prev) => prev.map((i) => (i.id === completeDish.id ? { ...i, ...completeDish } : i)));
           } else {
             setItems((prev) => [completeDish, ...prev]);
           }
@@ -269,7 +277,7 @@ export default function AdminMenuManagement({
           setStatusMsg({ type: "success", text: "Menu dish & nutritional macros saved successfully!" });
           setTimeout(() => setStatusMsg(null), 3500);
         } else {
-          setStatusMsg({ type: "error", text: res.error || "Failed to save menu dish." });
+          setStatusMsg({ type: "error", text: resJson.error || "Failed to save menu dish." });
         }
       } catch (err: any) {
         setStatusMsg({ type: "error", text: err.message || "Failed to save." });

@@ -1,51 +1,51 @@
 [
   {
     "name": "India",
-    "flag": "🇮🇳",
+    "code": "in",
     "coords": [20.5937, 78.9629],
-    "dish": "Dum Gosht Biryani & Tandoor Hearth",
-    "region": "Old Delhi & Hyderabad"
+    "coordinatesLabel": "20.59° N, 78.96° E",
+    "terroir": "Sacred Spice Hearth"
   },
   {
     "name": "Italy",
-    "flag": "🇮🇹",
+    "code": "it",
     "coords": [41.9028, 12.4964],
-    "dish": "Wood-Fired Pizzas & Pastas",
-    "region": "Naples & Modena"
+    "coordinatesLabel": "41.90° N, 12.50° E",
+    "terroir": "Mediterranean Soil"
   },
   {
     "name": "France",
-    "flag": "🇫🇷",
+    "code": "fr",
     "coords": [48.8566, 2.3522],
-    "dish": "Classical Pastries & Reductions",
-    "region": "Lyon & Paris"
+    "coordinatesLabel": "48.86° N, 2.35° E",
+    "terroir": "Haute Culinary Arts"
   },
   {
     "name": "Japan",
-    "flag": "🇯🇵",
+    "code": "jp",
     "coords": [35.6762, 139.6503],
-    "dish": "Wagyu Prime & Fresh Scallops",
-    "region": "Hokkaido & Tokyo"
+    "coordinatesLabel": "35.68° N, 139.65° E",
+    "terroir": "Umami Craft & Coast"
   },
   {
     "name": "Spain",
-    "flag": "🇪🇸",
+    "code": "es",
     "coords": [40.4168, -3.7038],
-    "dish": "Mountain Saffron & Calamari",
-    "region": "Valencia & Basque Coast"
+    "coordinatesLabel": "40.42° N, 3.70° W",
+    "terroir": "Iberian Mountain Sun"
   },
   {
     "name": "United States",
-    "flag": "🇺🇸",
+    "code": "us",
     "coords": [40.7128, -74.006],
-    "dish": "Artisanal Brioche Burgers",
-    "region": "New York City"
+    "coordinatesLabel": "40.71° N, 74.01° W",
+    "terroir": "Artisanal Innovation"
   },
   {
     "name": "Mexico",
-    "flag": "🇲🇽",
+    "code": "mx",
     "coords": [19.4326, -99.1332],
-    "dish": "Smoked Chipotle & Fire Spices",
-    "region": "Oaxaca"
+    "coordinatesLabel": "19.43° N, 99.13° W",
+    "terroir": "Ancestral Volcanic Soil"
   }
 ]

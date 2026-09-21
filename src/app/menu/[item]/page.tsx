@@ -1,8 +1,8 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getMenuItemById, getMenuItems } from "@/app/actions/restaurant";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getMenuItemById, getMenuItems } from "@/lib/db-server";
+import { getCurrentUser } from "@/lib/auth-server";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Flame, AlertCircle, Sparkles, UtensilsCrossed, Heart } from "lucide-react";

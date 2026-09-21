@@ -64,6 +64,8 @@ export const metadata: Metadata = {
 import SmoothScroll from "@/components/SmoothScroll";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import BackToTop from "@/components/BackToTop";
+import { Toaster } from "@/components/ui/sonner";
+import QueryProvider from "@/providers/query-provider";
 
 export default function RootLayout({
   children,
@@ -77,10 +79,13 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-[#0b0c0f] text-white selection:bg-[#e60000] selection:text-white">
         <ScrollProgress className="top-0 z-[100] h-[3px] bg-gradient-to-r from-[#ffbe33] via-[#ff9900] to-[#e60000] shadow-[0_0_12px_rgba(255,190,51,0.7)]" />
-        <SmoothScroll>
-          <TooltipProvider>{children}</TooltipProvider>
-          <BackToTop />
-        </SmoothScroll>
+        <QueryProvider>
+          <SmoothScroll>
+            <TooltipProvider>{children}</TooltipProvider>
+            <BackToTop />
+          </SmoothScroll>
+        </QueryProvider>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

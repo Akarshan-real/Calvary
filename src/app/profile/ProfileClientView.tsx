@@ -16,7 +16,12 @@ import {
   Save,
   Trash2,
   X,
+  Edit3,
+  Star,
 } from "lucide-react";
+import EditReservationModal from "@/components/reservation/EditReservationModal";
+import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
+import DiningReviewModal from "@/components/reservation/DiningReviewModal";
 import {
   User02Icon,
   SmartPhone01Icon,
@@ -24,13 +29,14 @@ import {
   Calendar03Icon,
 } from "@hugeicons/core-free-icons/index";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { logout } from "@/app/actions/auth";
-import { updateUserProfile, uploadUserAvatar, deleteUserAccount } from "@/app/actions/profile";
-import type { UserReservation } from "@/app/actions/user-reservations";
-import type { Profile } from "@/types/database";
+import { useProfile, useUpdateProfile, useDeleteAccount } from "@/hooks/api/use-profile";
+import { useUserReservations } from "@/hooks/api/use-reservations";
+import type { UserReservation, Profile } from "@/types/database";
 import FileUpload from "@/components/kokonutui/file-upload";
 import { ProfileEditableField } from "@/components/ProfileEditableField";
 import { BirthdayCalendar } from "@/components/ui/simple-calender";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 interface ProfileClientViewProps {
   user: {
     id: string;
@@ -46,11 +52,19 @@ export default function ProfileClientView({
   profile,
   initialReservations,
 }: ProfileClientViewProps) {
+  const { data: currentProfile } = useProfile(profile);
+  const updateProfileMutation = useUpdateProfile();
+  const deleteAccountMutation = useDeleteAccount();
+  const { data: reservations = initialReservations } = useUserReservations(initialReservations);
+
   const [activeTab, setActiveTab] = useState<"profile" | "reservations">("profile");
 
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [email, setEmail] = useState(profile?.email || user.email || "");
+  const [phone, setPhone] = useState(profile?.phone || user.phone || "");
   const [birthday, setBirthday] = useState(profile?.birthday || "");
+  const [editingReservation, setEditingReservation] = useState<UserReservation | null>(null);
+  const [reviewingReservation, setReviewingReservation] = useState<UserReservation | null>(null);
 
   // Avatar & FileUpload Modal State
   const [avatarUrl, setAvatarUrl] = useState<string | null>(profile?.avatar_url || null);
@@ -68,12 +82,14 @@ export default function ProfileClientView({
   const [initialValues, setInitialValues] = useState({
     fullName: profile?.full_name || "",
     email: profile?.email || user.email || "",
+    phone: profile?.phone || user.phone || "",
     birthday: profile?.birthday || "",
   });
 
   const isChanged =
     fullName !== initialValues.fullName ||
     email !== initialValues.email ||
+    phone !== initialValues.phone ||
     birthday !== initialValues.birthday;
 
   // Permanently delete user account
@@ -82,16 +98,13 @@ export default function ProfileClientView({
     setStatusMsg(null);
 
     try {
-      const res = await deleteUserAccount();
-      if (!res.success) {
-        setStatusMsg({ type: "error", text: res.error || "Failed to delete account." });
-        setDeleting(false);
-        setShowDeleteConfirm(false);
-      } else {
-        window.location.href = "/";
-      }
+      await deleteAccountMutation.mutateAsync();
+      toast.success("Account deleted", { description: "Your account data has been removed." });
+      window.location.href = "/";
     } catch (err: any) {
-      setStatusMsg({ type: "error", text: err.message || "An error occurred while deleting account." });
+      const msg = err.message || "An error occurred while deleting account.";
+      setStatusMsg({ type: "error", text: msg });
+      toast.error("Error", { description: msg });
       setDeleting(false);
       setShowDeleteConfirm(false);
     }
@@ -104,25 +117,26 @@ export default function ProfileClientView({
     setStatusMsg(null);
 
     try {
-      const res = await updateUserProfile({
+      await updateProfileMutation.mutateAsync({
         full_name: fullName.trim(),
         email: email.trim() || undefined,
+        phone: phone.trim() || null,
         birthday: birthday || null,
       });
 
-      if (!res.success) {
-        setStatusMsg({ type: "error", text: res.error || "Failed to update profile." });
-      } else {
-        setInitialValues({
-          fullName: fullName.trim(),
-          email: email.trim(),
-          birthday: birthday || "",
-        });
-        setStatusMsg({ type: "success", text: "Profile details updated successfully!" });
-        setTimeout(() => setStatusMsg(null), 4000);
-      }
+      setInitialValues({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        birthday: birthday || "",
+      });
+      setStatusMsg({ type: "success", text: "Profile details updated successfully!" });
+      toast.success("Profile updated!", { description: "Your dining details have been saved." });
+      setTimeout(() => setStatusMsg(null), 4000);
     } catch (err: any) {
-      setStatusMsg({ type: "error", text: err.message || "An unexpected error occurred." });
+      const msg = err.message || "An unexpected error occurred.";
+      setStatusMsg({ type: "error", text: msg });
+      toast.error("Update error", { description: msg });
     } finally {
       setSaving(false);
     }
@@ -137,23 +151,57 @@ export default function ProfileClientView({
       const formData = new FormData();
       formData.append("avatar", file);
 
-      const res = await uploadUserAvatar(formData, user.id);
-      if (res.success && res.url) {
-        setAvatarUrl(res.url);
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.success && data.url) {
+        setAvatarUrl(data.url);
         setShowUploadModal(false);
         setStatusMsg({ type: "success", text: "Profile photo uploaded successfully!" });
+        toast.success("Avatar updated!", { description: "Your new profile image has been uploaded." });
         setTimeout(() => setStatusMsg(null), 4000);
       } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to upload avatar." });
+        const err = data.error || "Failed to upload avatar.";
+        setStatusMsg({ type: "error", text: err });
+        toast.error("Upload failed", { description: err });
       }
     } catch (err: any) {
-      setStatusMsg({ type: "error", text: err.message || "Failed to upload avatar." });
+      const msg = err.message || "Failed to upload avatar.";
+      setStatusMsg({ type: "error", text: msg });
+      toast.error("Upload error", { description: msg });
     } finally {
       setUploadingAvatar(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  // Helper to check if reservation date & slot time has already passed
+  const isReservationPast = (resDate: string, startTime?: string | null, durationMinutes: number = 90) => {
+    try {
+      const [y, m, d] = resDate.split("-").map(Number);
+      if (!y || !m || !d) return false;
+      const timeParts = (startTime || "00:00").split(":").map(Number);
+      const hours = timeParts[0] || 0;
+      const minutes = timeParts[1] || 0;
+      const slotEnd = new Date(y, m - 1, d, hours, minutes + durationMinutes, 0);
+      return slotEnd.getTime() <= Date.now();
+    } catch {
+      return false;
+    }
+  };
+
+  const getStatusBadge = (status: string, isPast: boolean = false) => {
+    if (status === "COMPLETED" || (status !== "CANCELLED" && isPast)) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          Completed
+        </span>
+      );
+    }
+
     switch (status) {
       case "CONFIRMED":
         return (
@@ -286,7 +334,11 @@ export default function ProfileClientView({
                 <button
                   type="button"
                   onClick={async () => {
-                    await logout();
+                    await fetch("/api/auth", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ action: "logout" }),
+                    });
                     window.location.href = "/";
                   }}
                   className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-red-400 transition-colors py-2 px-3 rounded-lg hover:bg-white/5 cursor-pointer"
@@ -353,31 +405,33 @@ export default function ProfileClientView({
                   placeholder="Enter full name"
                   onSave={(val) => {
                     setFullName(val);
-                    updateUserProfile({ full_name: val });
+                    updateProfileMutation.mutate({ full_name: val });
                   }}
                 />
 
-                {/* Verified Mobile Number (Read-only) */}
+                {/* Verified Email Address (Read-only / Verified Badge) */}
                 <ProfileEditableField
-                  icon={SmartPhone01Icon}
-                  label="Verified Mobile"
-                  value={user.phone || profile?.phone || "No phone linked"}
+                  icon={Mail01Icon}
+                  label="Verified Email"
+                  type="email"
+                  value={email || user.email || "No email linked"}
                   readOnly={true}
                   verifiedBadge={true}
+                  helperText="Primary dining identifier for account access & receipts."
                   onSave={() => {}}
                 />
 
-                {/* Email Address */}
+                {/* Contact Phone (Editable) */}
                 <ProfileEditableField
-                  icon={Mail01Icon}
-                  label="Email Address"
-                  type="email"
-                  value={email}
-                  placeholder="name@example.com"
-                  helperText="Required to receive automated table booking receipts."
+                  icon={SmartPhone01Icon}
+                  label="Contact Phone"
+                  type="tel"
+                  value={phone}
+                  placeholder="+91 XXXXX XXXXX"
+                  helperText="Used by concierge for SMS table updates & reminders."
                   onSave={(val) => {
-                    setEmail(val);
-                    updateUserProfile({ email: val });
+                    setPhone(val);
+                    updateProfileMutation.mutate({ phone: val });
                   }}
                 />
 
@@ -405,7 +459,7 @@ export default function ProfileClientView({
                       value={birthday}
                       onChange={(newDate) => {
                         setBirthday(newDate);
-                        updateUserProfile({ birthday: newDate });
+                        updateProfileMutation.mutate({ birthday: newDate });
                       }}
                       className="w-full"
                     />
@@ -512,7 +566,7 @@ export default function ProfileClientView({
               </Link>
             </div>
 
-            {initialReservations.length === 0 ? (
+            {reservations.length === 0 ? (
               <div className="bg-[#12141d] border border-white/10 rounded-3xl p-10 sm:p-14 text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-neutral-400">
                   <CalendarIcon className="w-8 h-8 text-[#ffbe33]" />
@@ -531,57 +585,144 @@ export default function ProfileClientView({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {initialReservations.map((res) => (
-                  <div
-                    key={res.id}
-                    className="bg-[#12141d] border border-white/10 rounded-2xl p-5 hover:border-[#ffbe33]/40 transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className="text-xs font-mono text-neutral-400">
-                          #{res.id.slice(0, 8).toUpperCase()}
-                        </span>
-                        {getStatusBadge(res.status)}
-                      </div>
+                {reservations.map((res) => {
+                  const isPast = isReservationPast(
+                    res.reservation_date,
+                    res.reservation_slots?.start_time,
+                    res.reservation_slots?.duration_minutes
+                  );
 
-                      <h4 className="font-bold text-base text-white flex items-center gap-2">
-                        <span>
-                          {res.restaurant_tables?.table_number
-                            ? `Table ${res.restaurant_tables.table_number}`
-                            : "Dining Table"}
-                        </span>
-                        <span className="text-neutral-500 font-normal text-xs">
-                          • {res.party_size} Guests
-                        </span>
-                      </h4>
-
-                      <div className="mt-3 space-y-1.5 text-xs text-neutral-300">
-                        <div className="flex items-center gap-2 text-neutral-400">
-                          <CalendarIcon className="w-3.5 h-3.5 text-[#ffbe33]" />
-                          <span>Date: {res.reservation_date}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-neutral-400">
-                          <Clock className="w-3.5 h-3.5 text-[#ffbe33]" />
-                          <span>
-                            Time Slot: {res.reservation_slots?.start_time || "Confirmed Time"}
+                  return (
+                    <div
+                      key={res.id}
+                      className={cn(
+                        "border rounded-2xl p-5 transition-all flex flex-col justify-between",
+                        isPast && res.status !== "CANCELLED"
+                          ? "bg-[#0f1118]/80 border-blue-500/20"
+                          : "bg-[#12141d] border-white/10 hover:border-[#ffbe33]/40"
+                      )}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-xs font-mono text-neutral-400">
+                            #{res.id.slice(0, 8).toUpperCase()}
                           </span>
+                          {getStatusBadge(res.status, isPast)}
                         </div>
-                        {res.special_request && (
-                          <div className="mt-2 p-2.5 rounded-lg bg-white/5 text-[11px] text-neutral-300 italic border border-white/5">
-                            "{res.special_request}"
+
+                        <h4 className="font-bold text-base text-white flex items-center gap-2">
+                          <span>
+                            {res.restaurant_tables?.table_number
+                              ? `Table ${res.restaurant_tables.table_number}`
+                              : "Dining Table"}
+                          </span>
+                          <span className="text-neutral-500 font-normal text-xs">
+                            • {res.party_size} Guests
+                          </span>
+                        </h4>
+
+                        <div className="mt-3 space-y-1.5 text-xs text-neutral-300">
+                          <div className="flex items-center gap-2 text-neutral-400">
+                            <CalendarIcon className="w-3.5 h-3.5 text-[#ffbe33]" />
+                            <span>Date: {res.reservation_date}</span>
                           </div>
-                        )}
+                          <div className="flex items-center gap-2 text-neutral-400">
+                            <Clock className="w-3.5 h-3.5 text-[#ffbe33]" />
+                            <span>
+                              Time Slot: {res.reservation_slots?.start_time || "Confirmed Time"}
+                            </span>
+                          </div>
+                          {res.special_request && (
+                            <div className="mt-2 p-2.5 rounded-lg bg-white/5 text-[11px] text-neutral-300 border border-white/5 flex items-start gap-1.5">
+                              <span className="font-semibold text-[#ffbe33] shrink-0">Special Notes:</span>
+                              <span className="italic">"{res.special_request}"</span>
+                            </div>
+                          )}
+                          {res.cancellation_reason && (
+                            <div className="mt-2 p-2.5 rounded-lg bg-rose-500/10 text-[11px] text-rose-300 border border-rose-500/20 flex items-start gap-1.5">
+                              <span className="font-semibold text-rose-400 shrink-0">Decline Reason:</span>
+                              <span>{res.cancellation_reason}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500">
+                        <div>
+                          <span>Booked {new Date(res.created_at).toLocaleDateString()}</span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Add to Calendar for upcoming active bookings */}
+                          {res.status !== "CANCELLED" && !isPast && (
+                            <AddToCalendarButton
+                              buttonSize="sm"
+                              event={{
+                                title: `Calvary Dining: ${res.restaurant_tables?.table_number ? `Table ${res.restaurant_tables.table_number}` : "Table Reservation"}`,
+                                description: `Reservation for ${res.party_size} guests at Calvary Fine Dining. Booking Ref: #${res.id.slice(0, 8)}.`,
+                                location: "Calvary Fine Dining, 124 Heritage Lane, Indiranagar, Bengaluru",
+                                startDate: res.reservation_date,
+                                startTime: res.reservation_slots?.start_time || "19:00",
+                                durationMinutes: res.reservation_slots?.duration_minutes || 90,
+                              }}
+                            />
+                          )}
+
+                          {/* Rate Dining for past visits */}
+                          {isPast && res.status !== "CANCELLED" && (
+                            <button
+                              type="button"
+                              onClick={() => setReviewingReservation(res)}
+                              className="px-2.5 py-1 rounded-lg bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] hover:bg-[#ffbe33] hover:text-neutral-950 font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
+                            >
+                              <Star className="w-2.5 h-2.5 fill-current" />
+                              <span>{res.feedback_rating ? `${res.feedback_rating}★ Reviewed` : "Rate Dining"}</span>
+                            </button>
+                          )}
+
+                          {res.status !== "CANCELLED" && !isPast && (
+                            <button
+                              type="button"
+                              onClick={() => setEditingReservation(res)}
+                              className="px-2.5 py-1 rounded-lg bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] font-bold text-[10px] uppercase tracking-wider hover:bg-[#ffbe33] hover:text-neutral-950 transition-all cursor-pointer flex items-center gap-1"
+                            >
+                              <Edit3 className="w-2.5 h-2.5" />
+                              <span>Alter</span>
+                            </button>
+                          )}
+
+                          {isPast && res.status !== "CANCELLED" ? (
+                            <span className="text-blue-400/80 font-medium">Session Concluded</span>
+                          ) : (
+                            <span className="text-[#ffbe33]">Calvary Hospitality</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-
-                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500">
-                      <span>Booked under: {res.customer_name}</span>
-                      <span>{new Date(res.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
+
+            {/* Alter Reservation Modal */}
+            <EditReservationModal
+              isOpen={!!editingReservation}
+              reservation={editingReservation}
+              onClose={() => setEditingReservation(null)}
+              onSuccess={() => {
+                setEditingReservation(null);
+              }}
+            />
+
+            {/* Dining Review Modal */}
+            <DiningReviewModal
+              isOpen={!!reviewingReservation}
+              reservation={reviewingReservation}
+              onClose={() => setReviewingReservation(null)}
+              onSuccess={() => {
+                setReviewingReservation(null);
+              }}
+            />
           </div>
         )}
 

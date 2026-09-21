@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Globe } from "@/components/ui/globe";
-import { Compass, Sparkles, MapPin, Utensils } from "lucide-react";
+import { Compass } from "lucide-react";
 import type { COBEOptions } from "cobe";
 import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 
@@ -10,14 +10,13 @@ import globalRootsData from "@/data/global-roots.json";
 
 interface Place {
   name: string;
-  flag: string;
+  code: string;
   coords: [number, number];
-  dish: string;
-  region: string;
 }
 
 const PLACES: Place[] = (globalRootsData as any[]).map((p) => ({
-  ...p,
+  name: p.name,
+  code: p.code,
   coords: [p.coords[0], p.coords[1]] as [number, number],
 }));
 
@@ -60,10 +59,10 @@ export default function GlobalRootsSection() {
             className="text-3xl sm:text-5xl font-bold text-white tracking-tight"
             style={{ fontFamily: "var(--font-cursive), cursive" }}
           >
-            Where Our Food Comes From
+            Where Our Ingredients Come From
           </h2>
           <p className="text-neutral-400 text-xs sm:text-sm">
-            Crafted with recipes and authentic ingredients inspired by culinary traditions across the globe.
+            Artisanal heritage ingredients sourced directly from 7 global partner regions.
           </p>
         </div>
       </RevealOnScroll>
@@ -74,7 +73,7 @@ export default function GlobalRootsSection() {
         {/* Left Column: 3D Globe with Glowing Outline Ring (No Dragging) */}
         <RevealOnScroll direction="left" delay={100} duration={900} className="lg:col-span-6 flex items-center justify-center">
           <div className="relative w-full max-w-[420px] sm:max-w-[480px] aspect-square flex items-center justify-center pointer-events-none select-none">
-            {/* Glowing Outline Ring that looked cool */}
+            {/* Glowing Outline Ring */}
             <div className="absolute inset-0 rounded-full ring-2 ring-[#ffbe33]/40 shadow-[0_0_80px_rgba(255,190,51,0.25)] pointer-events-none" />
 
             <Globe
@@ -84,37 +83,48 @@ export default function GlobalRootsSection() {
           </div>
         </RevealOnScroll>
 
-        {/* Right Column: Clean Regional Details Cards */}
+        {/* Right Column: Luxury Country Provenance Cards */}
         <RevealOnScroll direction="right" delay={200} duration={800} className="lg:col-span-6">
+          {/* Active Origins Header Bar */}
+          <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffbe33] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffbe33]"></span>
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                Partner Culinary Origins
+              </span>
+            </div>
+            <span className="text-xs font-mono text-[#ffbe33] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffbe33]/10 border border-[#ffbe33]/30">
+              7 Origins
+            </span>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {PLACES.map((place) => (
               <div
                 key={place.name}
-                className="p-4 rounded-2xl bg-[#12141a]/90 border border-white/10 hover:border-[#ffbe33]/40 transition-all duration-300 flex items-start gap-3.5 shadow-md group hover:-translate-y-0.5"
+                className="p-3.5 rounded-2xl bg-gradient-to-br from-[#141724]/90 via-[#0f1118]/90 to-[#12141c]/90 border border-white/10 flex items-center gap-3.5 shadow-md"
               >
-                <span className="text-2xl leading-none mt-0.5 group-hover:scale-110 transition-transform">
-                  {place.flag}
-                </span>
+                {/* Country Flag Crest */}
+                <div className="relative w-10 h-7 rounded-lg overflow-hidden shrink-0 ring-1 ring-white/20 shadow-md bg-black/40">
+                  <img
+                    src={`https://flagcdn.com/w80/${place.code}.png`}
+                    alt={`${place.name} flag`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
 
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <h4 className="text-sm font-bold text-white group-hover:text-[#ffbe33] transition-colors">
-                      {place.name}
-                    </h4>
-                    <span className="text-[10px] text-neutral-500 font-medium">({place.region})</span>
-                  </div>
-
-                  <p className="text-xs text-neutral-400 leading-snug">
-                    {place.dish}
-                  </p>
+                <div className="min-w-0">
+                  <h4 className="text-sm sm:text-base font-bold text-white truncate">
+                    {place.name}
+                  </h4>
                 </div>
               </div>
             ))}
           </div>
-
-          <p className="text-[11px] text-neutral-500 italic pt-4 text-center lg:text-left">
-            * All spices, heritage flour, and olive oils are sustainably imported from verified partner growers.
-          </p>
         </RevealOnScroll>
 
       </div>

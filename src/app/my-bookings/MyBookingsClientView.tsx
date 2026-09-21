@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import type { UserReservation } from "@/app/actions/user-reservations";
-import { cancelUserReservation } from "@/app/actions/user-reservations";
+import type { UserReservation } from "@/types/database";
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -20,7 +19,23 @@ import {
   Mail,
   Filter,
   X,
+  Edit3,
 } from "lucide-react";
+import EditReservationModal from "@/components/reservation/EditReservationModal";
+import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
+import DiningReviewModal from "@/components/reservation/DiningReviewModal";
+import {
+  useUserReservations,
+  useCancelReservation,
+  useSendReminder,
+} from "@/hooks/api/use-reservations";
+import { ParallaxHeroBg } from "@/components/sections/home/ParallaxHeroBg";
+import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
+import { toast } from "sonner";
+import { Bell, Star } from "lucide-react";
+import DatePicker6 from "@/components/date-picker-6";
+import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 interface MyBookingsClientViewProps {
   user: {
@@ -40,13 +55,47 @@ export default function MyBookingsClientView({
   user,
   initialReservations,
 }: MyBookingsClientViewProps) {
-  const [reservations, setReservations] = useState<UserReservation[]>(initialReservations);
+  const { data: reservations = initialReservations, refetch } = useUserReservations(initialReservations);
+  const cancelMutation = useCancelReservation();
+  const reminderMutation = useSendReminder();
+
   const [filter, setFilter] = useState<FilterStatus>("ALL");
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [confirmCancelModal, setConfirmCancelModal] = useState<string | null>(null);
+  const [editingReservation, setEditingReservation] = useState<UserReservation | null>(null);
+  const [reviewingReservation, setReviewingReservation] = useState<UserReservation | null>(null);
+  const [sendingReminderId, setSendingReminderId] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(
     null
   );
+
+  const isReservationPast = (resDate: string, startTime?: string | null, durationMinutes: number = 90) => {
+    try {
+      const [y, m, d] = resDate.split("-").map(Number);
+      if (!y || !m || !d) return false;
+      const timeParts = (startTime || "00:00").split(":").map(Number);
+      const hours = timeParts[0] || 0;
+      const minutes = timeParts[1] || 0;
+      const slotEnd = new Date(y, m - 1, d, hours, minutes + durationMinutes, 0);
+      return slotEnd.getTime() <= Date.now();
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSendReminder = async (res: UserReservation) => {
+    setSendingReminderId(res.id);
+    try {
+      await reminderMutation.mutateAsync(res.id);
+      toast.success("Dining reminder sent!", {
+        description: `An email itinerary with table details was delivered to ${res.customer_email}.`,
+      });
+    } catch (err: any) {
+      toast.error("Reminder failed", { description: err.message || "Failed to dispatch reminder." });
+    } finally {
+      setSendingReminderId(null);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -85,27 +134,35 @@ export default function MyBookingsClientView({
     setStatusMsg(null);
 
     try {
-      const res = await cancelUserReservation(id);
-      if (res.success) {
-        setReservations((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, status: "CANCELLED" } : item))
-        );
-        setStatusMsg({ type: "success", text: "Reservation cancelled successfully." });
-        setTimeout(() => setStatusMsg(null), 4000);
-      } else {
-        setStatusMsg({ type: "error", text: res.error || "Failed to cancel reservation." });
-      }
+      await cancelMutation.mutateAsync(id);
+      setStatusMsg({ type: "success", text: "Reservation cancelled successfully." });
+      setTimeout(() => setStatusMsg(null), 4000);
     } catch (err: any) {
-      setStatusMsg({ type: "error", text: err.message || "An error occurred." });
+      setStatusMsg({ type: "error", text: err.message || "Failed to cancel reservation." });
     } finally {
       setCancellingId(null);
       setConfirmCancelModal(null);
     }
   };
 
+  const [dateRangeFilter, setDateRangeFilter] = useState<DateRange | undefined>(undefined);
+
   const filteredReservations = reservations.filter((r) => {
-    if (filter === "ALL") return true;
-    return r.status === filter;
+    const matchesStatus = filter === "ALL" || r.status === filter;
+
+    let matchesDate = true;
+    if (dateRangeFilter?.from) {
+      const resDateStr = r.reservation_date;
+      const fromStr = format(dateRangeFilter.from, "yyyy-MM-dd");
+      if (dateRangeFilter.to) {
+        const toStr = format(dateRangeFilter.to, "yyyy-MM-dd");
+        matchesDate = resDateStr >= fromStr && resDateStr <= toStr;
+      } else {
+        matchesDate = resDateStr === fromStr;
+      }
+    }
+
+    return matchesStatus && matchesDate;
   });
 
   const countByStatus = {
@@ -127,38 +184,51 @@ export default function MyBookingsClientView({
         }}
       />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-8">
-        {/* Header Banner */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffbe33]/10 border border-[#ffbe33]/20 text-[#ffbe33] text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Dining Reservations</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              My Bookings
-            </h1>
-            <p className="text-neutral-400 text-xs sm:text-sm max-w-xl">
-              Track real-time status of your upcoming table bookings, view past culinary reservations, and manage your bookings.
-            </p>
-          </div>
+      {/* Header Banner with Parallax */}
+      <section className="relative overflow-hidden py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5">
+        <ParallaxHeroBg
+          src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop"
+          alt="Calvary Dining Reservations"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-[#090b0e]" />
 
-          <div className="flex items-center gap-3 shrink-0">
-            <Link
-              href="/profile"
-              className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-neutral-300 font-bold text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-            >
-              My Profile
-            </Link>
-            <Link
-              href="/reserve"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#ffbe33] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#e6a827] transition-all shadow-md cursor-pointer"
-            >
-              <UtensilsCrossed className="w-4 h-4" />
-              <span>Book a Table</span>
-            </Link>
-          </div>
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <RevealOnScroll direction="up" delay={100}>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffbe33]/10 border border-[#ffbe33]/20 text-[#ffbe33] text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Dining Reservations</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight drop-shadow-md">
+                My Bookings
+              </h1>
+              <p className="text-neutral-300 text-xs sm:text-sm max-w-xl font-light">
+                Track real-time status of your upcoming table bookings, view past culinary reservations, and manage your bookings.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll direction="left" delay={200}>
+            <div className="flex items-center gap-3 shrink-0">
+              <Link
+                href="/profile"
+                className="px-4 py-2.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-neutral-300 font-bold text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              >
+                My Profile
+              </Link>
+              <Link
+                href="/reserve"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#ffbe33] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#e6a827] transition-all shadow-md cursor-pointer"
+              >
+                <UtensilsCrossed className="w-4 h-4" />
+                <span>Book a Table</span>
+              </Link>
+            </div>
+          </RevealOnScroll>
         </div>
+      </section>
+
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-8">
 
         {/* Status Notification */}
         {statusMsg && (
@@ -178,34 +248,49 @@ export default function MyBookingsClientView({
           </div>
         )}
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 mr-2 shrink-0">
-            <Filter className="w-3.5 h-3.5 text-[#ffbe33]" />
-            <span>Filter:</span>
-          </div>
+        {/* Filter Pills Bar & Date Filter */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/5">
+          {/* Status Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 text-xs text-neutral-400 mr-1 shrink-0">
+              <Filter className="w-3.5 h-3.5 text-[#ffbe33]" />
+              <span>Filter:</span>
+            </div>
 
-          {(["ALL", "CONFIRMED", "PENDING", "CANCELLED"] as FilterStatus[]).map((st) => (
-            <button
-              key={st}
-              type="button"
-              onClick={() => setFilter(st)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
-                filter === st
-                  ? "bg-[#ffbe33] text-black shadow-md"
-                  : "bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/5"
-              }`}
-            >
-              <span>{st === "ALL" ? "All Bookings" : st}</span>
-              <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
-                  filter === st ? "bg-black/20 text-black" : "bg-white/10 text-neutral-400"
+            {(["ALL", "CONFIRMED", "PENDING", "CANCELLED"] as FilterStatus[]).map((st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={() => setFilter(st)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                  filter === st
+                    ? "bg-[#ffbe33] text-black shadow-md font-black"
+                    : "bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/5"
                 }`}
               >
-                {countByStatus[st]}
-              </span>
-            </button>
-          ))}
+                <span>{st === "ALL" ? "All Bookings" : st}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                    filter === st ? "bg-black/20 text-black font-extrabold" : "bg-white/10 text-neutral-400"
+                  }`}
+                >
+                  {countByStatus[st]}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Date Picker Filter on the right using @date-picker-6 (Range Mode) */}
+          <div className="w-full sm:w-auto shrink-0">
+            <DatePicker6
+              mode="range"
+              range={dateRangeFilter}
+              onRangeChange={setDateRangeFilter}
+              placeholder="Filter by Date Range"
+              className="w-full sm:w-64"
+              align="end"
+            />
+          </div>
         </div>
 
         {/* Reservations Content */}
@@ -215,118 +300,239 @@ export default function MyBookingsClientView({
               <CalendarIcon className="w-8 h-8 text-[#ffbe33]" />
             </div>
             <h3 className="text-lg font-bold text-white">
-              {filter === "ALL" ? "No Reservations Found" : `No ${filter} Reservations`}
+              {filter === "ALL" && !dateRangeFilter?.from ? "No Reservations Found" : "No Matching Reservations"}
             </h3>
             <p className="text-neutral-400 text-xs max-w-sm mx-auto">
-              {filter === "ALL"
+              {filter === "ALL" && !dateRangeFilter?.from
                 ? "You have not made any table reservations yet. Experience fine culinary craft by reserving your table today."
-                : `You do not have any reservations marked as ${filter.toLowerCase()}.`}
+                : "No reservations found matching your current filter criteria."}
             </p>
-            {filter === "ALL" ? (
+            {filter === "ALL" && !dateRangeFilter?.from ? (
               <Link
                 href="/reserve"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#ffbe33] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#e6a827] transition-all cursor-pointer"
               >
-                <span>Reserve Table Now</span>
-                <ArrowRight className="w-4 h-4" />
+                <UtensilsCrossed className="w-4 h-4" />
+                <span>Book a Table Now</span>
               </Link>
             ) : (
               <button
                 type="button"
-                onClick={() => setFilter("ALL")}
+                onClick={() => {
+                  setFilter("ALL");
+                  setDateRangeFilter(undefined);
+                }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-neutral-300 font-bold text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all cursor-pointer"
               >
-                <span>View All Bookings</span>
+                <span>Reset All Filters</span>
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {filteredReservations.map((res) => (
               <div
                 key={res.id}
-                className="bg-[#12141d] border border-white/10 rounded-3xl p-6 hover:border-[#ffbe33]/40 transition-all flex flex-col justify-between shadow-lg group relative overflow-hidden"
+                className="bg-gradient-to-b from-[#131520] to-[#0c0e15] border border-white/10 rounded-3xl p-7 sm:p-8 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-2xl group relative"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono text-neutral-400 font-semibold">
-                      #{res.id.slice(0, 8).toUpperCase()}
-                    </span>
+                <div className="space-y-6">
+                  {/* Header: Ref #, Zone & Status */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-mono text-neutral-300 font-bold tracking-wider px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+                        #{res.id.slice(0, 8).toUpperCase()}
+                      </span>
+                      {res.restaurant_tables?.zone && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 text-[#ffbe33] text-xs font-bold uppercase tracking-wider">
+                          {res.restaurant_tables.zone}
+                        </span>
+                      )}
+                      {res.restaurant_tables?.is_vip && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-black uppercase tracking-wider">
+                          VIP
+                        </span>
+                      )}
+                    </div>
                     {getStatusBadge(res.status)}
                   </div>
 
-                  <div>
-                    <h4 className="font-bold text-lg text-white flex items-center gap-2">
-                      <span>
+                  {/* Title & Party Size Badges */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <div>
+                      <h4 className="font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
                         {res.restaurant_tables?.table_number
                           ? `Table ${res.restaurant_tables.table_number}`
                           : "Dining Table"}
-                      </span>
-                      <span className="text-neutral-400 font-normal text-xs flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-[#ffbe33]" />
+                      </h4>
+                      {res.restaurant_tables?.description && (
+                        <p className="text-xs text-neutral-400 mt-1 font-normal max-w-md">
+                          {res.restaurant_tables.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-200 font-bold text-xs sm:text-sm flex items-center gap-2 bg-white/5 px-3.5 py-2 rounded-xl border border-white/10">
+                        <Users className="w-4 h-4 text-[#ffbe33]" />
                         {res.party_size} Guests
                       </span>
-                    </h4>
+                      {res.restaurant_tables?.shape && (
+                        <span className="text-neutral-400 text-xs capitalize bg-white/5 px-3 py-2 rounded-xl border border-white/5">
+                          {res.restaurant_tables.shape}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="space-y-2 p-3.5 rounded-2xl bg-[#090b0e] border border-white/5 text-xs text-neutral-300">
-                    <div className="flex items-center gap-2.5 text-neutral-300">
-                      <CalendarIcon className="w-4 h-4 text-[#ffbe33] shrink-0" />
-                      <span className="font-medium">Date: {res.reservation_date}</span>
+                  {/* Booking Details Box */}
+                  <div className="space-y-4 p-5 sm:p-6 rounded-2xl bg-[#080a10]/90 border border-white/5 text-xs sm:text-sm text-neutral-300">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
+                        <div className="w-9 h-9 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
+                          <CalendarIcon className="w-4 h-4 text-[#ffbe33]" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Date</div>
+                          <div className="font-bold text-white text-sm">{res.reservation_date}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
+                        <div className="w-9 h-9 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
+                          <Clock className="w-4 h-4 text-[#ffbe33]" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Time Slot</div>
+                          <div className="font-bold text-white text-sm">
+                            {res.reservation_slots?.start_time || "Confirmed Slot"}
+                            {res.reservation_slots?.duration_minutes
+                              ? ` (${res.reservation_slots.duration_minutes}m)`
+                              : ""}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-neutral-300">
-                      <Clock className="w-4 h-4 text-[#ffbe33] shrink-0" />
-                      <span className="font-medium">
-                        Time: {res.reservation_slots?.start_time || "Confirmed Slot"}
-                        {res.reservation_slots?.duration_minutes
-                          ? ` (${res.reservation_slots.duration_minutes} mins)`
-                          : ""}
-                      </span>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-xs text-neutral-400 border-t border-white/5">
+                      {res.customer_phone && (
+                        <div className="flex items-center gap-2 pt-2 sm:pt-0">
+                          <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                          <span className="font-medium text-neutral-300">{res.customer_phone}</span>
+                        </div>
+                      )}
+
+                      {res.customer_email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                          <span className="truncate max-w-[260px] text-neutral-300">{res.customer_email}</span>
+                        </div>
+                      )}
                     </div>
-
-                    {res.customer_phone && (
-                      <div className="flex items-center gap-2.5 text-neutral-400 pt-1">
-                        <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                        <span>{res.customer_phone}</span>
-                      </div>
-                    )}
-
-                    {res.customer_email && (
-                      <div className="flex items-center gap-2.5 text-neutral-400">
-                        <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                        <span className="truncate">{res.customer_email}</span>
-                      </div>
-                    )}
 
                     {res.special_request && (
-                      <div className="mt-2 p-2.5 rounded-xl bg-white/5 text-[11px] text-neutral-300 italic border border-white/5">
+                      <div className="mt-2 p-3.5 rounded-xl bg-white/5 text-xs text-neutral-300 italic border border-white/5 leading-relaxed">
                         "{res.special_request}"
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-3 text-[11px] text-neutral-500">
-                  <div>
-                    <span className="block text-neutral-400 font-medium">{res.customer_name}</span>
-                    <span>Booked {new Date(res.created_at).toLocaleDateString()}</span>
+                {/* Card footer actions */}
+                <div className="mt-6 pt-5 border-t border-white/10 flex flex-col gap-4 text-xs text-neutral-500">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-200 font-bold text-sm">{res.customer_name}</span>
+                    <span className="text-[11px] text-neutral-400 font-medium">Booked {new Date(res.created_at).toLocaleDateString()}</span>
                   </div>
 
-                  {res.status !== "CANCELLED" && (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmCancelModal(res.id)}
-                      className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 font-bold text-[11px] uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all cursor-pointer shrink-0"
-                    >
-                      Cancel
-                    </button>
-                  )}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    {/* Primary actions */}
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
+                        <AddToCalendarButton
+                          buttonSize="md"
+                          event={{
+                            title: `Calvary Dining: ${res.restaurant_tables?.table_number ? `Table ${res.restaurant_tables.table_number}` : "Table Reservation"}`,
+                            description: `Reservation for ${res.party_size} guests at Calvary Fine Dining. Booking Ref: #${res.id.slice(0, 8)}. Phone: +91 98765 43210`,
+                            location: "Calvary Fine Dining, 124 Heritage Lane, Indiranagar, Bengaluru",
+                            startDate: res.reservation_date,
+                            startTime: res.reservation_slots?.start_time || "19:00",
+                            durationMinutes: res.reservation_slots?.duration_minutes || 90,
+                          }}
+                        />
+                      )}
+
+                      {res.status === "CONFIRMED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
+                        <button
+                          type="button"
+                          onClick={() => handleSendReminder(res)}
+                          disabled={sendingReminderId === res.id}
+                          className="px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400 hover:bg-blue-500 hover:text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                          title="Send email reminder with itinerary to your inbox"
+                        >
+                          <Bell className="w-3.5 h-3.5" />
+                          <span>{sendingReminderId === res.id ? "Sending..." : "Reminder"}</span>
+                        </button>
+                      )}
+
+                      {isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && res.status !== "CANCELLED" && (
+                        <button
+                          type="button"
+                          onClick={() => setReviewingReservation(res)}
+                          className="px-4 py-2.5 rounded-xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] hover:bg-[#ffbe33] hover:text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span>{res.feedback_rating ? `${res.feedback_rating}★ Reviewed` : "Rate Dining"}</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Modification actions */}
+                    {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setEditingReservation(res)}
+                          className="px-4 py-2.5 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/30 text-[#ffbe33] font-bold text-xs uppercase tracking-wider hover:bg-[#ffbe33] hover:text-neutral-950 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Alter</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setConfirmCancelModal(res.id)}
+                          className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 font-bold text-xs uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all cursor-pointer shrink-0"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* Alter Reservation Modal */}
+        <EditReservationModal
+          isOpen={!!editingReservation}
+          reservation={editingReservation}
+          onClose={() => setEditingReservation(null)}
+          onSuccess={() => {
+            setEditingReservation(null);
+          }}
+        />
+
+        {/* Dining Review & Star Rating Modal */}
+        <DiningReviewModal
+          isOpen={!!reviewingReservation}
+          reservation={reviewingReservation}
+          onClose={() => setReviewingReservation(null)}
+          onSuccess={() => {
+            setReviewingReservation(null);
+          }}
+        />
 
         {/* Cancellation Confirmation Modal */}
         {confirmCancelModal && (

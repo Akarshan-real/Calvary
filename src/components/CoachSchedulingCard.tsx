@@ -25,18 +25,27 @@ import { Calendar } from "@/components/Calender";
 import TeamSelector from "@/components/kokonutui/team-selector";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import FuseButton from "@/components/FuseButton";
-import {
-  getDateSlotAndTableAvailability,
-  createReservation,
-  type DateOccupancyInfo,
-} from "@/app/actions/restaurant";
-import { updateUserProfileEmail } from "@/app/actions/auth";
+import type { DateOccupancyInfo } from "@/types/database";
+import { useCalendarData, useSlotAvailability } from "@/hooks/api/use-scheduling";
+import { useCreateReservation } from "@/hooks/api/use-reservations";
+import { toast } from "sonner";
+import TableFloorMap from "@/components/reservation/TableFloorMap";
+import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
+import { LayoutGrid, MapPin } from "lucide-react";
 
 export interface RestaurantTableInfo {
   id: number;
   table_number: string;
   capacity: number;
   is_active: boolean;
+  zone?: string | null;
+  zone_slug?: string | null;
+  description?: string | null;
+  shape?: string | null;
+  min_capacity?: number | null;
+  is_vip?: boolean | null;
+  sort_order?: number | null;
+  floor?: string | null;
 }
 
 export interface ReservationSlotInfo {
@@ -51,6 +60,7 @@ export interface SlotAvailability {
   availableTables: RestaurantTableInfo[];
   availableTableCount: number;
   isAvailable: boolean;
+  isPast?: boolean;
 }
 
 interface CoachSchedulingProps {
@@ -72,14 +82,18 @@ export function CoachSchedulingCard({
   // Step navigation: 1: Date & Time, 2: Table Selection, 3: Guest Details, 4: Confirmation
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
+  // Table view mode: 'grid' or 'floor_map'
+  const [tableViewMode, setTableViewMode] = useState<"grid" | "floor_map">("floor_map");
+
   // Selection states
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<ReservationSlotInfo | null>(null);
   const [selectedTable, setSelectedTable] = useState<RestaurantTableInfo | null>(null);
 
-  // Dynamic slot & table availability for the chosen date
-  const [isSlotLoading, startSlotTransition] = useTransition();
-  const [slotsAvailability, setSlotsAvailability] = useState<SlotAvailability[]>([]);
+  // TanStack Query for dynamic calendar data and slot/table availability
+  const { data: calendarData } = useCalendarData(initialDateOccupancyMap);
+  const { data: slotsAvailability = [], isLoading: isSlotLoading } = useSlotAvailability(selectedDate);
+  const createReservationMutation = useCreateReservation();
 
   // Guest Form states
   const [customerName, setCustomerName] = useState(user?.name || "");
@@ -116,21 +130,16 @@ export function CoachSchedulingCard({
     }
   }, [initialDateOccupancyMap, selectedDate]);
 
-  // When selectedDate changes, fetch active slots and tables
+  // Reset slot and table when date changes or if current selected slot is no longer available/in the past
   useEffect(() => {
-    if (!selectedDate) return;
-    startSlotTransition(async () => {
-      try {
-        const result = await getDateSlotAndTableAvailability(selectedDate);
-        setSlotsAvailability(result);
-        // Reset slot and table when date changes
+    if (selectedSlot && slotsAvailability.length > 0) {
+      const matching = slotsAvailability.find((s) => s.slot.id === selectedSlot.id);
+      if (!matching || !matching.isAvailable || matching.isPast) {
         setSelectedSlot(null);
         setSelectedTable(null);
-      } catch (err) {
-        console.error("Failed to load slot availability:", err);
       }
-    });
-  }, [selectedDate]);
+    }
+  }, [slotsAvailability, selectedSlot]);
 
   // Update profile email inline handler
   const handleSaveProfileEmail = async () => {
@@ -142,11 +151,16 @@ export function CoachSchedulingCard({
     setIsSavingEmail(true);
     setSubmitError(null);
     try {
-      const res = await updateUserProfileEmail(customerEmail);
-      if (res.success) {
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: customerEmail }),
+      });
+      const data = await res.json();
+      if (data.success) {
         setEmailUpdatedSuccess(true);
       } else {
-        setSubmitError(res.error || "Failed to update profile email.");
+        setSubmitError(data.error || "Failed to update profile email.");
       }
     } catch (err: any) {
       setSubmitError(err?.message || "Failed to update email.");
@@ -160,24 +174,30 @@ export function CoachSchedulingCard({
     setSubmitError(null);
 
     if (!selectedTable || !selectedSlot || !selectedDate) {
-      setSubmitError("Please choose a date, time slot, and table.");
+      const msg = "Please choose a date, time slot, and table.";
+      setSubmitError(msg);
+      toast.error("Selection incomplete", { description: msg });
       return false;
     }
 
     if (!customerEmail || !customerEmail.trim()) {
-      setSubmitError("An email address is mandatory for reservations.");
+      const msg = "An email address is mandatory for reservations.";
+      setSubmitError(msg);
+      toast.error("Email required", { description: msg });
       return false;
     }
 
     if (!customerName.trim() || !customerPhone.trim()) {
-      setSubmitError("Please fill out your full name and phone number.");
+      const msg = "Please fill out your full name and phone number.";
+      setSubmitError(msg);
+      toast.error("Contact details required", { description: msg });
       return false;
     }
 
     if (partySize > selectedTable.capacity) {
-      setSubmitError(
-        `Selected table capacity is ${selectedTable.capacity} guests. Please reduce party size or choose a larger table.`
-      );
+      const msg = `Selected table capacity is ${selectedTable.capacity} guests. Please reduce party size or choose a larger table.`;
+      setSubmitError(msg);
+      toast.error("Capacity exceeded", { description: msg });
       return false;
     }
 
@@ -190,7 +210,7 @@ export function CoachSchedulingCard({
 
     setIsSubmitting(true);
     try {
-      const res = await createReservation({
+      const bookingData = await createReservationMutation.mutateAsync({
         table_id: selectedTable.id,
         slot_id: selectedSlot.id,
         reservation_date: selectedDate,
@@ -201,14 +221,15 @@ export function CoachSchedulingCard({
         special_request: specialRequest,
       });
 
-      if (res.success && res.data) {
-        setConfirmedBooking(res.data);
-        setCurrentStep(4);
-      } else {
-        setSubmitError(res.error || "Could not complete reservation request.");
-      }
+      setConfirmedBooking(bookingData);
+      setCurrentStep(4);
+      toast.success("Reservation request received!", {
+        description: `Booking reference created for ${selectedDate}. Check your email for status.`,
+      });
     } catch (err: any) {
-      setSubmitError(err?.message || "Failed to create reservation.");
+      const msg = err?.message || "Failed to create reservation.";
+      setSubmitError(msg);
+      toast.error("Reservation failed", { description: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -257,6 +278,14 @@ export function CoachSchedulingCard({
     return timeStr;
   };
 
+  const isSlotInPast = (dateStr: string, timeStr: string): boolean => {
+    if (!dateStr || !timeStr) return false;
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const parts = timeStr.split(":").map(Number);
+    const slotDate = new Date(y, m - 1, d, parts[0] || 0, parts[1] || 0, 0);
+    return slotDate.getTime() <= Date.now();
+  };
+
   const selectedSlotAvailability = slotsAvailability.find(
     (s) => s.slot.id === selectedSlot?.id
   );
@@ -268,37 +297,37 @@ export function CoachSchedulingCard({
       animate="visible"
       className={cn(
         "rounded-3xl border border-white/10 bg-gradient-to-b from-[#151824]/95 via-[#10121a]/95 to-[#0b0c12]/95",
-        "shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden w-full max-w-4xl mx-auto",
+        "shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden w-full max-w-5xl mx-auto",
         className
       )}
     >
       {/* Header Bar */}
-      <div className="border-b border-white/10 p-6 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/[0.02]">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shadow-md shrink-0">
-            <Utensils className="w-6 h-6" />
+      <div className="border-b border-white/10 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-white/[0.02]">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shadow-md shrink-0">
+            <Utensils className="w-7 h-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                 Calvary Fine Dining
               </h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
-                <ShieldCheck className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2.5 py-0.5 rounded-full">
+                <ShieldCheck className="w-3.5 h-3.5" />
                 Table Reservation
               </span>
             </div>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-neutral-400 mt-1">
               Select date, timing, and signature table with instant approval lock
             </p>
           </div>
         </div>
 
         {/* Step Progression Badges */}
-        <div className="flex items-center gap-2 text-xs font-bold text-neutral-400">
+        <div className="flex items-center gap-2.5 text-xs font-bold text-neutral-400">
           <span
             className={cn(
-              "px-3 py-1 rounded-full border transition-all",
+              "px-3.5 py-1.5 rounded-full border transition-all",
               currentStep === 1
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -309,7 +338,7 @@ export function CoachSchedulingCard({
           <span className="text-neutral-600">→</span>
           <span
             className={cn(
-              "px-3 py-1 rounded-full border transition-all",
+              "px-3.5 py-1.5 rounded-full border transition-all",
               currentStep === 2
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -320,7 +349,7 @@ export function CoachSchedulingCard({
           <span className="text-neutral-600">→</span>
           <span
             className={cn(
-              "px-3 py-1 rounded-full border transition-all",
+              "px-3.5 py-1.5 rounded-full border transition-all",
               currentStep >= 3
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -332,13 +361,13 @@ export function CoachSchedulingCard({
       </div>
 
       {/* Dynamic Step Content */}
-      <div className="p-6 sm:p-8">
+      <div className="p-6 sm:p-10 lg:p-12">
         {/* ======================================================== */}
         {/* STEP 1: DATE (HEATMAP CALENDAR) & TIMINGS */}
         {/* ======================================================== */}
         {currentStep === 1 && (
-          <motion.div variants={itemVariants} className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <motion.div variants={itemVariants} className="space-y-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
               {/* Left Column: Heatmap Calendar */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex items-center justify-between">
@@ -357,8 +386,10 @@ export function CoachSchedulingCard({
                   selectedDate={selectedDate}
                   onSelectDate={(date) => {
                     setSelectedDate(date);
+                    setSelectedSlot(null);
+                    setSelectedTable(null);
                   }}
-                  dateOccupancyMap={initialDateOccupancyMap}
+                  dateOccupancyMap={calendarData?.dateOccupancyMap || initialDateOccupancyMap}
                 />
               </div>
 
@@ -387,24 +418,27 @@ export function CoachSchedulingCard({
                       No active time slots found for this date. Please pick another date.
                     </div>
                   ) : (
-                    <div className="space-y-2.5">
-                      {slotsAvailability.map(({ slot, availableTableCount, isAvailable }) => {
+                    <div className="space-y-3">
+                      {slotsAvailability.map(({ slot, availableTableCount, isAvailable, isPast }) => {
+                        const slotPassed = isPast !== undefined ? isPast : isSlotInPast(selectedDate, slot.start_time);
+                        const isSlotAvailable = isAvailable && !slotPassed;
                         const isSlotSelected = selectedSlot?.id === slot.id;
 
                         return (
                           <button
                             key={slot.id}
                             type="button"
-                            disabled={!isAvailable}
+                            disabled={!isSlotAvailable}
                             onClick={() => {
-                              setSelectedSlot(slot);
+                              if (!isSlotAvailable) return;
+                              setSelectedSlot(isSlotSelected ? null : slot);
                               setSelectedTable(null);
                             }}
                             className={cn(
-                              "w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all text-left",
-                              !isAvailable &&
-                                "opacity-40 cursor-not-allowed bg-neutral-900/40 border-transparent text-neutral-500",
-                              isAvailable &&
+                              "w-full flex items-center justify-between p-4 rounded-2xl border transition-all text-left",
+                              !isSlotAvailable &&
+                                "opacity-40 cursor-not-allowed bg-neutral-900/40 border-transparent text-neutral-500 pointer-events-none select-none",
+                              isSlotAvailable &&
                                 !isSlotSelected &&
                                 "bg-[#141722]/80 border-white/10 hover:border-white/25 hover:bg-[#1a1e2d] text-white cursor-pointer shadow-sm",
                               isSlotSelected &&
@@ -428,7 +462,11 @@ export function CoachSchedulingCard({
                             </div>
 
                             <div className="text-right">
-                              {isAvailable ? (
+                              {slotPassed ? (
+                                <span className="text-xs font-semibold text-neutral-500 flex items-center gap-1">
+                                  <Clock className="w-3 h-3 text-neutral-500" /> Time Passed
+                                </span>
+                              ) : isAvailable ? (
                                 <span
                                   className={cn(
                                     "text-xs font-extrabold flex items-center gap-1",
@@ -456,11 +494,17 @@ export function CoachSchedulingCard({
                 </div>
 
                 {/* Next Step Button */}
-                <div className="pt-6 border-t border-white/10 flex justify-center">
+                <div className="pt-8 border-t border-white/10 flex justify-center">
                   <InteractiveHoverButton
                     type="button"
                     variant="gold"
-                    disabled={!selectedDate || !selectedSlot}
+                    disabled={
+                      !selectedDate ||
+                      !selectedSlot ||
+                      (selectedSlotAvailability
+                        ? !selectedSlotAvailability.isAvailable || selectedSlotAvailability.isPast
+                        : false)
+                    }
                     onClick={() => setCurrentStep(2)}
                     className="w-full max-w-sm py-4 disabled:opacity-35 disabled:pointer-events-none"
                   >
@@ -477,7 +521,7 @@ export function CoachSchedulingCard({
         {/* ======================================================== */}
         {currentStep === 2 && (
           <motion.div variants={itemVariants} className="space-y-6">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
               <div>
                 <span className="text-xs font-extrabold uppercase tracking-wider text-[#ffbe33]">
                   Step 2 of 3
@@ -491,85 +535,127 @@ export function CoachSchedulingCard({
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Change Date / Time
-              </button>
-            </div>
-
-            {/* Tables Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {selectedSlotAvailability?.availableTables.map((table) => {
-                const isSelected = selectedTable?.id === table.id;
-
-                // Table classification flavor text
-                let tableStyle = "Artisanal Dining Booth";
-                if (table.capacity === 2) tableStyle = "Intimate Couple Table";
-                else if (table.capacity === 6) tableStyle = "Family & Banquette Seating";
-                else if (table.capacity >= 8) tableStyle = "Chef's Grand Feast Table";
-
-                return (
+              <div className="flex items-center gap-2.5">
+                {/* View Mode Toggle: Floor Map vs Grid */}
+                <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl">
                   <button
-                    key={table.id}
                     type="button"
-                    onClick={() => setSelectedTable(table)}
+                    onClick={() => setTableViewMode("floor_map")}
                     className={cn(
-                      "p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4",
-                      !isSelected &&
-                        "bg-[#141722]/80 border-white/10 hover:border-white/25 hover:scale-[1.02] text-white shadow-md",
-                      isSelected &&
-                        "bg-gradient-to-b from-[#ffbe33]/15 via-[#181c2b] to-[#12141f] border-[#ffbe33] shadow-[0_0_25px_rgba(255,190,51,0.35)] scale-[1.02]"
+                      "px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                      tableViewMode === "floor_map"
+                        ? "bg-[#ffbe33] text-neutral-950 shadow-sm"
+                        : "text-neutral-400 hover:text-white"
                     )}
                   >
-                    <div className="flex items-start justify-between w-full">
-                      <div className="space-y-1">
-                        <span className="text-lg font-black text-white">
-                          Table {table.table_number}
-                        </span>
-                        <div className="text-[11px] font-semibold text-neutral-400">
-                          {tableStyle}
+                    <MapPin className="w-3 h-3" />
+                    <span>Floor Map</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTableViewMode("grid")}
+                    className={cn(
+                      "px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                      tableViewMode === "grid"
+                        ? "bg-[#ffbe33] text-neutral-950 shadow-sm"
+                        : "text-neutral-400 hover:text-white"
+                    )}
+                  >
+                    <LayoutGrid className="w-3 h-3" />
+                    <span>List</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Time</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Render Table Floor Map OR Classic Grid */}
+            {tableViewMode === "floor_map" ? (
+              <TableFloorMap
+                availableTables={selectedSlotAvailability?.availableTables || []}
+                selectedTable={selectedTable}
+                onSelectTable={(table) => setSelectedTable(table)}
+              />
+            ) : (
+              /* Tables Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {selectedSlotAvailability?.availableTables.map((table) => {
+                  const isSelected = selectedTable?.id === table.id;
+
+                  // Table classification flavor text
+                  let tableStyle = "Artisanal Dining Booth";
+                  if (table.capacity === 2) tableStyle = "Intimate Couple Table";
+                  else if (table.capacity === 6) tableStyle = "Family & Banquette Seating";
+                  else if (table.capacity >= 8) tableStyle = "Chef's Grand Feast Table";
+
+                  return (
+                    <button
+                      key={table.id}
+                      type="button"
+                      onClick={() => setSelectedTable(isSelected ? null : table)}
+                      className={cn(
+                        "p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4",
+                        !isSelected &&
+                          "bg-[#141722]/80 border-white/10 hover:border-white/25 hover:scale-[1.02] text-white shadow-md",
+                        isSelected &&
+                          "bg-gradient-to-b from-[#ffbe33]/15 via-[#181c2b] to-[#12141f] border-[#ffbe33] shadow-[0_0_25px_rgba(255,190,51,0.35)] scale-[1.02]"
+                      )}
+                    >
+                      <div className="flex items-start justify-between w-full">
+                        <div className="space-y-1">
+                          <span className="text-lg font-black text-white">
+                            Table {table.table_number}
+                          </span>
+                          <div className="text-[11px] font-semibold text-neutral-400">
+                            {tableStyle}
+                          </div>
                         </div>
+
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black",
+                            isSelected
+                              ? "bg-[#ffbe33] text-neutral-950"
+                              : "bg-white/10 text-[#ffbe33] border border-[#ffbe33]/30"
+                          )}
+                        >
+                          <Users className="w-3 h-3" />
+                          {table.capacity} Seats
+                        </span>
                       </div>
 
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black",
-                          isSelected
-                            ? "bg-[#ffbe33] text-neutral-950"
-                            : "bg-white/10 text-[#ffbe33] border border-[#ffbe33]/30"
-                        )}
-                      >
-                        <Users className="w-3 h-3" />
-                        {table.capacity} Seats
-                      </span>
-                    </div>
-
-                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs w-full">
-                      <span className="text-neutral-400 font-medium">Status</span>
-                      <span
-                        className={cn(
-                          "font-bold uppercase tracking-wider text-[10px]",
-                          isSelected ? "text-[#ffbe33]" : "text-emerald-400"
-                        )}
-                      >
-                        {isSelected ? "Selected" : "Available"}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs w-full">
+                        <span className="text-neutral-400 font-medium">Status</span>
+                        <span
+                          className={cn(
+                            "font-bold uppercase tracking-wider text-[10px]",
+                            isSelected ? "text-[#ffbe33]" : "text-emerald-400"
+                          )}
+                        >
+                          {isSelected ? "Selected" : "Available"}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Step Navigation Bar */}
             <div className="pt-6 border-t border-white/10 flex items-center justify-between gap-4">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors"
+                className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
               >
                 Back
               </button>
@@ -865,17 +951,31 @@ export function CoachSchedulingCard({
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentStep(1);
-                setSelectedSlot(null);
-                setSelectedTable(null);
-              }}
-              className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
-            >
-              Make Another Reservation
-            </button>
+            {/* Calendar & Next Actions */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <AddToCalendarButton
+                event={{
+                  title: `Table Reservation: Calvary Fine Dining (Table ${selectedTable?.table_number || "Reserved"})`,
+                  description: `Calvary table reservation for ${confirmedBooking.party_size} guests. Ref #${confirmedBooking.id.slice(0, 8)}. Address: 124 Heritage Lane, Indiranagar, Bengaluru. Phone: +91 98765 43210`,
+                  location: "Calvary Fine Dining, 124 Heritage Lane, Indiranagar, Bengaluru",
+                  startDate: confirmedBooking.reservation_date,
+                  startTime: selectedSlot?.start_time || "19:00",
+                  durationMinutes: selectedSlot?.duration_minutes || 90,
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentStep(1);
+                  setSelectedSlot(null);
+                  setSelectedTable(null);
+                }}
+                className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all cursor-pointer"
+              >
+                Make Another Reservation
+              </button>
+            </div>
           </motion.div>
         )}
       </div>

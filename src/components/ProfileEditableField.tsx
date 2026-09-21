@@ -9,13 +9,14 @@ import {
   Cancel01Icon,
 } from "@hugeicons/core-free-icons/index";
 import { BirthdayCalendar } from "@/components/ui/simple-calender";
+import { toast } from "sonner";
 
 export interface ProfileEditableFieldProps {
   icon: any;
   label: string;
   value: string;
   onSave: (newValue: string) => void;
-  type?: "text" | "email" | "date";
+  type?: "text" | "email" | "date" | "tel";
   placeholder?: string;
   readOnly?: boolean;
   verifiedBadge?: boolean;
@@ -48,6 +49,9 @@ export const ProfileEditableField: React.FC<ProfileEditableFieldProps> = ({
     onSave(val);
     setEditing(false);
     setShowCalendarPicker(false);
+    toast.info(`${label} updated`, {
+      description: "Click 'Save All' on top to persist your changes.",
+    });
   };
 
   const handleCancel = () => {

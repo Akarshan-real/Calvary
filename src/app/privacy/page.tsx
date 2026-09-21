@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getCurrentUser } from "@/lib/auth-server";
 import { Shield, Lock, Eye, FileText, Bell, CheckCircle2 } from "lucide-react";
 
 export const metadata = {

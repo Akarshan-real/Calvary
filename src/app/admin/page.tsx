@@ -1,13 +1,13 @@
 import React from "react";
 import AdminDashboardClient from "@/components/AdminDashboardClient";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getCurrentUser } from "@/lib/auth-server";
 import {
-  getAllReservations,
+  getAllReservationsAdmin,
   getMenuItems,
   getMenuCategories,
   getContactMessages,
-} from "@/app/actions/restaurant";
-import { getGalleryItems } from "@/app/actions/gallery";
+  getGalleryItems,
+} from "@/lib/db-server";
 
 export const metadata = {
   title: "Admin Portal • Restaurant Control Center | Calvary",
@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
   const [authData, allReservations, menuItems, categories, galleryItems, messages] =
     await Promise.all([
       getCurrentUser().catch(() => null),
-      getAllReservations().catch(() => []),
+      getAllReservationsAdmin().catch(() => []),
       getMenuItems().catch(() => []),
       getMenuCategories().catch(() => []),
       getGalleryItems().catch(() => []),

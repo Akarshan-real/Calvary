@@ -1,7 +1,7 @@
 import SystemErrorPanel from "@/components/ui/system-error-panel";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCurrentUser } from "@/app/actions/auth";
+import { getCurrentUser } from "@/lib/auth-server";
 
 export const metadata = {
   title: "404 - Page Not Found | Calvary Artisanal Cuisine & Bar",
