@@ -135,38 +135,66 @@ export async function POST(req: Request) {
     }
 
     // Insert reservation
-    const { data, error } = await supabase
-      .from("reservations")
-      .insert({
-        table_id,
-        slot_id,
-        reservation_date,
-        customer_name: customer_name.trim(),
-        customer_phone: customer_phone.trim(),
-        customer_email: cleanEmail,
-        party_size,
-        special_request: special_request?.trim() || null,
-        user_id: user?.id || null,
-        status: "PENDING",
-      })
-      .select("*, restaurant_tables(*), reservation_slots(*)")
-      .single();
+    const insertPayload = {
+      table_id,
+      slot_id,
+      reservation_date,
+      customer_name: customer_name.trim(),
+      customer_phone: customer_phone.trim(),
+      customer_email: cleanEmail,
+      party_size,
+      special_request: special_request?.trim() || null,
+      user_id: user?.id || null,
+      status: "PENDING" as const,
+    };
 
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    let reservationData: any;
+
+    if (user) {
+      // Authenticated user: insert + select in one call (RLS allows read-back)
+      const { data, error } = await supabase
+        .from("reservations")
+        .insert(insertPayload)
+        .select("*, restaurant_tables(*), reservation_slots(*)")
+        .single();
+
+      if (error) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      }
+      reservationData = data;
+    } else {
+      // Anonymous guest: insert without .select() to avoid RLS SELECT denial,
+      // then build response from the known payload
+      const { error: insertError } = await supabase
+        .from("reservations")
+        .insert(insertPayload);
+
+      if (insertError) {
+        return NextResponse.json({ success: false, error: insertError.message }, { status: 400 });
+      }
+
+      // Build response from known data (we can't read back due to RLS)
+      reservationData = {
+        ...insertPayload,
+        id: "guest-booking",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        restaurant_tables: null,
+        reservation_slots: slotRecord ? { id: slot_id, start_time: slotRecord.start_time } : null,
+      };
     }
 
     // Send confirmation email asynchronously
     try {
-      const tableName = data.restaurant_tables?.table_number
-        ? `Table ${data.restaurant_tables.table_number}`
+      const tableName = reservationData.restaurant_tables?.table_number
+        ? `Table ${reservationData.restaurant_tables.table_number}`
         : "Reserved Table";
-      const timeSlot = data.reservation_slots?.start_time || "Scheduled Time";
+      const timeSlot = reservationData.reservation_slots?.start_time || "Scheduled Time";
 
       await sendEmail({
         to: cleanEmail,
-        name: data.customer_name,
-        subject: `Reservation Request Received: Calvary Restaurant (${data.reservation_date})`,
+        name: reservationData.customer_name,
+        subject: `Reservation Request Received: Calvary Restaurant (${reservationData.reservation_date})`,
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0c0e14; color: #ffffff; padding: 32px; border-radius: 16px; border: 1px solid #272a38;">
             <div style="text-align: center; margin-bottom: 24px;">
@@ -174,16 +202,16 @@ export async function POST(req: Request) {
               <p style="color: #a0a5b8; font-size: 13px; margin: 6px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Artisanal Cuisine & Fine Dining</p>
             </div>
             <div style="background-color: #151824; padding: 24px; border-radius: 12px; border: 1px solid #232738; margin-bottom: 24px;">
-              <h2 style="font-size: 18px; color: #ffffff; margin-top: 0;">Dear ${data.customer_name},</h2>
+              <h2 style="font-size: 18px; color: #ffffff; margin-top: 0;">Dear ${reservationData.customer_name},</h2>
               <p style="color: #d1d5db; font-size: 14px; line-height: 1.6;">
                 Thank you for choosing Calvary. We have successfully received your table reservation request. Our dining host is reviewing your booking.
               </p>
               <div style="border-top: 1px dashed #34384d; margin: 20px 0; padding-top: 16px;">
-                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>📅 Date:</strong> ${data.reservation_date}</p>
+                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>📅 Date:</strong> ${reservationData.reservation_date}</p>
                 <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>⏰ Time:</strong> ${timeSlot}</p>
                 <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>🍽️ Table:</strong> ${tableName}</p>
-                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>👥 Guests:</strong> ${data.party_size} People</p>
-                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>🔖 Booking ID:</strong> <span style="color: #ffbe33; font-family: monospace;">${data.id}</span></p>
+                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>👥 Guests:</strong> ${reservationData.party_size} People</p>
+                <p style="margin: 6px 0; font-size: 14px; color: #e5e7eb;"><strong>🔖 Booking ID:</strong> <span style="color: #ffbe33; font-family: monospace;">${reservationData.id}</span></p>
               </div>
             </div>
           </div>
@@ -193,7 +221,7 @@ export async function POST(req: Request) {
       console.warn("[Reservation Email] Failed to send email:", emailErr);
     }
 
-    return NextResponse.json({ success: true, reservation: data });
+    return NextResponse.json({ success: true, reservation: reservationData });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }

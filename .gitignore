@@ -45,5 +45,6 @@ next-env.d.ts
 /.kilo
 AGENTS.md
 
-# future
-futureWork.txt
+# overall
+**/ignore/
+*.sql

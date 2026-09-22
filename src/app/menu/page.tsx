@@ -6,7 +6,6 @@ import { getMenuItems, getMenuCategories } from "@/lib/db-server";
 import { getCurrentUser } from "@/lib/auth-server";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 
 export const metadata = {
   title: "A La Carte Menu | Calvary Fine Dining",
@@ -51,7 +50,7 @@ export default async function MenuPage() {
           </Link>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <RevealOnScroll direction="up" duration={600}>
+            <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ffbe33] animate-pulse" />
                 <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-[#ffbe33]">
@@ -67,33 +66,29 @@ export default async function MenuPage() {
               <p className="text-neutral-300 text-sm max-w-xl mt-2 leading-relaxed">
                 Every dish is prepared fresh to order using artisanal hearth ovens, rare spices, and sustainable local harvests.
               </p>
-            </RevealOnScroll>
+            </div>
 
             {/* Quick stats pill */}
-            <RevealOnScroll direction="left" duration={600} delay={100}>
-              <div className="flex items-center gap-4 bg-white/10 border border-white/20 px-5 py-3 rounded-2xl backdrop-blur-md shrink-0 shadow-xl">
-                <div>
-                  <div className="text-xl font-extrabold text-[#ffbe33]">{items.length}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-300">Total Dishes</div>
-                </div>
-                <div className="h-8 w-px bg-white/15" />
-                <div>
-                  <div className="text-xl font-extrabold text-emerald-400">
-                    {items.filter((i) => i.is_vegetarian).length}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-300">Pure Veg</div>
-                </div>
+            <div className="flex items-center gap-4 bg-white/10 border border-white/20 px-5 py-3 rounded-2xl backdrop-blur-md shrink-0 shadow-xl">
+              <div>
+                <div className="text-xl font-extrabold text-[#ffbe33]">{items.length}</div>
+                <div className="text-[10px] uppercase tracking-wider text-neutral-300">Total Dishes</div>
               </div>
-            </RevealOnScroll>
+              <div className="h-8 w-px bg-white/15" />
+              <div>
+                <div className="text-xl font-extrabold text-emerald-400">
+                  {items.filter((i) => i.is_vegetarian).length}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-neutral-300">Pure Veg</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <main className="flex-1 py-10 px-6 sm:px-8 max-w-7xl mx-auto w-full">
-        <RevealOnScroll direction="up" duration={700} delay={150}>
-          {/* Categorized Menu Catalog with Search */}
-          <MenuClientCatalog items={items} categories={categories} />
-        </RevealOnScroll>
+        {/* Categorized Menu Catalog with Search */}
+        <MenuClientCatalog items={items} categories={categories} />
       </main>
 
       <Footer />
