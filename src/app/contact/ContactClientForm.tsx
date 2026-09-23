@@ -5,6 +5,7 @@ import { Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import FuseButton from "@/components/FuseButton";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 interface ContactClientFormProps {
   initialUser: {
@@ -92,12 +93,7 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
     setError(null);
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
+      const { data } = await api.post('/api/contact', formData);
       if (!data.success) {
         throw new Error(data.error || "Failed to send message.");
       }
@@ -107,7 +103,7 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (err: any) {
-      const msg = err.message || "An unexpected error occurred. Please try again.";
+      const msg = getApiErrorMessage(err, "An unexpected error occurred. Please try again.");
       setError(msg);
       toast.error("Message delivery error", { description: msg });
     } finally {

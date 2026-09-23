@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import type { MenuItem, MenuCategory, MenuItemNutrition } from "@/types/database";
 import { motion, AnimatePresence } from "motion/react";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 interface AdminMenuManagementProps {
   initialItems: MenuItem[];
@@ -105,12 +106,7 @@ export default function AdminMenuManagement({
   const handleToggleAvailability = (item: MenuItem) => {
     startTransition(async () => {
       try {
-        const res = await fetch("/api/menu", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item.id, is_available: !item.is_available }),
-        });
-        const data = await res.json();
+        const { data } = await api.patch("/api/menu", { id: item.id, is_available: !item.is_available });
         if (data.success) {
           setItems((prev) =>
             prev.map((i) => (i.id === item.id ? { ...i, is_available: !i.is_available } : i))
@@ -126,8 +122,7 @@ export default function AdminMenuManagement({
     if (!confirm("Are you sure you want to permanently delete this menu item?")) return;
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/menu?id=${id}`, { method: "DELETE" });
-        const data = await res.json();
+        const { data } = await api.delete(`/api/menu?id=${id}`);
         if (data.success) {
           setItems((prev) => prev.filter((i) => i.id !== id));
           setStatusMsg({ type: "success", text: "Menu dish deleted successfully." });
@@ -136,7 +131,7 @@ export default function AdminMenuManagement({
           setStatusMsg({ type: "error", text: data.error || "Failed to delete dish." });
         }
       } catch (err: any) {
-        setStatusMsg({ type: "error", text: err.message || "Failed to delete dish." });
+        setStatusMsg({ type: "error", text: getApiErrorMessage(err, "Failed to delete dish.") });
       }
     });
   };
@@ -152,11 +147,9 @@ export default function AdminMenuManagement({
       formData.append("folder", "items");
       formData.append("fileName", editingItem?.name || file.name);
 
-      const res = await fetch("/api/media", {
-        method: "POST",
-        body: formData,
+      const { data: resJson } = await api.post("/api/media", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      const resJson = await res.json();
       if (resJson.success && resJson.data) {
         setEditingItem((prev) => ({
           ...prev,
@@ -258,13 +251,7 @@ export default function AdminMenuManagement({
           };
         }
 
-        const res = await fetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const resJson = await res.json();
+        const { data: resJson } = await api.post("/api/menu", payload);
         if (resJson.success && resJson.item) {
           const completeDish: MenuItem = resJson.item;
 

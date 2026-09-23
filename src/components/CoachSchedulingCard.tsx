@@ -28,6 +28,7 @@ import FuseButton from "@/components/FuseButton";
 import type { DateOccupancyInfo } from "@/types/database";
 import { useCalendarData, useSlotAvailability } from "@/hooks/api/use-scheduling";
 import { useCreateReservation } from "@/hooks/api/use-reservations";
+import { api, getApiErrorMessage } from "@/lib/api";
 import { toast } from "sonner";
 import TableFloorMap from "@/components/reservation/TableFloorMap";
 import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
@@ -151,19 +152,14 @@ export function CoachSchedulingCard({
     setIsSavingEmail(true);
     setSubmitError(null);
     try {
-      const res = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: customerEmail }),
-      });
-      const data = await res.json();
+      const { data } = await api.patch("/api/profile", { email: customerEmail });
       if (data.success) {
         setEmailUpdatedSuccess(true);
       } else {
         setSubmitError(data.error || "Failed to update profile email.");
       }
     } catch (err: any) {
-      setSubmitError(err?.message || "Failed to update email.");
+      setSubmitError(getApiErrorMessage(err, "Failed to update email."));
     } finally {
       setIsSavingEmail(false);
     }

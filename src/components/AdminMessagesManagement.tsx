@@ -14,6 +14,7 @@ import {
   Check,
 } from "lucide-react";
 import type { ContactMessage } from "@/types/database";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 interface AdminMessagesManagementProps {
   initialMessages: ContactMessage[];
@@ -45,16 +46,15 @@ export default function AdminMessagesManagement({
 
   const handleMarkStatus = (id: number, status: "UNREAD" | "READ") => {
     startTransition(async () => {
-      const res = await fetch("/api/contact", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, status } : m))
-        );
+      try {
+        const { data } = await api.patch("/api/contact", { id, status });
+        if (data.success) {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, status } : m))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to update status:", err);
       }
     });
   };
@@ -62,16 +62,17 @@ export default function AdminMessagesManagement({
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to delete this customer message?")) return;
     startTransition(async () => {
-      const res = await fetch(`/api/contact?id=${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessages((prev) => prev.filter((m) => m.id !== id));
-        setStatusMsg({ type: "success", text: "Message removed from inbox." });
-        setTimeout(() => setStatusMsg(null), 3000);
-      } else {
-        setStatusMsg({ type: "error", text: data.error || "Failed to delete message." });
+      try {
+        const { data } = await api.delete(`/api/contact?id=${id}`);
+        if (data.success) {
+          setMessages((prev) => prev.filter((m) => m.id !== id));
+          setStatusMsg({ type: "success", text: "Message removed from inbox." });
+          setTimeout(() => setStatusMsg(null), 3000);
+        } else {
+          setStatusMsg({ type: "error", text: data.error || "Failed to delete message." });
+        }
+      } catch (err) {
+        setStatusMsg({ type: "error", text: getApiErrorMessage(err, "Failed to delete message.") });
       }
     });
   };

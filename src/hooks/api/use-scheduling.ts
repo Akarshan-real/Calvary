@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 import type { DateOccupancyInfo } from "@/app/api/reservations/calendar/route";
 import type { SlotAvailability } from "@/components/CoachSchedulingCard";
 
@@ -14,13 +15,12 @@ export function useCalendarData(initialMap?: Record<string, DateOccupancyInfo>) 
   return useQuery<CalendarResponse>({
     queryKey: ["reservation-calendar"],
     queryFn: async () => {
-      const res = await fetch("/api/reservations/calendar?days=45");
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load calendar data");
+      const { data } = await api.get("/api/reservations/calendar?days=45");
+      if (!data.success) throw new Error(data.error || "Failed to load calendar data");
       return {
-        tables: json.tables || [],
-        slots: json.slots || [],
-        dateOccupancyMap: json.dateOccupancyMap || {},
+        tables: data.tables || [],
+        slots: data.slots || [],
+        dateOccupancyMap: data.dateOccupancyMap || {},
       };
     },
     initialData: initialMap
@@ -39,10 +39,9 @@ export function useSlotAvailability(date: string) {
     queryKey: ["reservation-availability", date],
     queryFn: async () => {
       if (!date) return [];
-      const res = await fetch(`/api/reservations/availability?date=${date}`);
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load slot availability");
-      return json.availability || [];
+      const { data } = await api.get(`/api/reservations/availability?date=${date}`);
+      if (!data.success) throw new Error(data.error || "Failed to load slot availability");
+      return data.availability || [];
     },
     enabled: !!date,
     staleTime: 1000 * 30, // 30 seconds fresh

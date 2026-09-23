@@ -1,16 +1,16 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, getApiErrorMessage } from "@/lib/api";
 import type { UserReservation } from "@/types/database";
 
 export function useUserReservations(initialData?: UserReservation[]) {
   return useQuery<UserReservation[]>({
     queryKey: ["user-reservations"],
     queryFn: async () => {
-      const res = await fetch("/api/reservations");
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load reservations");
-      return json.reservations || [];
+      const { data } = await api.get("/api/reservations");
+      if (!data.success) throw new Error(data.error || "Failed to load reservations");
+      return data.reservations || [];
     },
     initialData,
     staleTime: 1000 * 30, // 30 seconds fresh
@@ -21,7 +21,7 @@ export function useCreateReservation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: {
+    mutationFn: async (payload: {
       table_id: number;
       slot_id: number;
       reservation_date: string;
@@ -31,14 +31,13 @@ export function useCreateReservation() {
       party_size: number;
       special_request?: string;
     }) => {
-      const res = await fetch("/api/reservations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to create reservation");
-      return json.reservation;
+      try {
+        const { data } = await api.post("/api/reservations", payload);
+        if (!data.success) throw new Error(data.error || "Failed to create reservation");
+        return data.reservation;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to create reservation"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-reservations"] });
@@ -53,14 +52,13 @@ export function useCancelReservation() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/reservations/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "cancel" }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to cancel reservation");
-      return json;
+      try {
+        const { data } = await api.patch(`/api/reservations/${id}`, { action: "cancel" });
+        if (!data.success) throw new Error(data.error || "Failed to cancel reservation");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to cancel reservation"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-reservations"] });
@@ -75,7 +73,7 @@ export function useAlterReservation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: {
+    mutationFn: async (payload: {
       id: string;
       reservation_date: string;
       slot_id: number;
@@ -83,14 +81,13 @@ export function useAlterReservation() {
       party_size: number;
       special_request?: string | null;
     }) => {
-      const res = await fetch(`/api/reservations/${data.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "alter", ...data }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to alter reservation");
-      return json.reservation;
+      try {
+        const { data } = await api.patch(`/api/reservations/${payload.id}`, { action: "alter", ...payload });
+        if (!data.success) throw new Error(data.error || "Failed to alter reservation");
+        return data.reservation;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to alter reservation"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-reservations"] });
@@ -104,12 +101,13 @@ export function useAlterReservation() {
 export function useSendReminder() {
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/reservations/${id}/reminder`, {
-        method: "POST",
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to send reminder");
-      return json;
+      try {
+        const { data } = await api.post(`/api/reservations/${id}/reminder`);
+        if (!data.success) throw new Error(data.error || "Failed to send reminder");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to send reminder"));
+      }
     },
   });
 }
@@ -119,14 +117,13 @@ export function useSubmitReview() {
 
   return useMutation({
     mutationFn: async ({ id, rating, comment }: { id: string; rating: number; comment?: string }) => {
-      const res = await fetch(`/api/reservations/${id}/review`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, comment }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to submit review");
-      return json;
+      try {
+        const { data } = await api.post(`/api/reservations/${id}/review`, { rating, comment });
+        if (!data.success) throw new Error(data.error || "Failed to submit review");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to submit review"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-reservations"] });

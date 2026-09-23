@@ -69,10 +69,12 @@ export async function POST(req: Request) {
         formattedPhone = phoneCheck.formatted || null;
       }
 
+      const shouldCreateUser = body.shouldCreateUser !== false;
+
       const { error } = await supabase.auth.signInWithOtp({
         email: cleanEmail,
         options: {
-          shouldCreateUser: true,
+          shouldCreateUser,
           data: {
             full_name: cleanName,
             email: cleanEmail,
@@ -84,7 +86,8 @@ export async function POST(req: Request) {
       });
 
       if (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        console.error("[Auth API] signInWithOtp error:", error);
+        return NextResponse.json({ success: false, error: error.message || "Failed to send OTP code." }, { status: 400 });
       }
 
       return NextResponse.json({ success: true, email: cleanEmail });

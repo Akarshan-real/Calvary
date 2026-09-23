@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { GalleryItem } from "@/types/database";
 import { motion, AnimatePresence } from "motion/react";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 interface AdminGalleryManagementProps {
   initialItems: GalleryItem[];
@@ -117,19 +118,14 @@ export default function AdminGalleryManagement({
           setStatusMsg({ type: "success", text: "Gallery photo details updated!" });
           setModalOpen(false);
         } else {
-          const res = await fetch("/api/gallery", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id: String(editingItem.id),
-              title,
-              category,
-              tag,
-              imageUrl: imageUrl.trim() || undefined,
-              aspect,
-            }),
+          const { data: resJson } = await api.patch("/api/gallery", {
+            id: String(editingItem.id),
+            title,
+            category,
+            tag,
+            imageUrl: imageUrl.trim() || undefined,
+            aspect,
           });
-          const resJson = await res.json();
 
           if (resJson.success) {
             setItems((prev) =>
@@ -169,11 +165,9 @@ export default function AdminGalleryManagement({
             JSON.stringify({ category, tag: tag.trim() || "Artisanal Craft", aspect })
           );
 
-          const res = await fetch("/api/media", {
-            method: "POST",
-            body: formData,
+          const { data: resJson } = await api.post("/api/media", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
           });
-          const resJson = await res.json();
           if (resJson.success) {
             setStatusMsg({ type: "success", text: "Photo uploaded to gallery successfully!" });
             setModalOpen(false);
@@ -187,18 +181,13 @@ export default function AdminGalleryManagement({
             setUploading(false);
             return;
           }
-          const res = await fetch("/api/gallery", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              title,
-              imageUrl: imageUrl.trim(),
-              category,
-              tag,
-              aspect,
-            }),
+          const { data: result } = await api.post("/api/gallery", {
+            title,
+            imageUrl: imageUrl.trim(),
+            category,
+            tag,
+            aspect,
           });
-          const result = await res.json();
 
           if (result.success && result.item) {
             setItems((prev) => [result.item, ...prev]);
@@ -210,7 +199,7 @@ export default function AdminGalleryManagement({
         }
       }
     } catch (err: any) {
-      setStatusMsg({ type: "error", text: err.message || "An unexpected error occurred." });
+      setStatusMsg({ type: "error", text: getApiErrorMessage(err, "An unexpected error occurred.") });
     } finally {
       setUploading(false);
     }
@@ -228,16 +217,17 @@ export default function AdminGalleryManagement({
     if (!confirm("Are you sure you want to permanently delete this photo from the gallery?")) return;
 
     startTransition(async () => {
-      const res = await fetch(`/api/gallery?id=${item.id}`, {
-        method: "DELETE",
-      });
-      const result = await res.json();
-      if (result.success) {
-        setItems((prev) => prev.filter((i) => i.id !== item.id));
-        setStatusMsg({ type: "success", text: "Gallery photo deleted successfully." });
-        setTimeout(() => setStatusMsg(null), 3000);
-      } else {
-        setStatusMsg({ type: "error", text: result.error || "Failed to delete photo." });
+      try {
+        const { data: result } = await api.delete(`/api/gallery?id=${item.id}`);
+        if (result.success) {
+          setItems((prev) => prev.filter((i) => i.id !== item.id));
+          setStatusMsg({ type: "success", text: "Gallery photo deleted successfully." });
+          setTimeout(() => setStatusMsg(null), 3000);
+        } else {
+          setStatusMsg({ type: "error", text: result.error || "Failed to delete photo." });
+        }
+      } catch (err) {
+        setStatusMsg({ type: "error", text: getApiErrorMessage(err, "Failed to delete photo.") });
       }
     });
   };

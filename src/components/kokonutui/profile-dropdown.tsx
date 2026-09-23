@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 export interface Profile {
   name?: string | null;
@@ -79,11 +80,7 @@ export default function ProfileDropdown({
     if (onSignOut) {
       await onSignOut();
     } else {
-      await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "logout" }),
-      });
+      await api.post("/api/auth", { action: "logout" });
       window.location.href = "/";
     }
   };

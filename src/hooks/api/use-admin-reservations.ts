@@ -1,16 +1,16 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, getApiErrorMessage } from "@/lib/api";
 import type { ReservationWithRelations } from "@/components/AdminReservationManagement";
 
 export function useAdminReservations(initialData?: ReservationWithRelations[]) {
   return useQuery<ReservationWithRelations[]>({
     queryKey: ["admin-reservations"],
     queryFn: async () => {
-      const res = await fetch("/api/reservations?admin=true");
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load admin reservations");
-      return json.reservations || [];
+      const { data } = await api.get("/api/reservations?admin=true");
+      if (!data.success) throw new Error(data.error || "Failed to load admin reservations");
+      return data.reservations || [];
     },
     initialData,
     staleTime: 1000 * 30, // 30 seconds fresh
@@ -22,14 +22,13 @@ export function useApproveReservation() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/reservations/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve" }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to approve reservation");
-      return json;
+      try {
+        const { data } = await api.patch(`/api/reservations/${id}`, { action: "approve" });
+        if (!data.success) throw new Error(data.error || "Failed to approve reservation");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to approve reservation"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reservations"] });
@@ -45,14 +44,13 @@ export function useRejectReservation() {
 
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const res = await fetch(`/api/reservations/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reject", reason }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to reject reservation");
-      return json;
+      try {
+        const { data } = await api.patch(`/api/reservations/${id}`, { action: "reject", reason });
+        if (!data.success) throw new Error(data.error || "Failed to reject reservation");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to reject reservation"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reservations"] });
@@ -73,14 +71,17 @@ export function useSendAdminEmail() {
       subject: string;
       message: string;
     }) => {
-      const res = await fetch(`/api/reservations/${reservationId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "email", subject, message }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to send email");
-      return json;
+      try {
+        const { data } = await api.patch(`/api/reservations/${reservationId}`, {
+          action: "email",
+          subject,
+          message,
+        });
+        if (!data.success) throw new Error(data.error || "Failed to send email");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to send email"));
+      }
     },
   });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, getApiErrorMessage } from "@/lib/api";
 import type { MenuCategory, MenuItem } from "@/types/database";
 
 interface MenuData {
@@ -12,12 +13,11 @@ export function useMenu(initialData?: MenuData) {
   return useQuery<MenuData>({
     queryKey: ["menu"],
     queryFn: async () => {
-      const res = await fetch("/api/menu");
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load menu");
+      const { data } = await api.get("/api/menu");
+      if (!data.success) throw new Error(data.error || "Failed to load menu");
       return {
-        categories: json.categories || [],
-        items: json.items || [],
+        categories: data.categories || [],
+        items: data.items || [],
       };
     },
     initialData,
@@ -30,14 +30,13 @@ export function useUpsertMenuItem() {
 
   return useMutation({
     mutationFn: async (item: Partial<MenuItem>) => {
-      const res = await fetch("/api/menu", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to save item");
-      return json.item;
+      try {
+        const { data } = await api.post("/api/menu", item);
+        if (!data.success) throw new Error(data.error || "Failed to save item");
+        return data.item;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to save item"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu"] });
@@ -50,12 +49,13 @@ export function useDeleteMenuItem() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/menu?id=${id}`, {
-        method: "DELETE",
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to delete item");
-      return json;
+      try {
+        const { data } = await api.delete(`/api/menu?id=${id}`);
+        if (!data.success) throw new Error(data.error || "Failed to delete item");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to delete item"));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu"] });

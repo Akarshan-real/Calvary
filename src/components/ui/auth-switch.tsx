@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import InputOtp9 from "@/components/input-otp-9";
 import { toast } from "sonner";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 interface SignInFormData {
   email: string;
@@ -102,19 +103,16 @@ export default function AuthSwitch() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "send-otp",
-          email: data.email,
-          fullName: "Customer",
-        }),
+      const res = await api.post("/api/auth", {
+        action: "send-otp",
+        email: data.email,
+        fullName: "Customer",
+        shouldCreateUser: false,
       });
-      const result = await res.json();
+      const result = res.data;
 
       if (!result.success) {
-        const err = result.error || "Failed to send verification code.";
+        const err = typeof result.error === "string" ? result.error : result.error?.message || "Failed to send verification code.";
         setError(err);
         toast.error("Sign-in failed", { description: err });
       } else {
@@ -129,9 +127,12 @@ export default function AuthSwitch() {
         });
       }
     } catch (err: any) {
-      const msg = err.message || "An unexpected error occurred.";
+      let msg = getApiErrorMessage(err, "Failed to send verification code.");
+      if (msg.toLowerCase().includes("signups not allowed") || msg.toLowerCase().includes("otp_disabled")) {
+        msg = "No account found with this email. Please switch to the Sign Up tab to register.";
+      }
       setError(msg);
-      toast.error("Error", { description: msg });
+      toast.error("Sign-in failed", { description: msg });
     } finally {
       setLoading(false);
     }
@@ -144,21 +145,17 @@ export default function AuthSwitch() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "send-otp",
-          email: data.email,
-          fullName: data.fullName,
-          phone: data.phone,
-          foodPreference: data.foodPreference,
-        }),
+      const res = await api.post("/api/auth", {
+        action: "send-otp",
+        email: data.email,
+        fullName: data.fullName,
+        phone: data.phone,
+        foodPreference: data.foodPreference,
       });
-      const result = await res.json();
+      const result = res.data;
 
       if (!result.success) {
-        const err = result.error || "Failed to send verification code.";
+        const err = typeof result.error === "string" ? result.error : result.error?.message || "Failed to send verification code.";
         setError(err);
         toast.error("Registration failed", { description: err });
       } else {
@@ -175,7 +172,7 @@ export default function AuthSwitch() {
         });
       }
     } catch (err: any) {
-      const msg = err.message || "An unexpected error occurred.";
+      const msg = getApiErrorMessage(err, "An unexpected error occurred.");
       setError(msg);
       toast.error("Error", { description: msg });
     } finally {
@@ -189,22 +186,18 @@ export default function AuthSwitch() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "verify-otp",
-          email: pendingEmail,
-          token: data.token,
-          fullName: pendingFullName || "Customer",
-          phone: pendingPhone || undefined,
-          foodPreference: pendingFoodPreference || "all",
-        }),
+      const res = await api.post("/api/auth", {
+        action: "verify-otp",
+        email: pendingEmail,
+        token: data.token,
+        fullName: pendingFullName || "Customer",
+        phone: pendingPhone || undefined,
+        foodPreference: pendingFoodPreference || "all",
       });
-      const result = await res.json();
+      const result = res.data;
 
       if (!result.success) {
-        const err = result.error || "Invalid verification code.";
+        const err = typeof result.error === "string" ? result.error : result.error?.message || "Invalid verification code.";
         setError(err);
         toast.error("Verification failed", { description: err });
       } else {
@@ -215,7 +208,7 @@ export default function AuthSwitch() {
         router.refresh();
       }
     } catch (err: any) {
-      const msg = err.message || "Verification failed.";
+      const msg = getApiErrorMessage(err, "Verification failed.");
       setError(msg);
       toast.error("Verification failed", { description: msg });
     } finally {

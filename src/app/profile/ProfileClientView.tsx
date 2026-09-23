@@ -22,6 +22,7 @@ import {
 import EditReservationModal from "@/components/reservation/EditReservationModal";
 import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
 import DiningReviewModal from "@/components/reservation/DiningReviewModal";
+import { api, getApiErrorMessage } from "@/lib/api";
 import {
   User02Icon,
   SmartPhone01Icon,
@@ -151,11 +152,9 @@ export default function ProfileClientView({
       const formData = new FormData();
       formData.append("avatar", file);
 
-      const res = await fetch("/api/profile", {
-        method: "POST",
-        body: formData,
+      const { data } = await api.post("/api/profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      const data = await res.json();
 
       if (data.success && data.url) {
         setAvatarUrl(data.url);
@@ -169,7 +168,7 @@ export default function ProfileClientView({
         toast.error("Upload failed", { description: err });
       }
     } catch (err: any) {
-      const msg = err.message || "Failed to upload avatar.";
+      const msg = getApiErrorMessage(err, "Failed to upload avatar.");
       setStatusMsg({ type: "error", text: msg });
       toast.error("Upload error", { description: msg });
     } finally {
@@ -334,11 +333,7 @@ export default function ProfileClientView({
                 <button
                   type="button"
                   onClick={async () => {
-                    await fetch("/api/auth", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ action: "logout" }),
-                    });
+                    await api.post("/api/auth", { action: "logout" });
                     window.location.href = "/";
                   }}
                   className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-red-400 transition-colors py-2 px-3 rounded-lg hover:bg-white/5 cursor-pointer"

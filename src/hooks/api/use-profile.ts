@@ -1,16 +1,16 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, getApiErrorMessage } from "@/lib/api";
 import type { Profile } from "@/types/database";
 
 export function useProfile(initialData?: Profile | null) {
   return useQuery<Profile | null>({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      const res = await fetch("/api/profile");
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to load profile");
-      return json.profile || null;
+      const { data } = await api.get("/api/profile");
+      if (!data.success) throw new Error(data.error || "Failed to load profile");
+      return data.profile || null;
     },
     initialData: initialData ?? undefined,
     staleTime: 1000 * 60 * 5, // 5 minutes fresh
@@ -22,14 +22,13 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
-      const res = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to update profile");
-      return json.profile;
+      try {
+        const { data } = await api.patch("/api/profile", updates);
+        if (!data.success) throw new Error(data.error || "Failed to update profile");
+        return data.profile;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to update profile"));
+      }
     },
     onSuccess: (updatedProfile) => {
       queryClient.setQueryData(["user-profile"], updatedProfile);
@@ -43,12 +42,13 @@ export function useDeleteAccount() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/profile", {
-        method: "DELETE",
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Failed to delete account");
-      return json;
+      try {
+        const { data } = await api.delete("/api/profile");
+        if (!data.success) throw new Error(data.error || "Failed to delete account");
+        return data;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err, "Failed to delete account"));
+      }
     },
     onSuccess: () => {
       queryClient.clear();

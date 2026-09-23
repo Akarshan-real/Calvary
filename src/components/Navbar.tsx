@@ -11,6 +11,7 @@ import {
   User,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { api } from '@/lib/api'
 
 import ProfileDropdown from '@/components/kokonutui/profile-dropdown'
 import SlideTextButton from '@/components/kokonutui/slide-text-button'
@@ -121,11 +122,7 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
                 role: user.role,
               }}
               onSignOut={async () => {
-                await fetch('/api/auth', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ action: 'logout' }),
-                })
+                await api.post('/api/auth', { action: 'logout' })
                 window.location.href = '/'
               }}
             />
