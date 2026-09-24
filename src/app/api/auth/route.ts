@@ -86,7 +86,12 @@ export async function POST(req: Request) {
       });
 
       if (error) {
-        console.error("[Auth API] signInWithOtp error:", error);
+        console.error("[Auth API] signInWithOtp error details:", {
+          message: error.message,
+          status: error.status,
+          code: (error as any).code,
+          name: error.name,
+        });
         return NextResponse.json({ success: false, error: error.message || "Failed to send OTP code." }, { status: 400 });
       }
 

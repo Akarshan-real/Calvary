@@ -120,10 +120,8 @@ export default function AuthSwitch() {
         setPendingEmail(clean);
         setPendingFullName("Customer");
         setStep("otp");
-        const msg = `A 6-digit code has been sent to ${clean}`;
-        setSuccessMsg(msg);
-        toast.success("Verification code sent!", {
-          description: `Please check your inbox at ${clean} (including spam).`,
+        toast.success("Sent ✓", {
+          description: `6-digit verification code sent to ${clean}`,
         });
       }
     } catch (err: any) {
@@ -165,10 +163,8 @@ export default function AuthSwitch() {
         setPendingPhone(data.phone || "");
         setPendingFoodPreference(data.foodPreference);
         setStep("otp");
-        const msg = `A 6-digit code has been sent to ${clean}`;
-        setSuccessMsg(msg);
-        toast.success("Verification code sent!", {
-          description: `We've sent a 6-digit security code to ${clean}`,
+        toast.success("Sent ✓", {
+          description: `6-digit verification code sent to ${clean}`,
         });
       }
     } catch (err: any) {
@@ -783,7 +779,6 @@ export default function AuthSwitch() {
               </p>
 
               {error && <div className="error-banner">{error}</div>}
-              {successMsg && <div className="success-banner">{successMsg}</div>}
 
               {step === "email" ? (
                 <form
@@ -910,7 +905,6 @@ export default function AuthSwitch() {
               </p>
 
               {error && <div className="error-banner">{error}</div>}
-              {successMsg && <div className="success-banner">{successMsg}</div>}
 
               {step === "email" ? (
                 <form
