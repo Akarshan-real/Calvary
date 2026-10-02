@@ -41,7 +41,7 @@ export function FaqAccordion({
         </h2>
       )}
       
-      <ul className="w-full mx-auto list-none p-0 flex flex-col rounded-3xl overflow-hidden border border-white/10 bg-[#12141a]/80 backdrop-blur-md">
+      <ul className="w-full mx-auto list-none p-0 flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-[#12141a]/80 backdrop-blur-md">
         {items.map((item, index) => {
           const isActive = activeIndex === index;
           return (
@@ -56,8 +56,8 @@ export function FaqAccordion({
             >
               <button
                 className={cn(
-                  "flex flex-row items-center justify-start w-full min-h-[64px] py-4 relative m-0 px-6 pl-14 cursor-pointer",
-                  "border-l-[4px] md:border-l-[6px] transition-all duration-200 text-left outline-none text-base md:text-lg",
+                  "flex flex-row items-center justify-start w-full min-h-[54px] sm:min-h-[64px] py-3.5 sm:py-4 relative m-0 px-4 sm:px-6 pl-10 sm:pl-14 cursor-pointer",
+                  "border-l-[4px] md:border-l-[6px] transition-all duration-200 text-left outline-none text-sm sm:text-base md:text-lg",
                   isActive 
                     ? "border-l-[#ffbe33] bg-[#ffbe33]/10 text-white font-bold" 
                     : "border-l-transparent bg-transparent text-neutral-300 hover:border-l-[#ffbe33]/50 hover:text-[#ffbe33] hover:bg-white/[0.02]"
@@ -68,19 +68,19 @@ export function FaqAccordion({
                 {/* Plus/Minus Icon */}
                 <span 
                   className={cn(
-                    "absolute left-5 top-1/2 -translate-y-1/2 transition-all duration-200 leading-none select-none",
-                    isActive ? "text-[28px] md:text-[34px] font-light text-[#ffbe33]" : "text-[22px] md:text-[26px] font-light text-neutral-400"
+                    "absolute left-3.5 sm:left-5 top-1/2 -translate-y-1/2 transition-all duration-200 leading-none select-none",
+                    isActive ? "text-[24px] md:text-[34px] font-light text-[#ffbe33]" : "text-[20px] md:text-[26px] font-light text-neutral-400"
                   )}
                 >
                   {isActive ? "−" : "+"}
                 </span>
                 
-                <span className="pr-8">{item.question}</span>
+                <span className="pr-6 sm:pr-8 leading-snug">{item.question}</span>
                 
                 {/* Chevron */}
                 <span 
                   className={cn(
-                    "absolute right-6 block w-2 h-2 border-t-2 border-r-2 transition-transform duration-200 ease-in-out",
+                    "absolute right-4 sm:right-6 block w-2 h-2 border-t-2 border-r-2 transition-transform duration-200 ease-in-out shrink-0",
                     isActive ? "rotate-[-45deg] border-[#ffbe33]" : "rotate-[135deg] border-neutral-500"
                   )}
                 />
@@ -94,7 +94,7 @@ export function FaqAccordion({
                 )}
               >
                 <div className="overflow-hidden">
-                  <div className="flex flex-row items-start justify-start w-full px-6 pl-14 pb-6 pt-1 text-sm md:text-base font-normal text-neutral-300 leading-relaxed">
+                  <div className="flex flex-row items-start justify-start w-full px-4 sm:px-6 pl-10 sm:pl-14 pb-5 sm:pb-6 pt-1 text-xs sm:text-sm md:text-base font-normal text-neutral-300 leading-relaxed">
                     <span className="opacity-95">{item.answer}</span>
                   </div>
                 </div>

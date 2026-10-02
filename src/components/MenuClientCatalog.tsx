@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import FoodCard, { FoodItem } from "@/components/FoodCard";
+import FoodCard, { FoodItem, FoodCardSkeleton } from "@/components/FoodCard";
 import { HighlightGrid } from "@/components/ui/highlight-grid";
 import { Search, X, Filter, Utensils, Heart } from "lucide-react";
 import { useMenu } from "@/hooks/api/use-menu";
@@ -32,7 +32,7 @@ export default function MenuClientCatalog({
   items: initialItems,
   categories: initialCategories,
 }: MenuClientCatalogProps) {
-  const { data: menuData } = useMenu({ items: initialItems as any, categories: initialCategories as any });
+  const { data: menuData, isLoading } = useMenu({ items: initialItems as any, categories: initialCategories as any });
   const items = (menuData?.items as FoodItem[]) || initialItems;
   const categories = (menuData?.categories as Category[]) || initialCategories;
 
@@ -136,9 +136,9 @@ export default function MenuClientCatalog({
       {/* ======================================================== */}
       {/* 1. FILTER STRIP: NORMAL SEARCH & DIETARY PILLS */}
       {/* ======================================================== */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-[#12141c] border border-white/10 p-5 sm:p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 bg-[#12141c] border border-white/10 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl">
         {/* Left: Normal sleek search input with clearly visible grey placeholder */}
-        <div className="w-full lg:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="w-full lg:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-1">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-neutral-400 shrink-0">
             <Filter className="w-4 h-4 text-[#ffbe33]" />
             <span>Search Dishes:</span>
@@ -151,7 +151,7 @@ export default function MenuClientCatalog({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search curries, biryani, starters, desserts..."
-              className="w-full bg-[#141722] border border-white/20 focus:border-[#ffbe33] rounded-2xl pl-10 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder:text-gray-400 placeholder:text-neutral-400 outline-none transition-all shadow-inner focus:ring-2 focus:ring-[#ffbe33]/20"
+              className="w-full bg-[#141722] border border-white/20 focus:border-[#ffbe33] rounded-xl sm:rounded-2xl pl-10 pr-10 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder:text-gray-400 placeholder:text-neutral-400 outline-none transition-all shadow-inner focus:ring-2 focus:ring-[#ffbe33]/20"
             />
             {searchQuery && (
               <button
@@ -176,11 +176,11 @@ export default function MenuClientCatalog({
         </div>
 
         {/* Right: Pure Veg vs Non-Veg Toggle Filter */}
-        <div className="flex items-center gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/10 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 bg-black/40 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-white/10 w-full sm:w-auto justify-between sm:justify-start shrink-0">
           <button
             type="button"
             onClick={() => setSelectedDiet("all")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial text-center justify-center px-2.5 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               selectedDiet === "all"
                 ? "bg-white/15 text-white shadow-sm"
                 : "text-neutral-400 hover:text-white"
@@ -191,7 +191,7 @@ export default function MenuClientCatalog({
           <button
             type="button"
             onClick={() => setSelectedDiet("veg")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 sm:flex-initial text-center justify-center px-2.5 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
               selectedDiet === "veg"
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                 : "text-neutral-400 hover:text-emerald-400"
@@ -203,7 +203,7 @@ export default function MenuClientCatalog({
           <button
             type="button"
             onClick={() => setSelectedDiet("non-veg")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 sm:flex-initial text-center justify-center px-2.5 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
               selectedDiet === "non-veg"
                 ? "bg-red-500/20 text-red-400 border border-red-500/30"
                 : "text-neutral-400 hover:text-red-400"
@@ -218,13 +218,13 @@ export default function MenuClientCatalog({
       {/* ======================================================== */}
       {/* 2. CATEGORY HIGHLIGHT FILTER BUTTONS + FAVOURITES TO THE RIGHT */}
       {/* ======================================================== */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
         {/* Left: Scrollable Categories */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none flex-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 sm:pb-2 scrollbar-none flex-1 -mx-4 px-4 sm:mx-0 sm:px-0">
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border cursor-pointer shrink-0 ${
               selectedCategory === "all"
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] shadow-md shadow-[#ffbe33]/20"
                 : "bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10"
@@ -241,7 +241,7 @@ export default function MenuClientCatalog({
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border cursor-pointer ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border cursor-pointer shrink-0 ${
                   isSelected
                     ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] shadow-md shadow-[#ffbe33]/20"
                     : "bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10"
@@ -259,7 +259,7 @@ export default function MenuClientCatalog({
           onClick={() =>
             setSelectedCategory(selectedCategory === "favorites" ? "all" : "favorites")
           }
-          className={`px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 cursor-pointer shadow-sm ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition-all border flex items-center justify-center gap-2 shrink-0 cursor-pointer shadow-sm ${
             selectedCategory === "favorites"
               ? "bg-red-500/25 text-red-400 border-red-500/60 shadow-md shadow-red-500/20 ring-1 ring-red-500/40"
               : "bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10 hover:text-red-400"
@@ -280,6 +280,14 @@ export default function MenuClientCatalog({
       {/* 3. CATEGORIZED MENU SECTIONS WITH HIGHLIGHT GRID */}
       {/* ======================================================== */}
       <div className="space-y-14">
+        {isLoading && items.length === 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 pt-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <FoodCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
         {categorizedSections.map(({ category, dishes }) => (
           <section key={category.id} className="space-y-6">
             {/* Category Header */}

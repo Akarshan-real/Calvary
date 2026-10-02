@@ -7,6 +7,7 @@ import { Heart, Flame, AlertCircle, ArrowUpRight } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip-card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Extracts clean weight (e.g., "250g", "160g", "350ml") from verbose portion strings
@@ -213,6 +214,7 @@ export default function FoodCard({
               src={displayImageUrl}
               alt={item.name}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover object-center brightness-95"
             />
           ) : (
@@ -336,3 +338,35 @@ export default function FoodCard({
     </Tooltip>
   );
 }
+
+export function FoodCardSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col justify-between rounded-2xl select-none overflow-hidden h-full w-full",
+        "bg-gradient-to-b from-[#181c28]/95 via-[#12141e]/95 to-[#0e1017]/95 backdrop-blur-md",
+        "border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.35)]",
+        className
+      )}
+    >
+      <div className="relative w-full h-32 sm:h-36 bg-[#0c0e14] overflow-hidden">
+        <Skeleton className="w-full h-full rounded-none" />
+      </div>
+
+      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+        <div className="space-y-1.5 flex flex-col items-center">
+          <Skeleton className="h-4.5 w-3/4" />
+        </div>
+
+        <div className="pt-2.5 border-t border-white/10 flex items-center justify-between w-full">
+          <div className="space-y-1">
+            <Skeleton className="h-2 w-8" />
+            <Skeleton className="h-5 w-16" />
+          </div>
+          <Skeleton className="h-7 w-18 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+}
+

@@ -11,16 +11,16 @@ export default function HomeFaqSection() {
   }));
 
   return (
-    <section className="py-20 px-6 sm:px-8 max-w-7xl mx-auto w-full relative">
+    <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
       {/* Subtle ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#ffbe33]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <RevealOnScroll direction="up" duration={700}>
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
+        <div className="text-center max-w-2xl mx-auto space-y-3 mb-10 sm:mb-12">
           <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-[#ffbe33]">
             Got Questions?
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          <h2 className="text-2xl xs:text-3xl sm:text-5xl font-black text-white tracking-tight">
             Frequently Asked Questions
           </h2>
           <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -48,6 +48,17 @@ export default function AuthSwitch() {
   const [pendingFullName, setPendingFullName] = useState("");
   const [pendingPhone, setPendingPhone] = useState("");
   const [pendingFoodPreference, setPendingFoodPreference] = useState<"all" | "veg" | "non-veg" | "vegan">("all");
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
+
+  // 15-second resend countdown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   // React Hook Form instances with onChange mode for live validation
   const signInForm = useForm<SignInFormData>({
@@ -120,7 +131,8 @@ export default function AuthSwitch() {
         setPendingEmail(clean);
         setPendingFullName("Customer");
         setStep("otp");
-        toast.success("Sent ✓", {
+        setResendCooldown(40);
+        toast.success("Sent", {
           description: `6-digit verification code sent to ${clean}`,
         });
       }
@@ -163,7 +175,8 @@ export default function AuthSwitch() {
         setPendingPhone(data.phone || "");
         setPendingFoodPreference(data.foodPreference);
         setStep("otp");
-        toast.success("Sent ✓", {
+        setResendCooldown(40);
+        toast.success("Sent", {
           description: `6-digit verification code sent to ${clean}`,
         });
       }
@@ -176,8 +189,54 @@ export default function AuthSwitch() {
     }
   };
 
+  // Resend OTP handler with 40-second cooldown
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || resending || !pendingEmail) return;
+
+    setResending(true);
+    setError(null);
+
+    try {
+      const payload: Record<string, any> = {
+        action: "send-otp",
+        email: pendingEmail,
+        fullName: pendingFullName || "Customer",
+        shouldCreateUser: isSignUp,
+      };
+
+      if (isSignUp) {
+        if (pendingPhone) payload.phone = pendingPhone;
+        if (pendingFoodPreference) payload.foodPreference = pendingFoodPreference;
+      }
+
+      const res = await api.post("/api/auth", payload);
+      const result = res.data;
+
+      if (!result.success) {
+        const err = typeof result.error === "string" ? result.error : result.error?.message || "Failed to resend code.";
+        setError(err);
+        toast.error("Resend failed", { description: err });
+      } else {
+        setResendCooldown(40);
+        toast.success("Sent", {
+          description: `A fresh 6-digit code has been sent to ${pendingEmail}`,
+        });
+      }
+    } catch (err: any) {
+      const msg = getApiErrorMessage(err, "Failed to resend verification code.");
+      setError(msg);
+      toast.error("Resend failed", { description: msg });
+    } finally {
+      setResending(false);
+    }
+  };
+
   // Verify OTP submit (Step 2: Confirm 6-digit token)
   const onOtpSubmit = async (data: OtpFormData) => {
+    if (loading) return;
+    const cleanToken = data?.token?.trim();
+    if (!cleanToken || cleanToken.length !== 6) return;
+
     setError(null);
     setLoading(true);
 
@@ -185,7 +244,7 @@ export default function AuthSwitch() {
       const res = await api.post("/api/auth", {
         action: "verify-otp",
         email: pendingEmail,
-        token: data.token,
+        token: cleanToken,
         fullName: pendingFullName || "Customer",
         phone: pendingPhone || undefined,
         foodPreference: pendingFoodPreference || "all",
@@ -197,11 +256,12 @@ export default function AuthSwitch() {
         setError(err);
         toast.error("Verification failed", { description: err });
       } else {
+        setError(null);
+        toast.dismiss();
         toast.success("Welcome to Calvary!", {
           description: "Your account is verified and you are now logged in.",
         });
-        router.push("/");
-        router.refresh();
+        window.location.href = "/";
       }
     } catch (err: any) {
       const msg = getApiErrorMessage(err, "Verification failed.");
@@ -433,6 +493,9 @@ export default function AuthSwitch() {
           -webkit-text-fill-color: #ffffff !important;
           caret-color: #ffbe33 !important;
           width: 100%;
+          height: 100%;
+          flex: 1;
+          border-radius: 10px;
           font-family: var(--font-huninn), "Huninn", sans-serif;
           letter-spacing: 0.02em;
         }
@@ -444,11 +507,25 @@ export default function AuthSwitch() {
 
         /* Prevent browser autofill from covering the styled input */
         .input-field input:-webkit-autofill,
-        .input-field input:-webkit-autofill:hover,
-        .input-field input:-webkit-autofill:focus,
-        .input-field input:-webkit-autofill:active {
+        .input-field input:-webkit-autofill:hover {
           -webkit-box-shadow: 0 0 0 1000px #0d0f16 inset !important;
           box-shadow: 0 0 0 1000px #0d0f16 inset !important;
+          -webkit-text-fill-color: #ffffff !important;
+          color: #ffffff !important;
+          caret-color: #ffbe33 !important;
+          transition: background-color 50000s ease-in-out 0s !important;
+        }
+
+        .input-field:hover input:-webkit-autofill {
+          -webkit-box-shadow: 0 0 0 1000px #131620 inset !important;
+          box-shadow: 0 0 0 1000px #131620 inset !important;
+        }
+
+        .input-field:focus-within input:-webkit-autofill,
+        .input-field input:-webkit-autofill:focus,
+        .input-field input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 1000px #151926 inset !important;
+          box-shadow: 0 0 0 1000px #151926 inset !important;
           -webkit-text-fill-color: #ffffff !important;
           color: #ffffff !important;
           caret-color: #ffbe33 !important;
@@ -461,8 +538,35 @@ export default function AuthSwitch() {
         }
 
         .input-field input::placeholder {
-          color: #6b7280 !important;
+          color: #9ca3af !important;
+          -webkit-text-fill-color: #9ca3af !important;
+          opacity: 1 !important;
           font-size: 0.88rem;
+          font-weight: 400;
+        }
+
+        .input-field input::-webkit-input-placeholder {
+          color: #9ca3af !important;
+          -webkit-text-fill-color: #9ca3af !important;
+          opacity: 1 !important;
+          font-size: 0.88rem;
+          font-weight: 400;
+        }
+
+        .input-field input::-moz-placeholder {
+          color: #9ca3af !important;
+          -webkit-text-fill-color: #9ca3af !important;
+          opacity: 1 !important;
+          font-size: 0.88rem;
+          font-weight: 400;
+        }
+
+        .input-field input:-ms-input-placeholder {
+          color: #9ca3af !important;
+          -webkit-text-fill-color: #9ca3af !important;
+          opacity: 1 !important;
+          font-size: 0.88rem;
+          font-weight: 400;
         }
 
         .field-error {
@@ -753,6 +857,64 @@ export default function AuthSwitch() {
             transform: translate(-50%, 0);
           }
         }
+
+        @media (max-width: 570px) {
+          .auth-switch-root {
+            padding: 12px;
+            padding-top: 60px;
+          }
+          .back-home-btn {
+            top: 14px;
+            left: 14px;
+            padding: 6px 12px;
+            font-size: 0.72rem;
+          }
+          .container {
+            min-height: 720px;
+            border-radius: 20px;
+          }
+          .form-panel {
+            padding: 0 1rem;
+          }
+          .form-title {
+            font-size: 1.55rem;
+          }
+          .form-subtitle {
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+          }
+          .input-group {
+            max-width: 100%;
+            margin: 4px 0;
+          }
+          .input-field {
+            height: 46px;
+          }
+          .btn-gold {
+            height: 44px;
+            font-size: 0.78rem;
+            max-width: 100%;
+            margin-top: 10px;
+          }
+          .panel {
+            padding: 1.5rem 5%;
+          }
+          .panel h3 {
+            font-size: 1.15rem;
+          }
+          .btn-transparent {
+            padding: 8px 18px;
+            font-size: 0.72rem;
+          }
+          .container:before {
+            bottom: 74%;
+            left: 50%;
+          }
+          .container.sign-up-mode:before {
+            bottom: 26%;
+            left: 50%;
+          }
+        }
       `}</style>
 
       {/* Back to Home Button */}
@@ -878,17 +1040,33 @@ export default function AuthSwitch() {
                     )}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep("email");
-                      setError(null);
-                      otpForm.reset();
-                    }}
-                    className="text-xs text-neutral-400 hover:text-white mt-4 underline transition-colors"
-                  >
-                    Change email address
-                  </button>
+                  <div className="flex flex-col items-center gap-3 mt-4 w-full max-w-[360px]">
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={resendCooldown > 0 || resending || loading}
+                      className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-[#ffbe33]/10 hover:border-[#ffbe33]/40 inline-flex items-center justify-center gap-2 text-xs font-bold text-[#ffbe33] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 text-[#ffbe33] ${resending ? "animate-spin" : ""}`} />
+                      <span>
+                        {resendCooldown > 0
+                          ? `Resend code in ${resendCooldown}s`
+                          : "Resend Verification Code"}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep("email");
+                        setError(null);
+                        otpForm.reset();
+                      }}
+                      className="text-xs text-neutral-400 hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+                    >
+                      Change email address
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
@@ -1086,17 +1264,33 @@ export default function AuthSwitch() {
                     )}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep("email");
-                      setError(null);
-                      otpForm.reset();
-                    }}
-                    className="text-xs text-neutral-400 hover:text-white mt-4 underline transition-colors"
-                  >
-                    Change email or edit details
-                  </button>
+                  <div className="flex flex-col items-center gap-3 mt-4 w-full max-w-[360px]">
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={resendCooldown > 0 || resending || loading}
+                      className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-[#ffbe33]/10 hover:border-[#ffbe33]/40 inline-flex items-center justify-center gap-2 text-xs font-bold text-[#ffbe33] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 text-[#ffbe33] ${resending ? "animate-spin" : ""}`} />
+                      <span>
+                        {resendCooldown > 0
+                          ? `Resend code in ${resendCooldown}s`
+                          : "Resend Verification Code"}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep("email");
+                        setError(null);
+                        otpForm.reset();
+                      }}
+                      className="text-xs text-neutral-400 hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+                    >
+                      Change email or edit details
+                    </button>
+                  </div>
                 </form>
               )}
             </div>

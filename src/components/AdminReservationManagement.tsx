@@ -31,6 +31,7 @@ import type { ReservationStatus } from "@/types/database";
 import DatePicker6 from "@/components/date-picker-6";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ReservationWithRelations {
   id: string;
@@ -82,7 +83,7 @@ export default function AdminReservationManagement({
     }
   };
 
-  const { data: reservations = [] } = useAdminReservations(initialReservations);
+  const { data: reservations = [], isLoading } = useAdminReservations(initialReservations);
   const approveMutation = useApproveReservation();
   const rejectMutation = useRejectReservation();
   const sendEmailMutation = useSendAdminEmail();
@@ -329,8 +330,8 @@ export default function AdminReservationManagement({
   }, [declineModal.isOpen, replyModal.isOpen]);
 
   const declineModalContent = declineModal.isOpen && declineModal.reservation ? (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative bg-[#141724] border border-white/10 rounded-3xl p-6 sm:p-7 max-w-lg w-full space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative bg-[#141724] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -420,8 +421,8 @@ export default function AdminReservationManagement({
   ) : null;
 
   const replyModalContent = replyModal.isOpen && replyModal.reservation ? (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative bg-[#141724] border border-white/10 rounded-3xl p-6 sm:p-7 max-w-lg w-full space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative bg-[#141724] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -526,12 +527,12 @@ export default function AdminReservationManagement({
   return (
     <div className="space-y-8">
       {/* Metric Counters Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Pending Approvals */}
         <div
           onClick={() => setFilterTab("PENDING")}
           className={cn(
-            "p-5 rounded-2xl border transition-all cursor-pointer",
+            "p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer",
             filterTab === "PENDING"
               ? "bg-amber-500/15 border-amber-500/50 shadow-lg shadow-amber-500/10"
               : "bg-[#131622]/80 border-white/10 hover:border-white/20"
@@ -681,7 +682,32 @@ export default function AdminReservationManagement({
 
       {/* Reservation Requests List */}
       <div className="space-y-4">
-        {filteredReservations.length === 0 ? (
+        {isLoading && reservations.length === 0 ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#11141e] border border-white/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
+              >
+                <div className="space-y-2 flex-1 w-full">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-5 w-36" />
+                    <Skeleton variant="gold" className="h-5 w-24 rounded-full" />
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-3.5 w-20" />
+                    <Skeleton className="h-3.5 w-28" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-9 w-28 rounded-xl" />
+                  <Skeleton className="h-9 w-24 rounded-xl" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredReservations.length === 0 ? (
           <div className="p-12 text-center bg-[#131622]/60 rounded-3xl border border-white/10 text-neutral-400 text-sm space-y-2">
             <Utensils className="w-8 h-8 mx-auto text-neutral-500" />
             <p className="font-bold text-white">No reservation records found</p>
@@ -711,7 +737,7 @@ export default function AdminReservationManagement({
               <div
                 key={item.id}
                 className={cn(
-                  "p-5 sm:p-6 rounded-3xl border transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6",
+                  "p-4 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6",
                   isCompleted &&
                     "bg-[#0e1017]/90 border-blue-500/25 shadow-sm",
                   isPendingItem &&
@@ -825,7 +851,7 @@ export default function AdminReservationManagement({
                 </div>
 
                 {/* Right: Admin Action Buttons */}
-                <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full lg:w-auto justify-end">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 w-full lg:w-auto justify-start sm:justify-end">
                   {/* Reply Email Action (Opens interactive in-app modal like Decline) */}
                   <button
                     type="button"

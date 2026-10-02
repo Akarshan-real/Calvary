@@ -57,6 +57,7 @@
     --radius-4xl: calc(var(--radius) * 2.6);
     --animate-marquee: marquee var(--duration) infinite linear;
     --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+    --animate-shimmer: shimmer 2s infinite linear;
   @keyframes marquee {
   from {
     transform: translateX(0);
@@ -71,6 +72,14 @@
     }
   to {
     transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
     }
   }
 }
@@ -227,5 +236,28 @@
   }
   select:focus {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffbe33' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  /* Mobile responsiveness & touch UX helpers */
+  html, body {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Utility for hiding scrollbars while allowing touch momentum scrolling */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 }

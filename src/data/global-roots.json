@@ -47,5 +47,61 @@
     "coords": [19.4326, -99.1332],
     "coordinatesLabel": "19.43° N, 99.13° W",
     "terroir": "Ancestral Volcanic Soil"
+  },
+  {
+    "name": "Morocco",
+    "code": "ma",
+    "coords": [31.7917, -7.0926],
+    "coordinatesLabel": "31.79° N, 7.09° W",
+    "terroir": "Atlas Spice Routes"
+  },
+  {
+    "name": "Lebanon",
+    "code": "lb",
+    "coords": [33.8547, 35.8623],
+    "coordinatesLabel": "33.85° N, 35.86° E",
+    "terroir": "Levantine Mezze Heritage"
+  },
+  {
+    "name": "Norway",
+    "code": "no",
+    "coords": [60.472, 8.4689],
+    "coordinatesLabel": "60.47° N, 8.47° E",
+    "terroir": "Nordic Fjord Waters"
+  },
+  {
+    "name": "Thailand",
+    "code": "th",
+    "coords": [15.87, 100.9925],
+    "coordinatesLabel": "15.87° N, 100.99° E",
+    "terroir": "Golden Tropics & Lemongrass"
+  },
+  {
+    "name": "Greece",
+    "code": "gr",
+    "coords": [39.0742, 21.8243],
+    "coordinatesLabel": "39.07° N, 21.82° E",
+    "terroir": "Aegean Olive & Sea"
+  },
+  {
+    "name": "Peru",
+    "code": "pe",
+    "coords": [-9.19, -75.0152],
+    "coordinatesLabel": "9.19° S, 75.02° W",
+    "terroir": "Andean Altitude Heritage"
+  },
+  {
+    "name": "China",
+    "code": "cn",
+    "coords": [35.8617, 104.1954],
+    "coordinatesLabel": "35.86° N, 104.20° E",
+    "terroir": "Imperial Dim Sum & Wok"
+  },
+  {
+    "name": "Turkey",
+    "code": "tr",
+    "coords": [38.9637, 35.2433],
+    "coordinatesLabel": "38.96° N, 35.24° E",
+    "terroir": "Silk Road Crossroads"
   }
 ]

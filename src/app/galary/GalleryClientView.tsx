@@ -30,7 +30,7 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
     <div className="space-y-10">
       {/* Category Pills Filter */}
       <RevealOnScroll direction="up" duration={600}>
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeCategory === cat.key;
@@ -38,7 +38,7 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
               <button
                 key={cat.key}
                 onClick={() => setActiveCategory(cat.key)}
-                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                   isActive
                     ? "bg-[#ffbe33] text-neutral-950 shadow-lg shadow-[#ffbe33]/25 scale-105"
                     : "bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 hover:scale-105"

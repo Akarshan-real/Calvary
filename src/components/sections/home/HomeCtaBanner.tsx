@@ -6,7 +6,7 @@ import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 
 export default function HomeCtaBanner() {
   return (
-    <section className="relative overflow-hidden py-20 px-6">
+    <section className="relative overflow-hidden py-14 sm:py-20 px-4 sm:px-6">
       {/* Background: Bold red with layered depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#cc0000] via-[#e60000] to-[#b30000]" />
 
@@ -23,47 +23,47 @@ export default function HomeCtaBanner() {
         <UtensilsCrossed className="w-20 h-20 text-white" strokeWidth={0.8} />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 text-center md:text-left">
         <RevealOnScroll direction="left" duration={700} className="space-y-4 flex-1">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm">
             <Sparkles className="w-3.5 h-3.5 text-[#ffbe33]" />
-            <span className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-white/90">
+            <span className="text-[10px] xs:text-[11px] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-extrabold text-white/90">
               Planning an intimate evening or private event?
             </span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 className="text-2xl xs:text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
             Reserve Your Signature
             <br />
             <span className="text-[#ffbe33]">Table Today</span>
           </h2>
-          <p className="text-sm text-white/85 max-w-lg leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/85 max-w-lg leading-relaxed">
             Experience bespoke chef tasting menus and priority table booking
             with instant confirmation. Private dining rooms available for
             groups up to 30.
           </p>
 
           {/* Mini trust indicators */}
-          <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start pt-2">
-            <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-              <CalendarCheck className="w-4 h-4 text-[#ffbe33]" />
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-center md:justify-start pt-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-white/80 text-xs font-semibold">
+              <CalendarCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe33]" />
               <span>Instant Confirmation</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-white/40 hidden sm:block" />
-            <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-              <UtensilsCrossed className="w-4 h-4 text-[#ffbe33]" />
+            <div className="flex items-center gap-1.5 sm:gap-2 text-white/80 text-xs font-semibold">
+              <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe33]" />
               <span>Private Chef Available</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-white/40 hidden sm:block" />
-            <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-              <Sparkles className="w-4 h-4 text-[#ffbe33]" />
+            <div className="flex items-center gap-1.5 sm:gap-2 text-white/80 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe33]" />
               <span>Groups up to 30</span>
             </div>
           </div>
         </RevealOnScroll>
 
-        <RevealOnScroll direction="right" delay={200} duration={700} className="shrink-0">
-          <Link href="/reserve">
-            <InteractiveHoverButton className="bg-neutral-950 text-white border-neutral-700 py-4 px-10 shadow-2xl hover:scale-105 active:scale-95 text-base">
+        <RevealOnScroll direction="right" delay={200} duration={700} className="shrink-0 w-full sm:w-auto flex justify-center">
+          <Link href="/reserve" className="w-full sm:w-auto flex justify-center">
+            <InteractiveHoverButton className="bg-neutral-950 text-white border-neutral-700 py-3.5 px-8 sm:py-4 sm:px-10 shadow-2xl hover:scale-105 active:scale-95 text-sm sm:text-base w-full sm:w-auto">
               Book Table Now
             </InteractiveHoverButton>
           </Link>

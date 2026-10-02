@@ -77,7 +77,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${cursiveScript.variable} ${cinzelFont.variable} ${ptSerifFont.variable} ${huninnFont.variable} antialiased dark`}
     >
-      <body className="min-h-screen flex flex-col bg-[#0b0c0f] text-white selection:bg-[#e60000] selection:text-white">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen flex flex-col bg-[#0b0c0f] text-white selection:bg-[#e60000] selection:text-white overflow-x-hidden w-full max-w-[100vw]"
+      >
         <ScrollProgress className="top-0 z-[100] h-[3px] bg-gradient-to-r from-[#ffbe33] via-[#ff9900] to-[#e60000] shadow-[0_0_12px_rgba(255,190,51,0.7)]" />
         <QueryProvider>
           <SmoothScroll>

@@ -60,7 +60,7 @@ export default async function MenuItemPage({ params }: PageProps) {
         }
       />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-10 sm:py-16">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-16">
         {/* Back Link */}
         <div className="mb-8">
           <Link
@@ -73,8 +73,8 @@ export default async function MenuItemPage({ params }: PageProps) {
         </div>
 
         {/* Dish Showcase Card */}
-        <div className="bg-[#141722] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-6 sm:p-10">
+        <div className="bg-[#141722] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center p-4 xs:p-6 sm:p-10">
             {/* Visual Hero */}
             <div className="md:col-span-6 flex justify-center">
               <div className="relative w-full aspect-square max-w-[380px] rounded-2xl overflow-hidden bg-[#0c0e14] border border-white/10 shadow-inner">
@@ -126,11 +126,11 @@ export default async function MenuItemPage({ params }: PageProps) {
                 <span className="text-xs font-extrabold uppercase tracking-[0.25em] text-[#ffbe33]">
                   Artisanal Dish
                 </span>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-1">
+                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-1">
                   {dish.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 mt-3">
-                  <span className="text-3xl sm:text-4xl font-black text-[#a3f900]">
+                  <span className="text-2xl xs:text-3xl sm:text-4xl font-black text-[#a3f900]">
                     ₹{Number(dish.price).toLocaleString("en-IN")}
                   </span>
                   {(dish.portion_size || dish.quantity) && (
@@ -173,7 +173,7 @@ export default async function MenuItemPage({ params }: PageProps) {
                 <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block">
                   Nutritional Breakdown (Per Serving)
                 </span>
-                <div className="grid grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 sm:gap-2.5">
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center">
                     <div className="text-[10px] uppercase font-bold text-[#ff2d55]">Protein</div>
                     <div className="text-sm font-black text-white mt-0.5">{protein}g</div>

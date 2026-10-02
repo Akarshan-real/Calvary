@@ -249,11 +249,11 @@ export default function ProfileClientView({
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Profile Hero Card */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#141722] via-[#10121a] to-[#141722] border border-white/10 p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] mb-8">
-          <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#141722] via-[#10121a] to-[#141722] border border-white/10 p-4 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] mb-6 sm:mb-8">
+          <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8">
             {/* Avatar with Kokonut UI FileUpload trigger */}
             <div className="relative group shrink-0">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-[#ffbe33]/40 shadow-xl bg-[#1b1f2e] flex items-center justify-center">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-[#ffbe33]/40 shadow-xl bg-[#1b1f2e] flex items-center justify-center">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -261,7 +261,7 @@ export default function ProfileClientView({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-3xl sm:text-4xl font-extrabold text-[#ffbe33]">
+                  <span className="text-2xl sm:text-4xl font-extrabold text-[#ffbe33]">
                     {initialLetter}
                   </span>
                 )}
@@ -271,21 +271,21 @@ export default function ProfileClientView({
               <button
                 type="button"
                 onClick={() => setShowUploadModal(true)}
-                className="absolute bottom-0 right-0 p-2.5 rounded-full bg-[#ffbe33] text-black hover:bg-[#e6a827] shadow-lg cursor-pointer transition-all group-hover:scale-110"
+                className="absolute bottom-0 right-0 p-2 sm:p-2.5 rounded-full bg-[#ffbe33] text-black hover:bg-[#e6a827] shadow-lg cursor-pointer transition-all group-hover:scale-110"
                 title="Upload Photo via FileUpload"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
             {/* Profile Info Details: No "VIP Diner" badge */}
-            <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <div className="flex-1 text-center sm:text-left w-full">
+              <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-white">
                 {fullName || "Diner"}
               </h1>
 
               {/* Verified Contact Details Strip */}
-              <div className="text-neutral-400 text-sm mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-4">
+              <div className="text-neutral-400 text-xs sm:text-sm mt-1.5 sm:mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-4">
                 {user.phone && (
                   <span className="inline-flex items-center gap-1.5 text-neutral-300 font-medium">
                     <span className="w-2 h-2 rounded-full bg-[#ffbe33]" />
@@ -300,11 +300,11 @@ export default function ProfileClientView({
               </div>
 
               {/* Navigation Tabs: "Profile" and "My Bookings" */}
-              <div className="flex items-center justify-center sm:justify-start gap-3 mt-6 pt-5 border-t border-white/10">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/10 w-full">
                 <button
                   type="button"
                   onClick={() => setActiveTab("profile")}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                     activeTab === "profile"
                       ? "bg-[#ffbe33] text-black shadow-md shadow-[#ffbe33]/20"
                       : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white"
@@ -316,7 +316,7 @@ export default function ProfileClientView({
                 <button
                   type="button"
                   onClick={() => setActiveTab("reservations")}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer ${
                     activeTab === "reservations"
                       ? "bg-[#ffbe33] text-black shadow-md shadow-[#ffbe33]/20"
                       : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white"
@@ -324,7 +324,7 @@ export default function ProfileClientView({
                 >
                   <span>My Bookings</span>
                   {initialReservations.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-black/20 text-current flex items-center justify-center text-[10px] font-extrabold">
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-black/20 text-current flex items-center justify-center text-[9px] sm:text-[10px] font-extrabold">
                       {initialReservations.length}
                     </span>
                   )}
@@ -336,10 +336,10 @@ export default function ProfileClientView({
                     await api.post("/api/auth", { action: "logout" });
                     window.location.href = "/";
                   }}
-                  className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-red-400 transition-colors py-2 px-3 rounded-lg hover:bg-white/5 cursor-pointer"
+                  className="sm:ml-auto inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-neutral-400 hover:text-red-400 transition-colors py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-lg hover:bg-white/5 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Sign Out</span>
+                  <span>Sign Out</span>
                 </button>
               </div>
             </div>

@@ -128,19 +128,19 @@ export function BirthdayCalendar({
   return (
     <div
       className={cn(
-        "w-full max-w-sm rounded-2xl bg-[#12141d] border border-white/10 p-4 shadow-2xl text-white select-none",
+        "w-full max-w-sm rounded-2xl bg-[#12141d] border border-white/10 p-3 sm:p-4 shadow-2xl text-white select-none",
         className
       )}
     >
       {/* Month and Year Quick Select Dropdowns */}
-      <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-white/10">
-        <div className="flex items-center gap-1.5 flex-1">
+      <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-3 pb-3 border-b border-white/10">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-1 min-w-0">
           {/* Month Select */}
           <select
             aria-label="Select month"
             value={month}
             onChange={(e) => setMonthState(Number(e.target.value))}
-            className="flex-1 bg-[#1a1d29] border border-white/10 text-xs font-bold text-white rounded-lg px-2 py-1.5 outline-none focus:border-[#ffbe33] cursor-pointer"
+            className="flex-1 min-w-0 bg-[#1a1d29] border border-white/10 text-[11px] sm:text-xs font-bold text-white rounded-lg px-1.5 sm:px-2 py-1.5 outline-none focus:border-[#ffbe33] cursor-pointer"
           >
             {MONTH_NAMES.map((name, idx) => (
               <option key={name} value={idx} className="bg-[#12141d] text-white">
@@ -154,7 +154,7 @@ export function BirthdayCalendar({
             aria-label="Select year"
             value={year}
             onChange={(e) => setYearState(Number(e.target.value))}
-            className="w-24 bg-[#1a1d29] border border-white/10 text-xs font-bold text-white rounded-lg px-2 py-1.5 outline-none focus:border-[#ffbe33] cursor-pointer"
+            className="w-18 sm:w-24 shrink-0 bg-[#1a1d29] border border-white/10 text-[11px] sm:text-xs font-bold text-white rounded-lg px-1.5 sm:px-2 py-1.5 outline-none focus:border-[#ffbe33] cursor-pointer"
           >
             {yearOptions.map((y) => (
               <option key={y} value={y} className="bg-[#12141d] text-white">

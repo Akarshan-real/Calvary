@@ -20,23 +20,23 @@ const reviewsRow2 = reviewsList.slice(midPoint);
 
 function ReviewCard({ review }: { review: GoogleReview }) {
   return (
-    <div className="w-[320px] sm:w-[380px] shrink-0 p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+    <div className="w-[280px] xs:w-[320px] sm:w-[380px] shrink-0 p-4 sm:p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-lg group">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img
               src={review.avatar}
               alt={review.author}
-              className="w-10 h-10 rounded-full object-cover border border-white/20"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/20 shrink-0"
             />
-            <div>
-              <h4 className="text-sm font-bold text-white leading-tight">
+            <div className="min-w-0">
+              <h4 className="text-sm font-bold text-white leading-tight truncate">
                 {review.author}
               </h4>
-              <p className="text-[11px] text-neutral-400">{review.handle}</p>
+              <p className="text-[11px] text-neutral-400 truncate">{review.handle}</p>
             </div>
           </div>
-          <div className="flex items-center gap-0.5 text-[#ffbe33]">
+          <div className="flex items-center gap-0.5 text-[#ffbe33] shrink-0">
             {[...Array(review.rating)].map((_, i) => (
               <Star
                 key={i}
@@ -63,12 +63,12 @@ function ReviewCard({ review }: { review: GoogleReview }) {
 
 export default function GoogleReviewsMarquee() {
   return (
-    <section className="py-16 overflow-hidden relative">
+    <section className="py-12 sm:py-16 overflow-hidden relative">
       {/* Ambient glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-[#ffbe33]/5 blur-3xl pointer-events-none" />
 
       <RevealOnScroll direction="up" duration={700}>
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-10 px-6">
+        <div className="text-center max-w-2xl mx-auto space-y-3 mb-8 sm:mb-10 px-4 sm:px-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
             <div className="flex items-center gap-1 text-[#ffbe33]">
               {[...Array(5)].map((_, i) => (
@@ -80,7 +80,7 @@ export default function GoogleReviewsMarquee() {
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h2 className="text-2xl xs:text-3xl sm:text-4xl font-black text-white tracking-tight">
             Loved by Foodies &amp; Critics Alike
           </h2>
           <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
@@ -92,8 +92,8 @@ export default function GoogleReviewsMarquee() {
       {/* Marquee Row 1 - Forward */}
       <div className="relative w-full overflow-hidden">
         {/* Edge Fade Gradients */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0b0c0f] to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0b0c0f] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-24 bg-gradient-to-r from-[#0b0c0f] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-24 bg-gradient-to-l from-[#0b0c0f] to-transparent z-10" />
 
         <Marquee pauseOnHover className="[--duration:35s] py-3">
           {reviewsRow1.map((review, idx) => (

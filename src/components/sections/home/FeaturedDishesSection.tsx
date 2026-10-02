@@ -11,7 +11,7 @@ interface FeaturedDishesSectionProps {
 
 export default function FeaturedDishesSection({ items }: FeaturedDishesSectionProps) {
   return (
-    <section className="py-20 px-6 sm:px-8 max-w-7xl mx-auto w-full">
+    <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full">
       <RevealOnScroll direction="up" duration={700}>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-white/10 pb-6">
           <div className="space-y-2">

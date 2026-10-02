@@ -310,7 +310,7 @@ export default function AdminGalleryManagement({
       )}
 
       {/* Gallery Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
         {filteredItems.map((item) => (
           <div
             key={item.id}
@@ -388,7 +388,7 @@ export default function AdminGalleryManagement({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.94, y: 16 }}
                   transition={{ type: "spring", damping: 26, stiffness: 280 }}
-                  className="relative z-10 w-full max-w-2xl bg-[#12141d] border border-white/20 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar"
+                  className="relative z-10 w-full max-w-2xl bg-[#12141d] border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar"
                 >
                   <div className="flex items-center justify-between pb-3 border-b border-white/10">
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -461,8 +461,8 @@ export default function AdminGalleryManagement({
                     </div>
 
                     {/* Dual Option Image Selector: File Upload vs URL */}
-                    <div className="p-3.5 rounded-2xl bg-[#090b10] border border-white/10 space-y-2.5">
-                      <div className="flex items-center justify-between pb-1">
+                    <div className="p-3 sm:p-3.5 rounded-2xl bg-[#090b10] border border-white/10 space-y-2.5">
+                      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-1">
                         <label className="text-neutral-300 font-semibold block text-xs">
                           Image Source
                         </label>
@@ -494,7 +494,7 @@ export default function AdminGalleryManagement({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 pt-1">
+                      <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 pt-1">
                         {/* Preview Thumbnail */}
                         <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-black/60 border border-white/15 shrink-0 flex items-center justify-center">
                           {imageUrl ? (

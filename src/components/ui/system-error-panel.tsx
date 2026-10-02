@@ -37,7 +37,7 @@ function ErrorContent({
   return (
     <div className="pointer-events-none relative z-0 flex max-w-md flex-col items-center justify-center gap-5 text-center sm:items-start sm:text-start">
       <div className="space-y-1">
-        <h1 className="text-foreground text-4xl leading-tight font-bold tracking-tight sm:text-5xl">
+        <h1 className="text-foreground text-2xl xs:text-3xl sm:text-5xl leading-tight font-bold tracking-tight">
           {title}
         </h1>
 
@@ -65,7 +65,7 @@ function ErrorContent({
 function ErrorCode({ code }: Pick<ErrorHeroProps, 'code'>) {
   return (
     <div className="pointer-events-none relative z-10 flex items-center justify-center">
-      <span className="text-foreground/70 translate-y-10 text-[7rem] leading-none font-light tracking-tight select-none sm:translate-y-0 sm:text-[9rem] md:text-[11rem] lg:text-[13rem]">
+      <span className="text-foreground/70 translate-y-6 sm:translate-y-0 text-5xl xs:text-7xl sm:text-[9rem] md:text-[11rem] lg:text-[13rem] leading-none font-light tracking-tight select-none">
         {code}
       </span>
     </div>
@@ -80,8 +80,8 @@ export default function SystemErrorPanel({
   buttonHref = '/',
 }: ErrorHeroProps) {
   return (
-    <div className="p-4 h-full">
-      <Card className="bg-muted mx-auto relative overflow-hidden rounded-4xl px-4 sm:px-8 lg:px-14 w-full">
+    <div className="p-2 sm:p-4 h-full w-full">
+      <Card className="bg-muted mx-auto relative overflow-hidden rounded-2xl sm:rounded-4xl px-4 sm:px-8 lg:px-14 w-full">
         <BackgroundGrid />
 
         <div className="pointer-events-none relative z-10 grid min-h-[420px] grid-cols-1 gap-10 sm:grid-cols-2 sm:items-center">

@@ -130,8 +130,8 @@ export default function AdminMessagesManagement({
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
           {(["ALL", "UNREAD", "READ"] as const).map((st) => (
             <button
               key={st}
@@ -174,14 +174,14 @@ export default function AdminMessagesManagement({
           {filteredMessages.map((msg) => (
             <div
               key={msg.id}
-              className={`bg-[#12141d] border rounded-2xl p-5 transition-all flex flex-col md:flex-row md:items-start justify-between gap-4 ${
+              className={`bg-[#12141d] border rounded-2xl p-4 sm:p-5 transition-all flex flex-col md:flex-row md:items-start justify-between gap-4 ${
                 msg.status === "UNREAD"
                   ? "border-[#ffbe33]/40 shadow-lg shadow-[#ffbe33]/5"
                   : "border-white/10"
               }`}
             >
               <div className="space-y-3 flex-1">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                       msg.status === "UNREAD"
@@ -225,11 +225,11 @@ export default function AdminMessagesManagement({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center md:flex-col gap-2 shrink-0 pt-2 md:pt-0">
+              <div className="flex flex-wrap items-center md:flex-col gap-2 shrink-0 pt-2 md:pt-0 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => openMailtoReply(msg)}
-                  className="px-4 py-2 rounded-xl bg-[#ffbe33] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#e6a827] transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-[#ffbe33]/15"
+                  className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-[#ffbe33] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#e6a827] transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-[#ffbe33]/15"
                 >
                   <Reply className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Reply via Email</span>

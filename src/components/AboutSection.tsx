@@ -7,12 +7,12 @@ import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 
 export default function AboutSection() {
   return (
-    <section className="relative py-24 px-6 sm:px-8 max-w-7xl mx-auto w-full overflow-hidden">
+    <section className="relative py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto w-full overflow-hidden">
       {/* Subtle background glow */}
       <div className="absolute top-1/2 -left-40 -translate-y-1/2 w-96 h-96 bg-[#ffbe33]/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 -right-40 w-96 h-96 bg-[#e60000]/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         {/* Left Col: Visual Showcase & Badges */}
         <RevealOnScroll direction="left" duration={800} className="lg:col-span-6">
           <div className="relative mx-auto max-w-[500px] lg:max-w-none">
@@ -29,7 +29,7 @@ export default function AboutSection() {
             </div>
 
             {/* Overlapping Secondary Card (Chef In Action) */}
-            <div className="absolute -bottom-8 -right-4 sm:-bottom-10 sm:right-6 w-48 sm:w-60 aspect-square rounded-2xl overflow-hidden border-2 border-[#ffbe33]/40 shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-neutral-950">
+            <div className="absolute -bottom-6 right-2 sm:-bottom-10 sm:right-6 w-36 xs:w-44 sm:w-60 aspect-square rounded-2xl overflow-hidden border-2 border-[#ffbe33]/40 shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-neutral-950">
               <Image
                 src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=800&auto=format&fit=crop"
                 alt="Executive Chef Handcrafting Dishes"
@@ -40,24 +40,24 @@ export default function AboutSection() {
             </div>
 
             {/* Floating Experience Badge */}
-            <div className="absolute -top-6 -left-4 sm:left-4 bg-[#12141a]/90 backdrop-blur-xl border border-white/15 rounded-2xl p-4 shadow-2xl flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#ffbe33] to-[#e6a827] flex items-center justify-center text-neutral-950 font-black shadow-lg">
-                <ChefHat className="w-6 h-6 stroke-[2.5]" />
+            <div className="absolute -top-4 left-2 sm:-top-6 sm:left-4 bg-[#12141a]/95 backdrop-blur-xl border border-white/15 rounded-2xl p-2.5 sm:p-4 shadow-2xl flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#ffbe33] to-[#e6a827] flex items-center justify-center text-neutral-950 font-black shadow-lg shrink-0">
+                <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
               </div>
               <div>
-                <p className="text-xs text-neutral-400 font-medium">Culinary Heritage</p>
-                <p className="text-base font-extrabold text-white tracking-tight">15+ Years Mastery</p>
+                <p className="text-[10px] sm:text-xs text-neutral-400 font-medium">Culinary Heritage</p>
+                <p className="text-xs sm:text-base font-extrabold text-white tracking-tight">15+ Years Mastery</p>
               </div>
             </div>
 
             {/* Award badge — new! */}
-            <div className="absolute bottom-2 left-2 sm:-left-6 bg-[#12141a]/90 backdrop-blur-xl border border-[#ffbe33]/30 rounded-2xl px-3.5 py-2.5 shadow-xl flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#ffbe33]/15 text-[#ffbe33] flex items-center justify-center">
-                <Award className="w-4 h-4" />
+            <div className="absolute bottom-2 left-2 sm:-left-6 bg-[#12141a]/95 backdrop-blur-xl border border-[#ffbe33]/30 rounded-2xl px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 shadow-xl flex items-center gap-2 sm:gap-2.5">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#ffbe33]/15 text-[#ffbe33] flex items-center justify-center shrink-0">
+                <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div>
-                <p className="text-[10px] text-neutral-500 font-medium">Rated</p>
-                <p className="text-sm font-extrabold text-[#ffbe33] tracking-tight">Best Dining 2024</p>
+                <p className="text-[9px] sm:text-[10px] text-neutral-500 font-medium">Rated</p>
+                <p className="text-xs sm:text-sm font-extrabold text-[#ffbe33] tracking-tight">Best Dining 2024</p>
               </div>
             </div>
           </div>

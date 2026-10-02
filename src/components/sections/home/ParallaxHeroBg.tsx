@@ -35,6 +35,7 @@ export function ParallaxHeroBg({ src, alt }: ParallaxHeroBgProps) {
         alt={alt}
         fill
         priority
+        sizes="100vw"
         className="object-cover object-center brightness-75 contrast-105"
       />
       <div className="absolute inset-0 bg-black/45" />

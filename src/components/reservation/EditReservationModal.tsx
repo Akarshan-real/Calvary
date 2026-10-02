@@ -163,8 +163,8 @@ export default function EditReservationModal({
   const todayStr = new Date().toISOString().split("T")[0];
 
   const modalMarkup = (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-      <div className="relative bg-[#131622] border border-white/15 rounded-3xl p-6 sm:p-7 max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl shadow-black/95 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative bg-[#131622] border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl shadow-black/95 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
@@ -220,7 +220,7 @@ export default function EditReservationModal({
               </label>
               <span className="text-xs font-black text-[#ffbe33]">{partySize} Guests</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((size) => (
                 <button
                   key={size}
@@ -306,7 +306,7 @@ export default function EditReservationModal({
                   No tables with capacity for {partySize} guests are available for this slot. Try another slot or reduce party size.
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {candidateTables.map((tbl: any) => {
                     const isSelected = selectedTableId === tbl.id;
                     const isOriginal = tbl.id === reservation.table_id;

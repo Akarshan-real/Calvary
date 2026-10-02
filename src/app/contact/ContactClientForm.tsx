@@ -202,7 +202,7 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
         />
       </div>
 
-      <div className="flex items-center pt-2">
+      <div className="flex items-center justify-center sm:justify-start pt-2 w-full">
         <FuseButton
           label={loading ? "Sending Message..." : "Send Message"}
           undoLabel="Cancel"
@@ -218,7 +218,7 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
           beforeArm={checkContactConstraints}
           onFuseEnd={executeSendMessage}
           icon={<Send className="w-4 h-4 text-neutral-950" />}
-          className="font-black uppercase tracking-[0.16em] text-xs shadow-lg shadow-[#ffbe33]/25 hover:bg-[#e6a827]"
+          className="font-black uppercase tracking-[0.16em] text-xs shadow-lg shadow-[#ffbe33]/25 hover:bg-[#e6a827] w-full sm:w-auto"
         />
       </div>
     </form>

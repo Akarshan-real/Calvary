@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Lock, Ban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DateOccupancyInfo } from "@/types/database";
@@ -141,28 +141,28 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-[#0e1017]/95 p-5 sm:p-7 text-white backdrop-blur-md shadow-2xl space-y-5",
+        "rounded-2xl border border-white/10 bg-[#0e1017]/95 p-3.5 sm:p-5 md:p-7 text-white backdrop-blur-md shadow-2xl space-y-4 sm:space-y-5",
         className
       )}
     >
       {/* Month & Year Header with Navigation */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-4">
-        <div className="space-y-1">
-          <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+      <div className="flex items-center justify-between border-b border-white/10 pb-3.5 sm:pb-4">
+        <div className="space-y-0.5 sm:space-y-1">
+          <h3 className="text-base sm:text-xl font-extrabold text-white tracking-tight">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </h3>
-          <p className="text-xs font-semibold text-neutral-400">
+          <p className="text-[11px] sm:text-xs font-semibold text-neutral-400">
             Select a highlighted dining date
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={handlePrevMonth}
             disabled={isPrevDisabled}
             aria-label="Previous month"
-            className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 text-neutral-300" />
           </button>
@@ -172,7 +172,7 @@ export function Calendar({
             onClick={handleNextMonth}
             disabled={isNextDisabled}
             aria-label="Next month"
-            className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
           >
             <ChevronRight className="w-4 h-4 text-neutral-300" />
           </button>
@@ -180,11 +180,11 @@ export function Calendar({
       </div>
 
       {/* Days of week header */}
-      <div className="grid grid-cols-7 gap-2 text-center">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
         {DAY_LABELS.map((dayName) => (
           <div
             key={dayName}
-            className="text-xs font-bold uppercase tracking-wider text-neutral-400 py-1.5"
+            className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-neutral-400 py-1 sm:py-1.5"
           >
             {dayName}
           </div>
@@ -192,10 +192,10 @@ export function Calendar({
       </div>
 
       {/* Month Days Matrix */}
-      <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2.5">
         {calendarCells.map((cell, idx) => {
           if (!cell.isCurrentMonth) {
-            return <div key={`empty-${idx}`} className="h-12 sm:h-14" />;
+            return <div key={`empty-${idx}`} className="h-10 sm:h-12 md:h-14" />;
           }
 
           const isSelected = selectedDate === cell.dateStr;
@@ -218,7 +218,7 @@ export function Calendar({
               onClick={() => cell.isSelectable && onSelectDate(cell.dateStr)}
               title={`${cell.dateStr}: ${statusLabel}`}
               className={cn(
-                "relative group/cell h-12 sm:h-14 rounded-xl flex flex-col items-center justify-center transition-all duration-200",
+                "relative group/cell h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl flex flex-col items-center justify-center transition-all duration-200",
                 "border text-xs sm:text-sm font-bold select-none",
                 // Base state for disabled / unselectable
                 !cell.isSelectable &&
@@ -248,30 +248,30 @@ export function Calendar({
               </span>
 
               {/* Status Indicator Icon or Dot */}
-              <div className="mt-1 flex items-center justify-center">
+              <div className="mt-0.5 sm:mt-1 flex items-center justify-center">
                 {isClosed ? (
-                  <Ban className="w-2.5 h-2.5 text-neutral-500" aria-hidden="true" />
+                  <Ban className="w-2 sm:w-2.5 h-2 sm:h-2.5 text-neutral-500" aria-hidden="true" />
                 ) : isFull ? (
-                  <Lock className="w-2.5 h-2.5 text-rose-500/70" aria-hidden="true" />
+                  <Lock className="w-2 sm:w-2.5 h-2 sm:h-2.5 text-rose-500/70" aria-hidden="true" />
                 ) : density === "high" ? (
                   <span
                     className={cn(
-                      "w-1.5 h-1.5 rounded-full shadow-sm",
-                      isSelected ? "bg-neutral-950" : "bg-rose-500 ring-2 ring-rose-500/30"
+                      "w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full shadow-sm",
+                      isSelected ? "bg-neutral-950" : "bg-rose-500 ring-1 sm:ring-2 ring-rose-500/30"
                     )}
                   />
                 ) : density === "medium" ? (
                   <span
                     className={cn(
-                      "w-1.5 h-1.5 rounded-full shadow-sm",
-                      isSelected ? "bg-neutral-950" : "bg-amber-400 ring-2 ring-amber-400/30"
+                      "w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full shadow-sm",
+                      isSelected ? "bg-neutral-950" : "bg-amber-400 ring-1 sm:ring-2 ring-amber-400/30"
                     )}
                   />
                 ) : (
                   <span
                     className={cn(
-                      "w-1.5 h-1.5 rounded-full shadow-sm",
-                      isSelected ? "bg-neutral-950" : "bg-emerald-400 ring-2 ring-emerald-400/30"
+                      "w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full shadow-sm",
+                      isSelected ? "bg-neutral-950" : "bg-emerald-400 ring-1 sm:ring-2 ring-emerald-400/30"
                     )}
                   />
                 )}
@@ -282,7 +282,7 @@ export function Calendar({
       </div>
 
       {/* Clear Intuitive Color Legend */}
-      <div className="pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2.5 text-[10.5px] font-semibold text-neutral-300">
+      <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-center sm:justify-between gap-2 sm:gap-2.5 text-[9.5px] sm:text-[10.5px] font-semibold text-neutral-300">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30" />
           <span>Low Bookings</span>

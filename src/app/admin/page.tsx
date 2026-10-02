@@ -1,4 +1,3 @@
-import React from "react";
 import AdminDashboardClient from "@/components/AdminDashboardClient";
 import { getCurrentUser } from "@/lib/auth-server";
 import {

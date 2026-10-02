@@ -49,7 +49,7 @@ export default function BackToTop() {
       onClick={scrollToTop}
       aria-label="Back to top"
       className={cn(
-        "fixed bottom-8 right-8 z-[90] flex items-center justify-center w-12 h-12 rounded-full",
+        "fixed bottom-5 right-5 sm:bottom-8 sm:right-8 z-[90] flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full",
         "bg-[#090b0e]/90 text-[#ffbe33] border border-[#ffbe33]/40 backdrop-blur-md",
         "shadow-2xl shadow-black/80 hover:shadow-[#ffbe33]/30 hover:border-[#ffbe33] hover:bg-[#ffbe33] hover:text-neutral-950",
         "hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer group",

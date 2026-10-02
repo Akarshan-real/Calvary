@@ -37,7 +37,7 @@ export default async function GalleryPage() {
       />
 
       {/* Hero Banner with Parallax */}
-      <section className="relative overflow-hidden py-20 sm:py-28 px-6 sm:px-8 border-b border-white/5">
+      <section className="relative overflow-hidden py-14 sm:py-28 px-4 sm:px-8 border-b border-white/5">
         <ParallaxHeroBg
           src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1600&auto=format&fit=crop"
           alt="Calvary Artisanal Cuisine & Atmosphere"
@@ -56,7 +56,7 @@ export default async function GalleryPage() {
 
           <RevealOnScroll direction="up" delay={200}>
             <h1
-              className="text-4xl sm:text-6xl font-bold text-white tracking-tight drop-shadow-md"
+              className="text-3xl xs:text-4xl sm:text-6xl font-bold text-white tracking-tight drop-shadow-md"
               style={{ fontFamily: "var(--font-cursive), cursive" }}
             >
               The Culinary Gallery
@@ -64,14 +64,14 @@ export default async function GalleryPage() {
           </RevealOnScroll>
 
           <RevealOnScroll direction="up" delay={300}>
-            <p className="text-neutral-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-light">
+            <p className="text-neutral-300 text-xs sm:text-base leading-relaxed max-w-2xl mx-auto font-light">
               Immerse yourself in our world of wood-fired creations, rare vintages, and warm artisanal atmosphere captured through the lens.
             </p>
           </RevealOnScroll>
         </div>
       </section>
 
-      <main className="flex-1 py-12 sm:py-16 px-6 sm:px-8 max-w-7xl mx-auto w-full space-y-12">
+      <main className="flex-1 py-10 sm:py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-10 sm:space-y-12">
         {/* Interactive Filterable Gallery Client Component */}
         <RevealOnScroll direction="up" delay={200}>
           <GalleryClientView items={galleryItems} />

@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import TableFloorMap from "@/components/reservation/TableFloorMap";
 import AddToCalendarButton from "@/components/reservation/AddToCalendarButton";
 import { LayoutGrid, MapPin } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface RestaurantTableInfo {
   id: number;
@@ -298,32 +299,32 @@ export function CoachSchedulingCard({
       )}
     >
       {/* Header Bar */}
-      <div className="border-b border-white/10 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-white/[0.02]">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shadow-md shrink-0">
-            <Utensils className="w-7 h-7" />
+      <div className="border-b border-white/10 p-4 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 bg-white/[0.02]">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shadow-md shrink-0">
+            <Utensils className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <h2 className="text-lg sm:text-2xl font-extrabold text-white tracking-tight">
                 Calvary Fine Dining
               </h2>
-              <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2.5 py-0.5 rounded-full">
-                <ShieldCheck className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-2 sm:px-2.5 py-0.5 rounded-full">
+                <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 Table Reservation
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+            <p className="text-[11px] sm:text-sm text-neutral-400 mt-0.5 sm:mt-1">
               Select date, timing, and signature table with instant approval lock
             </p>
           </div>
         </div>
 
         {/* Step Progression Badges */}
-        <div className="flex items-center gap-2.5 text-xs font-bold text-neutral-400">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs font-bold text-neutral-400 overflow-x-auto max-w-full pb-1 scrollbar-none w-full sm:w-auto">
           <span
             className={cn(
-              "px-3.5 py-1.5 rounded-full border transition-all",
+              "px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border transition-all whitespace-nowrap text-[11px] sm:text-xs shrink-0",
               currentStep === 1
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -331,10 +332,10 @@ export function CoachSchedulingCard({
           >
             1. Date & Time
           </span>
-          <span className="text-neutral-600">→</span>
+          <span className="text-neutral-600 shrink-0">→</span>
           <span
             className={cn(
-              "px-3.5 py-1.5 rounded-full border transition-all",
+              "px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border transition-all whitespace-nowrap text-[11px] sm:text-xs shrink-0",
               currentStep === 2
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -342,10 +343,10 @@ export function CoachSchedulingCard({
           >
             2. Table
           </span>
-          <span className="text-neutral-600">→</span>
+          <span className="text-neutral-600 shrink-0">→</span>
           <span
             className={cn(
-              "px-3.5 py-1.5 rounded-full border transition-all",
+              "px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border transition-all whitespace-nowrap text-[11px] sm:text-xs shrink-0",
               currentStep >= 3
                 ? "bg-[#ffbe33] text-neutral-950 border-[#ffbe33] font-black shadow-md"
                 : "bg-white/5 border-white/10 text-neutral-300"
@@ -357,7 +358,7 @@ export function CoachSchedulingCard({
       </div>
 
       {/* Dynamic Step Content */}
-      <div className="p-6 sm:p-10 lg:p-12">
+      <div className="p-4 sm:p-8 lg:p-12">
         {/* ======================================================== */}
         {/* STEP 1: DATE (HEATMAP CALENDAR) & TIMINGS */}
         {/* ======================================================== */}
@@ -405,9 +406,19 @@ export function CoachSchedulingCard({
                   </div>
 
                   {isSlotLoading ? (
-                    <div className="p-12 text-center text-neutral-400 text-xs flex flex-col items-center gap-2">
-                      <span className="w-6 h-6 border-2 border-[#ffbe33] border-t-transparent rounded-full animate-spin" />
-                      Loading live table availability...
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="w-full flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-[#141722]/80"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="h-5 w-24 rounded-lg" />
+                            <Skeleton className="h-4 w-16 rounded-md opacity-60" />
+                          </div>
+                          <Skeleton className="h-4 w-20 rounded-md" />
+                        </div>
+                      ))}
                     </div>
                   ) : slotsAvailability.length === 0 ? (
                     <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/10 text-neutral-400 text-xs">
@@ -502,7 +513,7 @@ export function CoachSchedulingCard({
                         : false)
                     }
                     onClick={() => setCurrentStep(2)}
-                    className="w-full max-w-sm py-4 disabled:opacity-35 disabled:pointer-events-none"
+                    className="w-full max-w-full sm:max-w-sm py-3.5 sm:py-4 disabled:opacity-35 disabled:pointer-events-none"
                   >
                     Proceed To Select Table
                   </InteractiveHoverButton>
@@ -647,11 +658,11 @@ export function CoachSchedulingCard({
             )}
 
             {/* Step Navigation Bar */}
-            <div className="pt-6 border-t border-white/10 flex items-center justify-between gap-4">
+            <div className="pt-6 border-t border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors cursor-pointer text-center"
               >
                 Back
               </button>
@@ -667,7 +678,7 @@ export function CoachSchedulingCard({
                   }
                   setCurrentStep(3);
                 }}
-                className="py-3.5 px-8 disabled:opacity-30 disabled:pointer-events-none"
+                className="w-full sm:w-auto py-3.5 px-6 sm:px-8 disabled:opacity-30 disabled:pointer-events-none"
               >
                 Continue To Guest Form
               </InteractiveHoverButton>
@@ -847,16 +858,16 @@ export function CoachSchedulingCard({
               </div>
 
               {/* Buttons */}
-              <div className="pt-4 flex items-center justify-between gap-4">
+              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(2)}
-                  className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
+                  className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-colors cursor-pointer text-center"
                 >
                   Back
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
                   <FuseButton
                     label={isSubmitting ? "Submitting Request..." : "Submit"}
                     undoLabel="Cancel"
@@ -872,7 +883,7 @@ export function CoachSchedulingCard({
                     beforeArm={checkReservationConstraints}
                     onFuseEnd={executeReservation}
                     icon={<ArrowRight className="w-4 h-4 text-neutral-950" />}
-                    className="font-black uppercase tracking-[0.16em] text-xs shadow-xl shadow-[#ffbe33]/30 hover:bg-[#ffc94d]"
+                    className="font-black uppercase tracking-[0.16em] text-xs shadow-xl shadow-[#ffbe33]/30 hover:bg-[#ffc94d] w-full sm:w-auto"
                   />
                 </div>
               </div>

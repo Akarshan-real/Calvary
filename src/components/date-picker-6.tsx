@@ -175,7 +175,7 @@ export function DatePicker6({
         </PopoverTrigger>
         
         <PopoverContent
-          className='w-auto overflow-hidden rounded-2xl border border-white/15 bg-[#12141d] p-3 shadow-2xl backdrop-blur-xl z-50 text-white'
+          className='w-auto max-w-[95vw] overflow-hidden rounded-2xl border border-white/15 bg-[#12141d] p-2 sm:p-3 shadow-2xl backdrop-blur-xl z-50 text-white'
           align={align}
         >
           {resolvedMode === 'range' ? (

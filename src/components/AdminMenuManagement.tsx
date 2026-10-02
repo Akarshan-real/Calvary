@@ -523,7 +523,7 @@ export default function AdminMenuManagement({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.94, y: 16 }}
                   transition={{ type: "spring", damping: 26, stiffness: 280 }}
-                  className="relative z-10 w-full max-w-3xl bg-[#12141d] border border-white/20 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto custom-scrollbar"
+                  className="relative z-10 w-full max-w-3xl bg-[#12141d] border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3.5 max-h-[92vh] overflow-y-auto custom-scrollbar"
                 >
                   <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -556,7 +556,7 @@ export default function AdminMenuManagement({
                     </div>
 
                     {/* Price in INR and Category */}
-                    <div className="grid grid-cols-2 gap-3 items-end">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 items-end">
                       <div className="space-y-1">
                         <label className="text-neutral-400 font-semibold block text-xs">
                           Price (₹) *
@@ -646,7 +646,7 @@ export default function AdminMenuManagement({
                       </div>
 
                       {/* Calories & 4 Major Macros without placeholders */}
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                      <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-2.5">
                         {/* Calories */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-amber-400/60 transition-colors">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 text-center">
@@ -744,7 +744,7 @@ export default function AdminMenuManagement({
                         </div>
 
                         {/* Fiber */}
-                        <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-purple-400/60 transition-colors col-span-2 sm:col-span-1">
+                        <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-purple-400/60 transition-colors col-span-2 xs:col-span-1">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-purple-400 text-center">
                             Fiber
                           </div>
@@ -789,8 +789,8 @@ export default function AdminMenuManagement({
                     {/* ========================================================= */}
                     {/* DUAL OPTION IMAGE SELECTOR: FILE UPLOAD OR URL */}
                     {/* ========================================================= */}
-                    <div className="space-y-2 p-4 rounded-2xl bg-[#090b10] border border-white/10">
-                      <div className="flex items-center justify-between pb-1">
+                    <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-[#090b10] border border-white/10">
+                      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-1">
                         <label className="text-neutral-300 font-semibold block text-xs">
                           Dish Image
                         </label>
@@ -823,7 +823,7 @@ export default function AdminMenuManagement({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3.5 pt-1">
+                      <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3.5 pt-1">
                         {/* Image Preview Thumbnail */}
                         <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-black/60 border border-white/15 shrink-0 flex items-center justify-center">
                           {editingItem.image_url ? (

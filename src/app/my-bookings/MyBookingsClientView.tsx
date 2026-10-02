@@ -36,6 +36,7 @@ import { Bell, Star } from "lucide-react";
 import DatePicker6 from "@/components/date-picker-6";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MyBookingsClientViewProps {
   user: {
@@ -55,7 +56,7 @@ export default function MyBookingsClientView({
   user,
   initialReservations,
 }: MyBookingsClientViewProps) {
-  const { data: reservations = initialReservations, refetch } = useUserReservations(initialReservations);
+  const { data: reservations = initialReservations, isLoading, refetch } = useUserReservations(initialReservations);
   const cancelMutation = useCancelReservation();
   const reminderMutation = useSendReminder();
 
@@ -294,7 +295,40 @@ export default function MyBookingsClientView({
         </div>
 
         {/* Reservations Content */}
-        {filteredReservations.length === 0 ? (
+        {isLoading && reservations.length === 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-[#12141e]/90 border border-white/10 shadow-xl space-y-5"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-2">
+                    <Skeleton variant="gold" className="h-6 w-28 rounded-full" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-20 opacity-60" />
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <Skeleton className="h-20 rounded-2xl" />
+                  <Skeleton className="h-20 rounded-2xl" />
+                  <Skeleton className="h-20 rounded-2xl col-span-2 sm:col-span-1" />
+                </div>
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                  <Skeleton className="h-3 w-48" />
+                  <Skeleton className="h-3 w-36" />
+                </div>
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <Skeleton className="h-9 w-28 rounded-xl" />
+                    <Skeleton className="h-9 w-24 rounded-xl" />
+                  </div>
+                  <Skeleton className="h-9 w-24 rounded-xl" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredReservations.length === 0 ? (
           <div className="bg-[#12141d] border border-white/10 rounded-3xl p-10 sm:p-16 text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-neutral-400">
               <CalendarIcon className="w-8 h-8 text-[#ffbe33]" />
@@ -329,26 +363,26 @@ export default function MyBookingsClientView({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {filteredReservations.map((res) => (
               <div
                 key={res.id}
-                className="bg-gradient-to-b from-[#131520] to-[#0c0e15] border border-white/10 rounded-3xl p-7 sm:p-8 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-2xl group relative"
+                className="bg-gradient-to-b from-[#131520] to-[#0c0e15] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-8 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-2xl group relative"
               >
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Header: Ref #, Zone & Status */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono text-neutral-300 font-bold tracking-wider px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+                      <span className="text-xs font-mono text-neutral-300 font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/5 border border-white/10">
                         #{res.id.slice(0, 8).toUpperCase()}
                       </span>
                       {res.restaurant_tables?.zone && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 text-[#ffbe33] text-xs font-bold uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 text-[#ffbe33] text-[11px] sm:text-xs font-bold uppercase tracking-wider">
                           {res.restaurant_tables.zone}
                         </span>
                       )}
                       {res.restaurant_tables?.is_vip && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-black uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md sm:rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-black uppercase tracking-wider">
                           VIP
                         </span>
                       )}
@@ -357,27 +391,27 @@ export default function MyBookingsClientView({
                   </div>
 
                   {/* Title & Party Size Badges */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 pt-1">
                     <div>
-                      <h4 className="font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                      <h4 className="font-extrabold text-xl sm:text-3xl text-white tracking-tight">
                         {res.restaurant_tables?.table_number
                           ? `Table ${res.restaurant_tables.table_number}`
                           : "Dining Table"}
                       </h4>
                       {res.restaurant_tables?.description && (
-                        <p className="text-xs text-neutral-400 mt-1 font-normal max-w-md">
+                        <p className="text-[11px] sm:text-xs text-neutral-400 mt-0.5 sm:mt-1 font-normal max-w-md">
                           {res.restaurant_tables.description}
                         </p>
                       )}
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-neutral-200 font-bold text-xs sm:text-sm flex items-center gap-2 bg-white/5 px-3.5 py-2 rounded-xl border border-white/10">
-                        <Users className="w-4 h-4 text-[#ffbe33]" />
+                      <span className="text-neutral-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 bg-white/5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-white/10">
+                        <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe33]" />
                         {res.party_size} Guests
                       </span>
                       {res.restaurant_tables?.shape && (
-                        <span className="text-neutral-400 text-xs capitalize bg-white/5 px-3 py-2 rounded-xl border border-white/5">
+                        <span className="text-neutral-400 text-xs capitalize bg-white/5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-white/5">
                           {res.restaurant_tables.shape}
                         </span>
                       )}
@@ -385,25 +419,25 @@ export default function MyBookingsClientView({
                   </div>
 
                   {/* Booking Details Box */}
-                  <div className="space-y-4 p-5 sm:p-6 rounded-2xl bg-[#080a10]/90 border border-white/5 text-xs sm:text-sm text-neutral-300">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                      <div className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
-                        <div className="w-9 h-9 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
+                  <div className="space-y-3.5 sm:space-y-4 p-3.5 sm:p-6 rounded-xl sm:rounded-2xl bg-[#080a10]/90 border border-white/5 text-xs sm:text-sm text-neutral-300">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
+                      <div className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
                           <CalendarIcon className="w-4 h-4 text-[#ffbe33]" />
                         </div>
                         <div>
                           <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Date</div>
-                          <div className="font-bold text-white text-sm">{res.reservation_date}</div>
+                          <div className="font-bold text-white text-xs sm:text-sm">{res.reservation_date}</div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
-                        <div className="w-9 h-9 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/25 flex items-center justify-center shrink-0">
                           <Clock className="w-4 h-4 text-[#ffbe33]" />
                         </div>
                         <div>
                           <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Time Slot</div>
-                          <div className="font-bold text-white text-sm">
+                          <div className="font-bold text-white text-xs sm:text-sm">
                             {res.reservation_slots?.start_time || "Confirmed Slot"}
                             {res.reservation_slots?.duration_minutes
                               ? ` (${res.reservation_slots.duration_minutes}m)`
@@ -413,9 +447,9 @@ export default function MyBookingsClientView({
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-xs text-neutral-400 border-t border-white/5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 pt-1 text-xs text-neutral-400 border-t border-white/5">
                       {res.customer_phone && (
-                        <div className="flex items-center gap-2 pt-2 sm:pt-0">
+                        <div className="flex items-center gap-2 pt-1 sm:pt-0">
                           <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
                           <span className="font-medium text-neutral-300">{res.customer_phone}</span>
                         </div>
@@ -430,7 +464,7 @@ export default function MyBookingsClientView({
                     </div>
 
                     {res.special_request && (
-                      <div className="mt-2 p-3.5 rounded-xl bg-white/5 text-xs text-neutral-300 italic border border-white/5 leading-relaxed">
+                      <div className="mt-2 p-3 sm:p-3.5 rounded-lg sm:rounded-xl bg-white/5 text-xs text-neutral-300 italic border border-white/5 leading-relaxed">
                         "{res.special_request}"
                       </div>
                     )}
@@ -438,15 +472,15 @@ export default function MyBookingsClientView({
                 </div>
 
                 {/* Card footer actions */}
-                <div className="mt-6 pt-5 border-t border-white/10 flex flex-col gap-4 text-xs text-neutral-500">
+                <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/10 flex flex-col gap-3 sm:gap-4 text-xs text-neutral-500">
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-200 font-bold text-sm">{res.customer_name}</span>
-                    <span className="text-[11px] text-neutral-400 font-medium">Booked {new Date(res.created_at).toLocaleDateString()}</span>
+                    <span className="text-neutral-200 font-bold text-xs sm:text-sm">{res.customer_name}</span>
+                    <span className="text-[10px] sm:text-[11px] text-neutral-400 font-medium">Booked {new Date(res.created_at).toLocaleDateString()}</span>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                     {/* Primary actions */}
-                    <div className="flex flex-wrap items-center gap-2.5">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                       {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
                         <AddToCalendarButton
                           buttonSize="md"
@@ -466,7 +500,7 @@ export default function MyBookingsClientView({
                           type="button"
                           onClick={() => handleSendReminder(res)}
                           disabled={sendingReminderId === res.id}
-                          className="px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400 hover:bg-blue-500 hover:text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400 hover:bg-blue-500 hover:text-white font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2 disabled:opacity-50"
                           title="Send email reminder with itinerary to your inbox"
                         >
                           <Bell className="w-3.5 h-3.5" />
@@ -478,7 +512,7 @@ export default function MyBookingsClientView({
                         <button
                           type="button"
                           onClick={() => setReviewingReservation(res)}
-                          className="px-4 py-2.5 rounded-xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] hover:bg-[#ffbe33] hover:text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
+                          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] hover:bg-[#ffbe33] hover:text-neutral-950 font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2"
                         >
                           <Star className="w-3.5 h-3.5 fill-current" />
                           <span>{res.feedback_rating ? `${res.feedback_rating}★ Reviewed` : "Rate Dining"}</span>
@@ -488,11 +522,11 @@ export default function MyBookingsClientView({
 
                     {/* Modification actions */}
                     {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
-                      <div className="flex items-center gap-2.5 shrink-0">
+                      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-end sm:self-auto">
                         <button
                           type="button"
                           onClick={() => setEditingReservation(res)}
-                          className="px-4 py-2.5 rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/30 text-[#ffbe33] font-bold text-xs uppercase tracking-wider hover:bg-[#ffbe33] hover:text-neutral-950 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                          className="px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#ffbe33]/10 border border-[#ffbe33]/30 text-[#ffbe33] font-bold text-[11px] sm:text-xs uppercase tracking-wider hover:bg-[#ffbe33] hover:text-neutral-950 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                           <span>Alter</span>
@@ -501,7 +535,7 @@ export default function MyBookingsClientView({
                         <button
                           type="button"
                           onClick={() => setConfirmCancelModal(res.id)}
-                          className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 font-bold text-xs uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all cursor-pointer shrink-0"
+                          className="px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 font-bold text-[11px] sm:text-xs uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all cursor-pointer shrink-0"
                         >
                           Cancel
                         </button>

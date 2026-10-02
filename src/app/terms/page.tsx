@@ -83,16 +83,16 @@ export default async function TermsPage() {
         }
       />
 
-      <main className="flex-1 py-16 sm:py-24 px-6 sm:px-8 max-w-4xl mx-auto w-full space-y-12">
+      <main className="flex-1 py-10 sm:py-24 px-4 sm:px-8 max-w-4xl mx-auto w-full space-y-10 sm:space-y-12">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10">
             <Scale className="w-3.5 h-3.5 text-[#ffbe33]" />
-            <span className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#ffbe33]">
+            <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#ffbe33]">
               Guest Agreement
             </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h1 className="text-2xl xs:text-3xl sm:text-5xl font-black tracking-tight text-white">
             Terms & Conditions
           </h1>
           <p className="text-neutral-400 text-xs sm:text-sm">
@@ -101,11 +101,11 @@ export default async function TermsPage() {
         </div>
 
         {/* Content Cards */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {sections.map((sec, idx) => (
             <div
               key={idx}
-              className="p-6 sm:p-8 rounded-3xl bg-[#12141a]/90 border border-white/10 hover:border-white/20 transition-all space-y-4"
+              className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#12141a]/90 border border-white/10 hover:border-white/20 transition-all space-y-3 sm:space-y-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">

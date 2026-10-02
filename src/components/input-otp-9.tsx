@@ -48,13 +48,13 @@ const InputOtp9: React.FC<InputOtp9Props> = ({
         autoFocus={autoFocus}
         containerClassName="flex items-center justify-center w-full"
       >
-        <div className="flex items-center justify-center gap-2 sm:gap-3">
-          <InputOTPGroup className="flex gap-2">
+        <div className="flex items-center justify-center gap-1 xs:gap-1.5 sm:gap-3">
+          <InputOTPGroup className="flex gap-1 xs:gap-1.5 sm:gap-2">
             {[0, 1, 2].map((i) => (
               <InputOTPSlot
                 key={i}
                 index={i}
-                className={`!h-13 !w-11 sm:!w-12 !rounded-xl !border-2 !text-xl !font-bold transition-all duration-200 !bg-[#131622] !text-white shadow-[inset_0px_2px_4px_rgba(0,0,0,0.6)] ${
+                className={`!h-10 xs:!h-11 sm:!h-13 !w-8 xs:!w-9.5 sm:!w-12 !rounded-lg sm:!rounded-xl !border-2 !text-base xs:!text-lg sm:!text-xl !font-bold transition-all duration-200 !bg-[#131622] !text-white shadow-[inset_0px_2px_4px_rgba(0,0,0,0.6)] ${
                   hasError
                     ? '!border-red-500/90 !ring-2 !ring-red-500/40 !text-red-400'
                     : '!border-white/20 hover:!border-[#ffbe33]/80 data-[active=true]:!border-[#ffbe33] data-[active=true]:!ring-4 data-[active=true]:!ring-[#ffbe33]/25 data-[active=true]:!bg-[#1a1f30]'
@@ -63,16 +63,16 @@ const InputOtp9: React.FC<InputOtp9Props> = ({
             ))}
           </InputOTPGroup>
 
-          <InputOTPSeparator className="text-[#ffbe33] font-bold text-xl px-0.5">
+          <InputOTPSeparator className="text-[#ffbe33] font-bold text-sm xs:text-base sm:text-xl px-0 xs:px-0.5">
             —
           </InputOTPSeparator>
 
-          <InputOTPGroup className="flex gap-2">
+          <InputOTPGroup className="flex gap-1 xs:gap-1.5 sm:gap-2">
             {[3, 4, 5].map((i) => (
               <InputOTPSlot
                 key={i}
                 index={i}
-                className={`!h-13 !w-11 sm:!w-12 !rounded-xl !border-2 !text-xl !font-bold transition-all duration-200 !bg-[#131622] !text-white shadow-[inset_0px_2px_4px_rgba(0,0,0,0.6)] ${
+                className={`!h-10 xs:!h-11 sm:!h-13 !w-8 xs:!w-9.5 sm:!w-12 !rounded-lg sm:!rounded-xl !border-2 !text-base xs:!text-lg sm:!text-xl !font-bold transition-all duration-200 !bg-[#131622] !text-white shadow-[inset_0px_2px_4px_rgba(0,0,0,0.6)] ${
                   hasError
                     ? '!border-red-500/90 !ring-2 !ring-red-500/40 !text-red-400'
                     : '!border-white/20 hover:!border-[#ffbe33]/80 data-[active=true]:!border-[#ffbe33] data-[active=true]:!ring-4 data-[active=true]:!ring-[#ffbe33]/25 data-[active=true]:!bg-[#1a1f30]'

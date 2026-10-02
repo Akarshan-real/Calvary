@@ -37,10 +37,10 @@ export default async function MenuPage() {
       />
 
       {/* Hero Header without Parallax */}
-      <div className="relative overflow-hidden border-b border-white/10 pt-16 pb-12 sm:pt-20 sm:pb-16 bg-[#090b0e]">
+      <div className="relative overflow-hidden border-b border-white/10 pt-12 pb-8 sm:pt-20 sm:pb-16 bg-[#090b0e]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 space-y-4">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 space-y-4">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-400 hover:text-[#ffbe33] transition-colors"
@@ -58,35 +58,35 @@ export default async function MenuPage() {
                 </span>
               </div>
               <h1
-                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight drop-shadow-md"
+                className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight drop-shadow-md"
                 style={{ fontFamily: "var(--font-cursive), cursive" }}
               >
                 Our Culinary Menu
               </h1>
-              <p className="text-neutral-300 text-sm max-w-xl mt-2 leading-relaxed">
+              <p className="text-neutral-300 text-xs sm:text-sm max-w-xl mt-2 leading-relaxed">
                 Every dish is prepared fresh to order using artisanal hearth ovens, rare spices, and sustainable local harvests.
               </p>
             </div>
 
             {/* Quick stats pill */}
-            <div className="flex items-center gap-4 bg-white/10 border border-white/20 px-5 py-3 rounded-2xl backdrop-blur-md shrink-0 shadow-xl">
+            <div className="self-start md:self-auto flex items-center gap-3 sm:gap-4 bg-white/10 border border-white/20 px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-md shrink-0 shadow-xl">
               <div>
-                <div className="text-xl font-extrabold text-[#ffbe33]">{items.length}</div>
-                <div className="text-[10px] uppercase tracking-wider text-neutral-300">Total Dishes</div>
+                <div className="text-lg sm:text-xl font-extrabold text-[#ffbe33]">{items.length}</div>
+                <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-300">Total Dishes</div>
               </div>
-              <div className="h-8 w-px bg-white/15" />
+              <div className="h-7 sm:h-8 w-px bg-white/15" />
               <div>
-                <div className="text-xl font-extrabold text-emerald-400">
+                <div className="text-lg sm:text-xl font-extrabold text-emerald-400">
                   {items.filter((i) => i.is_vegetarian).length}
                 </div>
-                <div className="text-[10px] uppercase tracking-wider text-neutral-300">Pure Veg</div>
+                <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-300">Pure Veg</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="flex-1 py-10 px-6 sm:px-8 max-w-7xl mx-auto w-full">
+      <main className="flex-1 py-8 sm:py-10 px-4 sm:px-8 max-w-7xl mx-auto w-full">
         {/* Categorized Menu Catalog with Search */}
         <MenuClientCatalog items={items} categories={categories} />
       </main>

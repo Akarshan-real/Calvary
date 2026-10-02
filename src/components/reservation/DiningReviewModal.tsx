@@ -88,8 +88,8 @@ export default function DiningReviewModal({
   const currentDisplayRating = hoverRating !== null ? hoverRating : rating;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-[#12141d] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-[#12141d] border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-8 max-h-[92vh] overflow-y-auto shadow-2xl space-y-5 sm:space-y-6 text-white">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-4">
           <div className="space-y-1">
@@ -125,7 +125,7 @@ export default function DiningReviewModal({
               How was your evening at Calvary?
             </label>
 
-            <div className="flex items-center justify-center gap-2 pt-1">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 pt-1">
               {[1, 2, 3, 4, 5].map((star) => {
                 const isActive = star <= currentDisplayRating;
                 return (
@@ -139,7 +139,7 @@ export default function DiningReviewModal({
                   >
                     <Star
                       className={cn(
-                        "w-8 h-8 transition-colors",
+                        "w-7 h-7 sm:w-8 sm:h-8 transition-colors",
                         isActive
                           ? "text-[#ffbe33] fill-[#ffbe33] drop-shadow-[0_0_8px_rgba(255,190,51,0.5)]"
                           : "text-neutral-600 hover:text-neutral-400"

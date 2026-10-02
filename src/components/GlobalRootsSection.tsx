@@ -42,13 +42,13 @@ const GLOBE_DARK_CONFIG: COBEOptions = {
 
 export default function GlobalRootsSection() {
   return (
-    <section className="py-24 px-6 sm:px-8 max-w-7xl mx-auto w-full relative overflow-hidden">
+    <section className="py-14 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto w-full relative overflow-hidden">
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[#ffbe33]/10 rounded-full blur-[160px] pointer-events-none" />
 
       {/* Header */}
       <RevealOnScroll direction="up" duration={700}>
-        <div className="text-center max-w-xl mx-auto space-y-3 mb-14">
+        <div className="text-center max-w-xl mx-auto space-y-3 mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
             <Compass className="w-3.5 h-3.5 text-[#ffbe33]" />
             <span className="text-[11px] uppercase tracking-[0.25em] font-extrabold text-[#ffbe33]">
@@ -56,23 +56,23 @@ export default function GlobalRootsSection() {
             </span>
           </div>
           <h2
-            className="text-3xl sm:text-5xl font-bold text-white tracking-tight"
+            className="text-2xl xs:text-3xl sm:text-5xl font-bold text-white tracking-tight"
             style={{ fontFamily: "var(--font-cursive), cursive" }}
           >
             Where Our Ingredients Come From
           </h2>
           <p className="text-neutral-400 text-xs sm:text-sm">
-            Artisanal heritage ingredients sourced directly from 7 global partner regions.
+            Artisanal heritage ingredients sourced directly from 15 global partner regions.
           </p>
         </div>
       </RevealOnScroll>
 
       {/* 2-Column Grid: Globe Left with Glowing Outline, Details on the Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
         
         {/* Left Column: 3D Globe with Glowing Outline Ring (No Dragging) */}
         <RevealOnScroll direction="left" delay={100} duration={900} className="lg:col-span-6 flex items-center justify-center">
-          <div className="relative w-full max-w-[420px] sm:max-w-[480px] aspect-square flex items-center justify-center pointer-events-none select-none">
+          <div className="relative w-full max-w-[280px] xs:max-w-[340px] sm:max-w-[480px] aspect-square flex items-center justify-center pointer-events-none select-none">
             {/* Glowing Outline Ring */}
             <div className="absolute inset-0 rounded-full ring-2 ring-[#ffbe33]/40 shadow-[0_0_80px_rgba(255,190,51,0.25)] pointer-events-none" />
 
@@ -97,7 +97,7 @@ export default function GlobalRootsSection() {
               </span>
             </div>
             <span className="text-xs font-mono text-[#ffbe33] font-extrabold px-2.5 py-0.5 rounded-full bg-[#ffbe33]/10 border border-[#ffbe33]/30">
-              7 Origins
+              15 Origins
             </span>
           </div>
 

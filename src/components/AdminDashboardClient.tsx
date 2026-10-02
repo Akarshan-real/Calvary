@@ -80,15 +80,15 @@ export default function AdminDashboardClient({
     <div className="min-h-screen bg-[#090b0e] text-white flex flex-col selection:bg-[#ffbe33] selection:text-neutral-950">
       <Navbar user={user} />
 
-      <main className="flex-1 py-10 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
+      <main className="flex-1 py-8 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8">
         {/* Header Strip */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-5 sm:pb-6">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] text-xs font-black uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] text-[10px] sm:text-xs font-black uppercase tracking-wider">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin & Maître D&apos; Console</span>
+              <span>Admin &amp; Maître D&apos; Console</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Restaurant Control Center
             </h1>
             <p className="text-xs sm:text-sm text-neutral-400">
@@ -96,11 +96,11 @@ export default function AdminDashboardClient({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             <Link
               href="/reserve"
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10 transition-colors cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5 text-[#ffbe33]" />
               <span>Live Booking Page</span>
@@ -108,7 +108,7 @@ export default function AdminDashboardClient({
             <Link
               href="/menu"
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10 transition-colors cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5 text-[#ffbe33]" />
               <span>Live Menu</span>
@@ -117,7 +117,7 @@ export default function AdminDashboardClient({
         </div>
 
         {/* Master Tab Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/10 scrollbar-none">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 border-b border-white/10 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
