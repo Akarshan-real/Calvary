@@ -23,9 +23,7 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
     message: "",
   });
 
-  // Client-side fallback: Hydrate email / name from Supabase auth session if not passed via SSR
   useEffect(() => {
-    // If SSR provided the values, update state
     if (initialUser.email || initialUser.name || initialUser.phone) {
       setFormData((prev) => ({
         ...prev,
@@ -35,7 +33,6 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
       }));
     }
 
-    // Also check active browser session in case SSR cookies were stale or missing email
     async function loadBrowserSessionUser() {
       try {
         const supabase = createClient();
@@ -45,7 +42,6 @@ export default function ContactClientForm({ initialUser }: ContactClientFormProp
           const userName = (user.user_metadata?.full_name as string) || "";
           const userPhone = user.phone || (user.user_metadata?.phone as string) || "";
 
-          // Also check profile
           const { data: profile } = await supabase
             .from("profiles")
             .select("full_name, email, phone")

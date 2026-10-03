@@ -38,19 +38,15 @@ export const Tooltip = ({
     const tooltipWidth = 340;
     const tooltipHeight = contentRef.current?.offsetHeight || 220;
 
-    // Center horizontally relative to mouse position or container center
     const targetX =
       typeof mouseX === "number" && mouseX > 0
         ? containerRect.left + mouseX - tooltipWidth / 2
         : containerRect.left + containerRect.width / 2 - tooltipWidth / 2;
 
-    // Clamp horizontally to viewport with safety margin
     const finalX = Math.max(16, Math.min(targetX, viewportWidth - tooltipWidth - 16));
 
-    // Move to the TOP of the card by default
     let finalY = containerRect.top - tooltipHeight - 14;
 
-    // If card is too close to top of viewport, flip to bottom of card
     if (finalY < 12) {
       finalY = containerRect.bottom + 14;
     }
@@ -120,7 +116,6 @@ export const Tooltip = ({
     }
   };
 
-  // Re-calculate position on scroll or viewport resize to keep it anchored
   useEffect(() => {
     if (!isVisible) return;
     const handleReposition = () => {

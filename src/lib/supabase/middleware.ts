@@ -33,7 +33,6 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  // Protect /admin routes: user must be logged in and have admin or staff role
   if (path.startsWith('/admin')) {
     if (!user) {
       const url = request.nextUrl.clone();
@@ -43,7 +42,6 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Check user role from profiles table
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')

@@ -67,7 +67,6 @@ export default function ProfileClientView({
   const [editingReservation, setEditingReservation] = useState<UserReservation | null>(null);
   const [reviewingReservation, setReviewingReservation] = useState<UserReservation | null>(null);
 
-  // Avatar & FileUpload Modal State
   const [avatarUrl, setAvatarUrl] = useState<string | null>(profile?.avatar_url || null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -79,7 +78,6 @@ export default function ProfileClientView({
     null
   );
 
-  // Initial values to check if any field has changed
   const [initialValues, setInitialValues] = useState({
     fullName: profile?.full_name || "",
     email: profile?.email || user.email || "",
@@ -93,7 +91,6 @@ export default function ProfileClientView({
     phone !== initialValues.phone ||
     birthday !== initialValues.birthday;
 
-  // Permanently delete user account
   const handleDeleteAccount = async () => {
     setDeleting(true);
     setStatusMsg(null);
@@ -111,7 +108,6 @@ export default function ProfileClientView({
     }
   };
 
-  // Save profile changes
   const handleSaveProfile = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
@@ -143,7 +139,6 @@ export default function ProfileClientView({
     }
   };
 
-  // Handle image upload via Kokonut UI FileUpload
   const handleFileUploadSuccess = async (file: File) => {
     setUploadingAvatar(true);
     setStatusMsg(null);
@@ -176,7 +171,6 @@ export default function ProfileClientView({
     }
   };
 
-  // Helper to check if reservation date & slot time has already passed
   const isReservationPast = (resDate: string, startTime?: string | null, durationMinutes: number = 90) => {
     try {
       const [y, m, d] = resDate.split("-").map(Number);
@@ -236,7 +230,6 @@ export default function ProfileClientView({
 
   return (
     <div className="min-h-screen bg-[#090a0d] text-white flex flex-col selection:bg-[#e60000] selection:text-white">
-      {/* Navigation Header */}
       <Navbar
         user={{
           name: fullName || "Diner",
@@ -248,10 +241,8 @@ export default function ProfileClientView({
       />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Profile Hero Card */}
         <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#141722] via-[#10121a] to-[#141722] border border-white/10 p-4 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] mb-6 sm:mb-8">
           <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8">
-            {/* Avatar with Kokonut UI FileUpload trigger */}
             <div className="relative group shrink-0">
               <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-[#ffbe33]/40 shadow-xl bg-[#1b1f2e] flex items-center justify-center">
                 {avatarUrl ? (
@@ -267,7 +258,6 @@ export default function ProfileClientView({
                 )}
               </div>
 
-              {/* Upload button opening Kokonut FileUpload Modal */}
               <button
                 type="button"
                 onClick={() => setShowUploadModal(true)}
@@ -278,13 +268,11 @@ export default function ProfileClientView({
               </button>
             </div>
 
-            {/* Profile Info Details: No "VIP Diner" badge */}
             <div className="flex-1 text-center sm:text-left w-full">
               <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-white">
                 {fullName || "Diner"}
               </h1>
 
-              {/* Verified Contact Details Strip */}
               <div className="text-neutral-400 text-xs sm:text-sm mt-1.5 sm:mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-4">
                 {user.phone && (
                   <span className="inline-flex items-center gap-1.5 text-neutral-300 font-medium">
@@ -299,7 +287,6 @@ export default function ProfileClientView({
                 )}
               </div>
 
-              {/* Navigation Tabs: "Profile" and "My Bookings" */}
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/10 w-full">
                 <button
                   type="button"
@@ -346,7 +333,6 @@ export default function ProfileClientView({
           </div>
         </div>
 
-        {/* Global Status Notification */}
         {statusMsg && (
           <div
             className={`p-4 rounded-2xl mb-6 text-sm flex items-center gap-3 transition-all ${
@@ -364,10 +350,8 @@ export default function ProfileClientView({
           </div>
         )}
 
-        {/* Tab 1: Profile Details with Inline-Edit Components */}
         {activeTab === "profile" && (
           <div className="space-y-6">
-            {/* Personal Information Card with Refined Spacing */}
             <div className="bg-[#12141d] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-5">
               <div className="pb-3 border-b border-white/10 flex items-center justify-between">
                 <div>
@@ -390,9 +374,7 @@ export default function ProfileClientView({
                 </button>
               </div>
 
-              {/* 2x2 Grid of ProfileEditableField Rows with Clean Padding & Spacing */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Full Name */}
                 <ProfileEditableField
                   icon={User02Icon}
                   label="Full Name"
@@ -404,7 +386,6 @@ export default function ProfileClientView({
                   }}
                 />
 
-                {/* Verified Email Address (Read-only / Verified Badge) */}
                 <ProfileEditableField
                   icon={Mail01Icon}
                   label="Verified Email"
@@ -416,7 +397,6 @@ export default function ProfileClientView({
                   onSave={() => {}}
                 />
 
-                {/* Contact Phone (Editable) */}
                 <ProfileEditableField
                   icon={SmartPhone01Icon}
                   label="Contact Phone"
@@ -430,7 +410,6 @@ export default function ProfileClientView({
                   }}
                 />
 
-                {/* Birthday Selector using simple-calender */}
                 <div className="w-full flex flex-col gap-2 p-3 sm:p-4 rounded-2xl bg-[#0e111a] border border-white/10 hover:border-[#ffbe33]/40 transition-all duration-200">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
@@ -463,7 +442,6 @@ export default function ProfileClientView({
               </div>
             </div>
 
-            {/* Danger Zone: Delete Account */}
             <div className="bg-[#12141d] border border-red-500/20 rounded-3xl p-6 sm:p-8 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -489,7 +467,6 @@ export default function ProfileClientView({
           </div>
         )}
 
-        {/* Delete Account Confirmation Modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative w-full max-w-md bg-[#12141d] border border-red-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
@@ -541,7 +518,6 @@ export default function ProfileClientView({
           </div>
         )}
 
-        {/* Tab 2: Reservations List with Fixed Spacing */}
         {activeTab === "reservations" && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
@@ -648,7 +624,6 @@ export default function ProfileClientView({
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                          {/* Add to Calendar for upcoming active bookings */}
                           {res.status !== "CANCELLED" && !isPast && (
                             <AddToCalendarButton
                               buttonSize="sm"
@@ -663,7 +638,6 @@ export default function ProfileClientView({
                             />
                           )}
 
-                          {/* Rate Dining for past visits */}
                           {isPast && res.status !== "CANCELLED" && (
                             <button
                               type="button"
@@ -699,7 +673,6 @@ export default function ProfileClientView({
               </div>
             )}
 
-            {/* Alter Reservation Modal */}
             <EditReservationModal
               isOpen={!!editingReservation}
               reservation={editingReservation}
@@ -709,7 +682,6 @@ export default function ProfileClientView({
               }}
             />
 
-            {/* Dining Review Modal */}
             <DiningReviewModal
               isOpen={!!reviewingReservation}
               reservation={reviewingReservation}
@@ -721,7 +693,6 @@ export default function ProfileClientView({
           </div>
         )}
 
-        {/* Modal for Kokonut UI FileUpload */}
         {showUploadModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative w-full max-w-md bg-[#12141d] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4">
@@ -739,7 +710,6 @@ export default function ProfileClientView({
                 </button>
               </div>
 
-              {/* Kokonut UI FileUpload Component */}
               <FileUpload
                 onUploadSuccess={handleFileUploadSuccess}
                 acceptedFileTypes={["image/jpeg", "image/png", "image/webp"]}

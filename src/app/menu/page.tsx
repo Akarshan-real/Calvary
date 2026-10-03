@@ -36,7 +36,6 @@ export default async function MenuPage() {
         }
       />
 
-      {/* Hero Header without Parallax */}
       <div className="relative overflow-hidden border-b border-white/10 pt-12 pb-8 sm:pt-20 sm:pb-16 bg-[#090b0e]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none" />
 
@@ -68,7 +67,6 @@ export default async function MenuPage() {
               </p>
             </div>
 
-            {/* Quick stats pill */}
             <div className="self-start md:self-auto flex items-center gap-3 sm:gap-4 bg-white/10 border border-white/20 px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-md shrink-0 shadow-xl">
               <div>
                 <div className="text-lg sm:text-xl font-extrabold text-[#ffbe33]">{items.length}</div>
@@ -87,7 +85,6 @@ export default async function MenuPage() {
       </div>
 
       <main className="flex-1 py-8 sm:py-10 px-4 sm:px-8 max-w-7xl mx-auto w-full">
-        {/* Categorized Menu Catalog with Search */}
         <MenuClientCatalog items={items} categories={categories} />
       </main>
 

@@ -28,20 +28,17 @@ function formatIndianPhoneNumber(phone?: string | null): { valid: boolean; forma
   return { valid: true, formatted: `+91${cleaned}` };
 }
 
-// POST: Send OTP or Verify OTP or Logout
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
     const body = await req.json();
     const { action } = body;
 
-    // 1. LOGOUT
     if (action === "logout") {
       await supabase.auth.signOut();
       return NextResponse.json({ success: true });
     }
 
-    // 2. SEND OTP
     if (action === "send-otp") {
       const { email, fullName, phone, foodPreference = "all" } = body;
       const cleanEmail = email?.trim().toLowerCase();
@@ -98,7 +95,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, email: cleanEmail });
     }
 
-    // 3. VERIFY OTP
     if (action === "verify-otp") {
       const { email, token, fullName, phone, foodPreference = "all" } = body;
       const cleanEmail = email?.trim().toLowerCase();

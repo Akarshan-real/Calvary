@@ -152,7 +152,6 @@ export const ProfileEditableField: React.FC<ProfileEditableFieldProps> = ({
               )}
             </div>
 
-            {/* Custom Birthday Calendar Dropdown Popover */}
             {editing && showCalendarPicker && (
               <div className="absolute top-full left-0 mt-2 z-50 w-full sm:w-[340px] animate-in fade-in zoom-in-95 duration-150">
                 <BirthdayCalendar

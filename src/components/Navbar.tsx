@@ -53,7 +53,6 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
     <nav className="sticky top-0 z-50 w-full bg-[#12141a]/95 backdrop-blur-md border-b border-white/10 transition-all">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         
-        {/* Left Side: Hamburger, Brand Logo, Nav Links */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
           <ParticleButton
             onClick={handleShowNav}
@@ -63,7 +62,6 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
             {showNav ? <XIcon size={18} /> : <MenuIcon size={18} />}
           </ParticleButton>
 
-          {/* Logo with Circular Icon and Calvary Title */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
             <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden ring-2 ring-[#ffbe33]/60 group-hover:ring-[#ffbe33] transition-all shadow-md shrink-0 aspect-square bg-[#fbf8f5]">
               <Image
@@ -84,7 +82,6 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
             </span>
           </Link>
 
-          {/* Mobile & Desktop Nav links */}
           <div
             className={`absolute right-0 left-0 -z-10 flex w-full flex-col gap-1 bg-[#12141a]/98 p-4 shadow-2xl border-b border-white/10 transition-all duration-300 ease-in-out md:relative md:top-auto md:right-auto md:left-0 md:z-auto md:flex-row md:gap-2 md:bg-transparent md:p-0 md:shadow-none md:border-none ${
               showNav
@@ -112,10 +109,8 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
           </div>
         </div>
 
-        {/* Right Side: Profile Dropdown & Highlighted Yellow "Book Table" CTA */}
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           
-          {/* Kokonut UI Profile Dropdown Menu when authenticated */}
           {user ? (
             <ProfileDropdown
               data={{
@@ -140,7 +135,6 @@ export default function CtaNavbar({ user = null }: CtaNavbarProps) {
             </Link>
           )}
 
-          {/* Kokonut UI SlideTextButton on Book Table CTA */}
           <SlideTextButton
             href="/reserve"
             text="Book Table"

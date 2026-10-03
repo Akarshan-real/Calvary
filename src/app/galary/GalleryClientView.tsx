@@ -28,7 +28,6 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
 
   return (
     <div className="space-y-10">
-      {/* Category Pills Filter */}
       <RevealOnScroll direction="up" duration={600}>
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3">
           {categories.map((cat) => {
@@ -52,7 +51,6 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
         </div>
       </RevealOnScroll>
 
-      {/* Masonry-Style Responsive Grid */}
       <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
         {filteredItems.map((item, index) => (
           <RevealOnScroll
@@ -77,7 +75,6 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
               </div>
 
-              {/* Overlay Info Card */}
               <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between gap-4">
                 <div className="space-y-1">
                   <span className="text-[10px] uppercase font-black tracking-widest text-[#ffbe33] bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 inline-block">
@@ -97,7 +94,6 @@ export default function GalleryClientView({ items = defaultItems }: { items?: Ga
         ))}
       </div>
 
-      {/* Lightbox Modal */}
       {activeModalItem && (
         <div
           onClick={() => setActiveModalItem(null)}

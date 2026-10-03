@@ -18,7 +18,6 @@ export async function PATCH(
     const body = await req.json();
     const { action } = body;
 
-    // Fetch current reservation
     const { data: current, error: fetchErr } = await supabase
       .from("reservations")
       .select("*, restaurant_tables(*), reservation_slots(*)")
@@ -34,7 +33,6 @@ export async function PATCH(
       (user.phone && current.customer_phone === user.phone) ||
       (user.email && current.customer_email === user.email);
 
-    // Check user's role for admin operations
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -43,7 +41,6 @@ export async function PATCH(
 
     const isAdmin = profile?.role === "admin";
 
-    // 1. CANCEL ACTION
     if (action === "cancel") {
       if (!isOwner && !isAdmin) {
         return NextResponse.json({ success: false, error: "Permission denied" }, { status: 403 });
@@ -61,7 +58,6 @@ export async function PATCH(
       return NextResponse.json({ success: true });
     }
 
-    // 2. ALTER ACTION
     if (action === "alter") {
       if (!isOwner && !isAdmin) {
         return NextResponse.json({ success: false, error: "Permission denied" }, { status: 403 });
@@ -69,7 +65,6 @@ export async function PATCH(
 
       const { reservation_date, slot_id, table_id, party_size, special_request } = body;
 
-      // Collision check
       const { data: collision } = await supabase
         .from("reservations")
         .select("id")
@@ -109,7 +104,6 @@ export async function PATCH(
       return NextResponse.json({ success: true, reservation: updated });
     }
 
-    // 3. ADMIN APPROVE ACTION
     if (action === "approve") {
       if (!isAdmin) {
         return NextResponse.json({ success: false, error: "Admin authorization required" }, { status: 403 });
@@ -124,7 +118,6 @@ export async function PATCH(
         return NextResponse.json({ success: false, error: updateErr.message }, { status: 400 });
       }
 
-      // Send approval email
       try {
         const tableName = current.restaurant_tables?.table_number
           ? `Table ${current.restaurant_tables.table_number}`
@@ -157,7 +150,6 @@ export async function PATCH(
       return NextResponse.json({ success: true });
     }
 
-    // 4. ADMIN REJECT ACTION
     if (action === "reject") {
       if (!isAdmin) {
         return NextResponse.json({ success: false, error: "Admin authorization required" }, { status: 403 });
@@ -187,7 +179,6 @@ export async function PATCH(
       return NextResponse.json({ success: true });
     }
 
-    // 5. ADMIN CUSTOM EMAIL ACTION
     if (action === "email") {
       if (!isAdmin) {
         return NextResponse.json({ success: false, error: "Admin authorization required" }, { status: 403 });

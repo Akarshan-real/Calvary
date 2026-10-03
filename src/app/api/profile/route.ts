@@ -131,13 +131,11 @@ export async function DELETE() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    // Delete profile (cascades or cleans up)
     const { error } = await supabase.from("profiles").delete().eq("id", user.id);
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
-    // Sign out user
     await supabase.auth.signOut();
 
     return NextResponse.json({ success: true });
@@ -145,5 +143,4 @@ export async function DELETE() {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
-
 

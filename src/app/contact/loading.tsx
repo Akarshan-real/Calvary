@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function ContactLoading() {
   return (
     <div className="min-h-screen bg-[#0b0c0f] text-white flex flex-col selection:bg-[#e60000]">
-      {/* Navbar Placeholder */}
       <header className="fixed top-0 inset-x-0 z-50 h-20 bg-[#0b0c0f]/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <Skeleton className="h-10 w-28 rounded-xl" />
@@ -19,16 +18,13 @@ export default function ContactLoading() {
       </header>
 
       <main className="flex-1 pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-12">
-        {/* Contact Hero Skeleton */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <Skeleton variant="gold" className="h-6 w-36 mx-auto rounded-full" />
           <Skeleton className="h-10 sm:h-14 w-72 sm:w-96 mx-auto" />
           <Skeleton className="h-4 w-80 mx-auto opacity-60" />
         </div>
 
-        {/* Dual Grid Skeleton: Coordinates & Form */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Coordinates Skeleton */}
           <div className="lg:col-span-5 space-y-4">
             {[1, 2, 3].map((i) => (
               <div
@@ -45,7 +41,6 @@ export default function ContactLoading() {
             ))}
           </div>
 
-          {/* Right Form Card Skeleton */}
           <div className="lg:col-span-7 p-6 sm:p-10 rounded-2xl sm:rounded-3xl bg-[#12141e]/90 border border-white/10 shadow-2xl space-y-5">
             <div className="space-y-2 pb-2">
               <Skeleton className="h-7 w-48" />

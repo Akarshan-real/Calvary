@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * @author: @dorianbaffier
- * @description: Team Selector
- * @version: 3.0.0
- * @date: 2026-04-23
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import { Minus, Plus } from "lucide-react";
 import {
   AnimatePresence,

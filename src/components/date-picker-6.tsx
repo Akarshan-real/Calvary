@@ -25,15 +25,12 @@ const calendarClassNames = {
 } satisfies CalendarClassNames
 
 export interface DatePicker6Props {
-  // Mode configuration ('range' or 'single')
   mode?: 'range' | 'single'
 
-  // Date Range mode props (preferred)
   range?: DateRange
   onRangeChange?: (range: DateRange | undefined) => void
 
-  // Single date mode props (backward compatibility)
-  value?: string // YYYY-MM-DD
+  value?: string
   onChange?: (dateStr: string) => void
 
   label?: string
@@ -56,18 +53,11 @@ export function DatePicker6({
   const id = useId()
   const [open, setOpen] = useState(false)
 
-  // Determine active mode:
-  // If mode explicitly passed, use it. Otherwise:
-  // If onRangeChange or range is provided, it's 'range'.
-  // Else if onChange or value is provided, it's 'single'.
-  // Default fallback is 'range'.
   const resolvedMode = mode || (onRangeChange !== undefined || range !== undefined ? 'range' : (onChange !== undefined || value !== undefined ? 'single' : 'range'))
 
-  // Internal state if uncontrolled in range mode
   const [internalRange, setInternalRange] = useState<DateRange | undefined>(undefined)
   const currentRange = range !== undefined ? range : internalRange
 
-  // Parse value to Date for single mode
   const singleDate = useMemo(() => {
     if (!value) return undefined
     try {
@@ -93,7 +83,6 @@ export function DatePicker6({
       return placeholder || 'Filter by Date Range'
     }
 
-    // Single mode
     return singleDate ? format(singleDate, 'EEE, MMM d, yyyy') : (placeholder || 'Select date')
   }, [resolvedMode, currentRange, singleDate, placeholder])
 
@@ -123,7 +112,6 @@ export function DatePicker6({
     } else {
       setInternalRange(newRange)
     }
-    // Auto-close if user has selected both start and end dates
     if (newRange?.from && newRange?.to) {
       setTimeout(() => setOpen(false), 200)
     }

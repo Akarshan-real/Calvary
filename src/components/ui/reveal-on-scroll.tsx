@@ -9,8 +9,8 @@ interface RevealOnScrollProps {
   children: React.ReactNode;
   className?: string;
   direction?: RevealDirection;
-  delay?: number; // ms
-  duration?: number; // ms
+  delay?: number;
+  duration?: number;
   once?: boolean;
   threshold?: number;
   as?: React.ElementType;
@@ -77,11 +77,10 @@ export function RevealOnScroll({
   );
 }
 
-/** Staggered group — wraps children with incrementing delays */
 interface RevealGroupProps {
   children: React.ReactNode[];
   className?: string;
-  stagger?: number; // ms between each child
+  stagger?: number;
   direction?: RevealDirection;
   duration?: number;
   threshold?: number;

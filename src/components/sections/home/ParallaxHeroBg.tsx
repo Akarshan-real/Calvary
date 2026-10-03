@@ -17,7 +17,6 @@ export function ParallaxHeroBg({ src, alt }: ParallaxHeroBgProps) {
 
     const onScroll = () => {
       const scrollY = window.scrollY;
-      // Move the bg image at 40% of scroll speed for parallax
       el.style.transform = `translateY(${scrollY * 0.4}px)`;
     };
 

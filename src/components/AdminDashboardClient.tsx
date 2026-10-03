@@ -81,7 +81,6 @@ export default function AdminDashboardClient({
       <Navbar user={user} />
 
       <main className="flex-1 py-8 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8">
-        {/* Header Strip */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-5 sm:pb-6">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] text-[10px] sm:text-xs font-black uppercase tracking-wider">
@@ -116,7 +115,6 @@ export default function AdminDashboardClient({
           </div>
         </div>
 
-        {/* Master Tab Bar */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 border-b border-white/10 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -152,7 +150,6 @@ export default function AdminDashboardClient({
           })}
         </div>
 
-        {/* Active Tab Panel */}
         <div className="pt-2">
           {activeTab === "reservations" && (
             <AdminReservationManagement initialReservations={initialReservations} />

@@ -81,39 +81,31 @@ export function CoachSchedulingCard({
   user = null,
   className,
 }: CoachSchedulingProps) {
-  // Step navigation: 1: Date & Time, 2: Table Selection, 3: Guest Details, 4: Confirmation
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
-  // Table view mode: 'grid' or 'floor_map'
   const [tableViewMode, setTableViewMode] = useState<"grid" | "floor_map">("floor_map");
 
-  // Selection states
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<ReservationSlotInfo | null>(null);
   const [selectedTable, setSelectedTable] = useState<RestaurantTableInfo | null>(null);
 
-  // TanStack Query for dynamic calendar data and slot/table availability
   const { data: calendarData } = useCalendarData(initialDateOccupancyMap);
   const { data: slotsAvailability = [], isLoading: isSlotLoading } = useSlotAvailability(selectedDate);
   const createReservationMutation = useCreateReservation();
 
-  // Guest Form states
   const [customerName, setCustomerName] = useState(user?.name || "");
   const [customerPhone, setCustomerPhone] = useState(user?.phone || "");
   const [customerEmail, setCustomerEmail] = useState(user?.email || "");
   const [partySize, setPartySize] = useState<number>(2);
   const [specialRequest, setSpecialRequest] = useState("");
 
-  // Missing profile email state & handler
   const [emailUpdatedSuccess, setEmailUpdatedSuccess] = useState(false);
   const [isSavingEmail, setIsSavingEmail] = useState(false);
 
-  // Submission states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<any | null>(null);
 
-  // Auto-select the first available date on mount if none selected
   useEffect(() => {
     if (!selectedDate) {
       const dates = Object.keys(initialDateOccupancyMap).sort();
@@ -132,7 +124,6 @@ export function CoachSchedulingCard({
     }
   }, [initialDateOccupancyMap, selectedDate]);
 
-  // Reset slot and table when date changes or if current selected slot is no longer available/in the past
   useEffect(() => {
     if (selectedSlot && slotsAvailability.length > 0) {
       const matching = slotsAvailability.find((s) => s.slot.id === selectedSlot.id);
@@ -143,7 +134,6 @@ export function CoachSchedulingCard({
     }
   }, [slotsAvailability, selectedSlot]);
 
-  // Update profile email inline handler
   const handleSaveProfileEmail = async () => {
     if (!customerEmail || !customerEmail.includes("@")) {
       setSubmitError("Please enter a valid email address.");
@@ -166,7 +156,6 @@ export function CoachSchedulingCard({
     }
   };
 
-  // Constraint check before arming/submitting
   const checkReservationConstraints = (): boolean => {
     setSubmitError(null);
 
@@ -201,7 +190,6 @@ export function CoachSchedulingCard({
     return true;
   };
 
-  // Handle final submission
   const executeReservation = async () => {
     if (!checkReservationConstraints() || !selectedTable || !selectedSlot) return;
 
@@ -232,7 +220,6 @@ export function CoachSchedulingCard({
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -262,7 +249,6 @@ export function CoachSchedulingCard({
     },
   };
 
-  // Formatting helpers
   const formatTimeSlot = (timeStr: string) => {
     const parts = timeStr.split(":");
     if (parts.length >= 2) {
@@ -298,7 +284,6 @@ export function CoachSchedulingCard({
         className
       )}
     >
-      {/* Header Bar */}
       <div className="border-b border-white/10 p-4 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 bg-white/[0.02]">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shadow-md shrink-0">
@@ -320,7 +305,6 @@ export function CoachSchedulingCard({
           </div>
         </div>
 
-        {/* Step Progression Badges */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs font-bold text-neutral-400 overflow-x-auto max-w-full pb-1 scrollbar-none w-full sm:w-auto">
           <span
             className={cn(
@@ -357,15 +341,10 @@ export function CoachSchedulingCard({
         </div>
       </div>
 
-      {/* Dynamic Step Content */}
       <div className="p-4 sm:p-8 lg:p-12">
-        {/* ======================================================== */}
-        {/* STEP 1: DATE (HEATMAP CALENDAR) & TIMINGS */}
-        {/* ======================================================== */}
         {currentStep === 1 && (
           <motion.div variants={itemVariants} className="space-y-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-              {/* Left Column: Heatmap Calendar */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-[#ffbe33] flex items-center gap-1.5">
@@ -390,7 +369,6 @@ export function CoachSchedulingCard({
                 />
               </div>
 
-              {/* Right Column: Timings Slots for Chosen Date */}
               <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -500,7 +478,6 @@ export function CoachSchedulingCard({
                   )}
                 </div>
 
-                {/* Next Step Button */}
                 <div className="pt-8 border-t border-white/10 flex justify-center">
                   <InteractiveHoverButton
                     type="button"
@@ -523,9 +500,6 @@ export function CoachSchedulingCard({
           </motion.div>
         )}
 
-        {/* ======================================================== */}
-        {/* STEP 2: TABLE SELECTION (CAPACITY & VIBE) */}
-        {/* ======================================================== */}
         {currentStep === 2 && (
           <motion.div variants={itemVariants} className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
@@ -543,7 +517,6 @@ export function CoachSchedulingCard({
               </div>
 
               <div className="flex items-center gap-2.5">
-                {/* View Mode Toggle: Floor Map vs Grid */}
                 <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl">
                   <button
                     type="button"
@@ -585,7 +558,6 @@ export function CoachSchedulingCard({
               </div>
             </div>
 
-            {/* Render Table Floor Map OR Classic Grid */}
             {tableViewMode === "floor_map" ? (
               <TableFloorMap
                 availableTables={selectedSlotAvailability?.availableTables || []}
@@ -593,12 +565,10 @@ export function CoachSchedulingCard({
                 onSelectTable={(table) => setSelectedTable(table)}
               />
             ) : (
-              /* Tables Grid */
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {selectedSlotAvailability?.availableTables.map((table) => {
                   const isSelected = selectedTable?.id === table.id;
 
-                  // Table classification flavor text
                   let tableStyle = "Artisanal Dining Booth";
                   if (table.capacity === 2) tableStyle = "Intimate Couple Table";
                   else if (table.capacity === 6) tableStyle = "Family & Banquette Seating";
@@ -657,7 +627,6 @@ export function CoachSchedulingCard({
               </div>
             )}
 
-            {/* Step Navigation Bar */}
             <div className="pt-6 border-t border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
               <button
                 type="button"
@@ -672,7 +641,6 @@ export function CoachSchedulingCard({
                 variant="gold"
                 disabled={!selectedTable}
                 onClick={() => {
-                  // Set party size to max table capacity or 2
                   if (selectedTable) {
                     setPartySize(Math.min(partySize, selectedTable.capacity));
                   }
@@ -686,9 +654,6 @@ export function CoachSchedulingCard({
           </motion.div>
         )}
 
-        {/* ======================================================== */}
-        {/* STEP 3: GUEST DETAILS & MANDATORY EMAIL ENFORCEMENT */}
-        {/* ======================================================== */}
         {currentStep === 3 && (
           <motion.div variants={itemVariants} className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center space-y-1 border-b border-white/10 pb-4">
@@ -704,7 +669,6 @@ export function CoachSchedulingCard({
               </p>
             </div>
 
-            {/* MANDATORY PROFILE EMAIL NOTIFICATION */}
             {(!user?.email || !customerEmail || emailUpdatedSuccess) && (
               <div
                 className={cn(
@@ -741,7 +705,6 @@ export function CoachSchedulingCard({
               </div>
             )}
 
-            {/* Reservation Form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -749,7 +712,6 @@ export function CoachSchedulingCard({
               }}
               className="space-y-4"
             >
-              {/* Full Name & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-neutral-300 flex items-center gap-1.5">
@@ -782,7 +744,6 @@ export function CoachSchedulingCard({
                 </div>
               </div>
 
-              {/* Email & Party Size */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-neutral-300 flex items-center justify-between">
@@ -812,7 +773,6 @@ export function CoachSchedulingCard({
                 </div>
               </div>
 
-              {/* Dynamic Kokonut UI TeamSelector for Table Guests */}
               <div className="pt-1 pb-2">
                 <TeamSelector
                   maxSize={selectedTable?.capacity || 4}
@@ -843,7 +803,6 @@ export function CoachSchedulingCard({
                 />
               </div>
 
-              {/* Special Requests */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-neutral-300">
                   Special Dining Notes (Optional)
@@ -857,7 +816,6 @@ export function CoachSchedulingCard({
                 />
               </div>
 
-              {/* Buttons */}
               <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
                 <button
                   type="button"
@@ -891,9 +849,6 @@ export function CoachSchedulingCard({
           </motion.div>
         )}
 
-        {/* ======================================================== */}
-        {/* STEP 4: SUBMISSION SUCCESS & PENDING STATUS FEEDBACK */}
-        {/* ======================================================== */}
         {currentStep === 4 && confirmedBooking && (
           <motion.div
             variants={itemVariants}
@@ -919,7 +874,6 @@ export function CoachSchedulingCard({
               </p>
             </div>
 
-            {/* Summary Card */}
             <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-left space-y-3 text-xs">
               <div className="flex justify-between items-center border-b border-white/10 pb-2.5">
                 <span className="text-neutral-400 font-medium">Date & Time</span>
@@ -948,7 +902,6 @@ export function CoachSchedulingCard({
               </div>
             </div>
 
-            {/* Explanatory Notice */}
             <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200 text-left flex items-start gap-3">
               <ShieldCheck className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
               <p className="leading-relaxed">
@@ -958,7 +911,6 @@ export function CoachSchedulingCard({
               </p>
             </div>
 
-            {/* Calendar & Next Actions */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <AddToCalendarButton
                 event={{

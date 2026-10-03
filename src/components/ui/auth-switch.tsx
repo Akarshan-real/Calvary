@@ -43,7 +43,6 @@ export default function AuthSwitch() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Stored registration context for OTP verification step
   const [pendingEmail, setPendingEmail] = useState("");
   const [pendingFullName, setPendingFullName] = useState("");
   const [pendingPhone, setPendingPhone] = useState("");
@@ -51,7 +50,6 @@ export default function AuthSwitch() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resending, setResending] = useState(false);
 
-  // 15-second resend countdown timer
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const interval = setInterval(() => {
@@ -60,7 +58,6 @@ export default function AuthSwitch() {
     return () => clearInterval(interval);
   }, [resendCooldown]);
 
-  // React Hook Form instances with onChange mode for live validation
   const signInForm = useForm<SignInFormData>({
     mode: "onChange",
     defaultValues: { email: "" },
@@ -81,7 +78,6 @@ export default function AuthSwitch() {
     defaultValues: { token: "" },
   });
 
-  // Watch inputs to disable Send OTP and submit buttons until all mandatory fields are valid
   const signInEmail = signInForm.watch("email") || "";
   const isSignInValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signInEmail.trim());
 
@@ -96,7 +92,6 @@ export default function AuthSwitch() {
   const otpToken = otpForm.watch("token") || "";
   const isOtpValid = /^\d{6}$/.test(otpToken.trim());
 
-  // Switch between Sign In and Sign Up with clean state reset
   const handleModeSwitch = (toSignUp: boolean) => {
     setIsSignUp(toSignUp);
     setStep("email");
@@ -107,7 +102,6 @@ export default function AuthSwitch() {
     otpForm.reset();
   };
 
-  // Sign In submit (Step 1: Check user & dispatch 6-digit email OTP)
   const onSignInSubmit = async (data: SignInFormData) => {
     setError(null);
     setSuccessMsg(null);
@@ -148,7 +142,6 @@ export default function AuthSwitch() {
     }
   };
 
-  // Sign Up submit (Step 1: Register with name, mandatory email, optional phone & food pref)
   const onSignUpSubmit = async (data: SignUpFormData) => {
     setError(null);
     setSuccessMsg(null);
@@ -189,7 +182,6 @@ export default function AuthSwitch() {
     }
   };
 
-  // Resend OTP handler with 40-second cooldown
   const handleResendOtp = async () => {
     if (resendCooldown > 0 || resending || !pendingEmail) return;
 
@@ -231,7 +223,6 @@ export default function AuthSwitch() {
     }
   };
 
-  // Verify OTP submit (Step 2: Confirm 6-digit token)
   const onOtpSubmit = async (data: OtpFormData) => {
     if (loading) return;
     const cleanToken = data?.token?.trim();
@@ -917,7 +908,6 @@ export default function AuthSwitch() {
         }
       `}</style>
 
-      {/* Back to Home Button */}
       <Link href="/" className="back-home-btn">
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Restaurant</span>
@@ -929,9 +919,6 @@ export default function AuthSwitch() {
         <div className="forms-container">
           <div className="signin-signup">
             
-            {/* ======================================================== */}
-            {/* SIGN IN FORM (EMAIL OTP) */}
-            {/* ======================================================== */}
             <div className="form-panel sign-in-form">
               <h2 className="form-title">Welcome Back</h2>
               <p className="form-subtitle">
@@ -947,7 +934,6 @@ export default function AuthSwitch() {
                   onSubmit={signInForm.handleSubmit(onSignInSubmit)}
                   className="w-full flex flex-col items-center"
                 >
-                  {/* Email Input */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Email Address</span>
@@ -993,7 +979,6 @@ export default function AuthSwitch() {
                   onSubmit={otpForm.handleSubmit(onOtpSubmit)}
                   className="w-full flex flex-col items-center"
                 >
-                  {/* Integrated InputOtp9 component */}
                   <div className="w-full max-w-[360px] my-2">
                     <Controller
                       name="token"
@@ -1071,9 +1056,6 @@ export default function AuthSwitch() {
               )}
             </div>
 
-            {/* ======================================================== */}
-            {/* SIGN UP FORM (FULL NAME + MANDATORY EMAIL + OPTIONAL PHONE + FOOD PREF) */}
-            {/* ======================================================== */}
             <div className="form-panel sign-up-form">
               <h2 className="form-title">Join Calvary</h2>
               <p className="form-subtitle">
@@ -1089,7 +1071,6 @@ export default function AuthSwitch() {
                   onSubmit={signUpForm.handleSubmit(onSignUpSubmit)}
                   className="w-full flex flex-col items-center"
                 >
-                  {/* Full Name */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Full Name</span>
@@ -1118,7 +1099,6 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
-                  {/* Mandatory Email */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Email Address</span>
@@ -1150,7 +1130,6 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
-                  {/* Optional Mobile Number */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Mobile Number</span>
@@ -1183,7 +1162,6 @@ export default function AuthSwitch() {
                     )}
                   </div>
 
-                  {/* Dietary Preference Selection */}
                   <div className="input-group">
                     <label className="input-label">
                       <span>Dietary Preference</span>
@@ -1217,7 +1195,6 @@ export default function AuthSwitch() {
                   onSubmit={otpForm.handleSubmit(onOtpSubmit)}
                   className="w-full flex flex-col items-center"
                 >
-                  {/* Integrated InputOtp9 for Signup OTP */}
                   <div className="w-full max-w-[360px] my-2">
                     <Controller
                       name="token"
@@ -1298,7 +1275,6 @@ export default function AuthSwitch() {
           </div>
         </div>
 
-        {/* Sliding Panels */}
         <div className="panels-container">
           <div className="panel left-panel">
             <div className="content">

@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * @author: @dorianbaffier
- * @description: Bento Grid
- * @version: 1.0.0
- * @date: 2025-06-26
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -339,13 +329,12 @@ const TypingCodeFeature = ({ text }: { text: string }) => {
           }
         },
         Math.random() * 30 + 10
-      ); // Random typing speed for realistic effect
+      );
 
       return () => clearTimeout(timeout);
     }
   }, [currentIndex, text]);
 
-  // Reset animation when component unmounts and remounts
   useEffect(() => {
     setDisplayedText("");
     setCurrentIndex(0);
@@ -628,7 +617,6 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
               {item.description}
             </p>
 
-            {/* Feature specific content */}
             {item.feature === "spotlight" && item.spotlightItems && (
               <SpotlightFeature items={item.spotlightItems} />
             )}
@@ -694,7 +682,6 @@ export default function BentoGrid() {
   return (
     <section className="relative overflow-hidden bg-white py-24 sm:py-32 dark:bg-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Bento Grid */}
         <motion.div
           className="grid gap-6"
           initial="hidden"

@@ -84,7 +84,6 @@ export default async function TermsPage() {
       />
 
       <main className="flex-1 py-10 sm:py-24 px-4 sm:px-8 max-w-4xl mx-auto w-full space-y-10 sm:space-y-12">
-        {/* Header */}
         <div className="text-center space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10">
             <Scale className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -100,7 +99,6 @@ export default async function TermsPage() {
           </p>
         </div>
 
-        {/* Content Cards */}
         <div className="space-y-4 sm:space-y-6">
           {sections.map((sec, idx) => (
             <div
@@ -120,7 +118,6 @@ export default async function TermsPage() {
           ))}
         </div>
 
-        {/* Help Note */}
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-2 text-xs sm:text-sm text-neutral-400">
           <p>
             Have specific inquiries about our reservation policy or private party terms?

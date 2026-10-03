@@ -61,7 +61,6 @@ export default async function MenuItemPage({ params }: PageProps) {
       />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-16">
-        {/* Back Link */}
         <div className="mb-8">
           <Link
             href="/menu"
@@ -72,10 +71,8 @@ export default async function MenuItemPage({ params }: PageProps) {
           </Link>
         </div>
 
-        {/* Dish Showcase Card */}
         <div className="bg-[#141722] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center p-4 xs:p-6 sm:p-10">
-            {/* Visual Hero */}
             <div className="md:col-span-6 flex justify-center">
               <div className="relative w-full aspect-square max-w-[380px] rounded-2xl overflow-hidden bg-[#0c0e14] border border-white/10 shadow-inner">
                 {displayImageUrl ? (
@@ -95,7 +92,6 @@ export default async function MenuItemPage({ params }: PageProps) {
                   </div>
                 )}
 
-                {/* Dietary Badge */}
                 <div className="absolute top-4 left-4">
                   {isVeg ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-black/70 backdrop-blur-md border border-emerald-500/40 text-emerald-400">
@@ -110,7 +106,6 @@ export default async function MenuItemPage({ params }: PageProps) {
                   )}
                 </div>
 
-                {/* Calorie Chip */}
                 <div className="absolute bottom-4 right-4">
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-white bg-black/70 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full">
                     <Flame className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -120,7 +115,6 @@ export default async function MenuItemPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Info & Details */}
             <div className="md:col-span-6 space-y-6">
               <div>
                 <span className="text-xs font-extrabold uppercase tracking-[0.25em] text-[#ffbe33]">
@@ -148,7 +142,6 @@ export default async function MenuItemPage({ params }: PageProps) {
                   "Handcrafted fresh to order using finest artisanal seasonings, certified organic produce, and craft culinary techniques."}
               </p>
 
-              {/* Allergen Advisory */}
               {allergens && allergens.length > 0 && (
                 <div className="space-y-1.5">
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
@@ -168,7 +161,6 @@ export default async function MenuItemPage({ params }: PageProps) {
                 </div>
               )}
 
-              {/* Complete Nutritional Breakdown */}
               <div className="space-y-3 pt-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block">
                   Nutritional Breakdown (Per Serving)

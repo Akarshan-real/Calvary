@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function PrivacyLoading() {
   return (
     <div className="min-h-screen bg-[#0b0c0f] text-white flex flex-col selection:bg-[#e60000]">
-      {/* Navbar Placeholder */}
       <header className="fixed top-0 inset-x-0 z-50 h-20 bg-[#0b0c0f]/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <Skeleton className="h-10 w-28 rounded-xl" />

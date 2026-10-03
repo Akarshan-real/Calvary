@@ -7,14 +7,11 @@ import { MapPin, Phone, Mail, Clock, ArrowUpRight } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="relative bg-[#0d0f13] text-white border-t border-white/10 overflow-hidden">
-      {/* Subtle top glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#e60000]/10 via-[#ffbe33]/5 to-transparent blur-3xl pointer-events-none" />
 
-      {/* Main Content Columns */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-8 sm:pt-16 sm:pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-10 sm:mb-16">
           
-          {/* Col 1: Brand & Bio */}
           <div className="space-y-5">
             <div className="flex items-center gap-3.5">
               <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-[#ffbe33]/50 bg-[#fbf8f5] shrink-0">
@@ -80,7 +77,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Quick Links */}
           <div className="space-y-4">
             <h3 className="text-xs uppercase tracking-[0.2em] font-extrabold text-neutral-200">
               Navigation
@@ -125,7 +121,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3: Hours of Operation */}
           <div className="space-y-4">
             <h3 className="text-xs uppercase tracking-[0.2em] font-extrabold text-neutral-200">
               Opening Hours
@@ -151,7 +146,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 4: Contact & Location */}
           <div className="space-y-4">
             <h3 className="text-xs uppercase tracking-[0.2em] font-extrabold text-neutral-200">
               Find Us
@@ -178,14 +172,12 @@ export default function Footer() {
 
         </div>
 
-        {/* Big Interactive Hoover Effect Brand Display */}
         <div className="border-t border-white/10 pt-8 sm:pt-10 pb-4">
           <div className="h-20 sm:h-36 md:h-44 w-full flex items-center justify-center">
             <TextHoverEffect text="CALVARY" />
           </div>
         </div>
 
-        {/* Copyright strip */}
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4 text-center sm:text-left">
           <p>© {new Date().getFullYear()} Calvary Restaurant. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6">

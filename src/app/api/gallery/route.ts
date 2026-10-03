@@ -10,7 +10,7 @@ export async function GET() {
       async () => {
         return await getGalleryItems();
       },
-      600 // 10 minutes cache
+      600
     );
 
     return NextResponse.json({ success: true, items });

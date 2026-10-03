@@ -48,7 +48,6 @@ export default async function ContactPage() {
         }
       />
 
-      {/* Hero Header with Parallax */}
       <section className="relative overflow-hidden py-14 sm:py-28 px-4 sm:px-8 border-b border-white/5">
         <ParallaxHeroBg
           src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop"
@@ -84,10 +83,8 @@ export default async function ContactPage() {
       </section>
 
       <main className="flex-1 py-10 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-12 sm:space-y-16">
-        {/* Contact Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14">
           
-          {/* Left Column: Direct Contact Info, Hours & Map */}
           <div className="lg:col-span-5 space-y-6">
             <RevealOnScroll direction="left" delay={150}>
               <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#12141a]/90 backdrop-blur-xl border border-white/10 space-y-6 shadow-2xl relative overflow-hidden">
@@ -142,7 +139,6 @@ export default async function ContactPage() {
                   </div>
                 </div>
 
-                {/* Operating Hours */}
                 <div className="pt-4 border-t border-white/10 space-y-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-neutral-300">
                     <Clock className="w-4 h-4 text-[#ffbe33]" />
@@ -179,7 +175,6 @@ export default async function ContactPage() {
             </RevealOnScroll>
           </div>
 
-          {/* Right Column: Interactive Contact Form */}
           <div className="lg:col-span-7">
             <RevealOnScroll direction="right" delay={200}>
               <div className="p-4 sm:p-10 rounded-2xl sm:rounded-3xl bg-[#12141a]/90 backdrop-blur-xl border border-white/10 shadow-2xl space-y-6 relative overflow-hidden">

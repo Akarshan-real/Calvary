@@ -43,7 +43,6 @@ export default function FeaturedDishesSection({ items }: FeaturedDishesSectionPr
       </RevealOnScroll>
 
       <RevealOnScroll direction="up" delay={150} duration={800}>
-        {/* Featured Dishes HighlightGrid (Limited to exactly 5 items) */}
         <HighlightGrid
           items={items.slice(0, 5).map((dish, idx) => ({
             color: [

@@ -85,7 +85,6 @@ export default async function PrivacyPolicyPage() {
       />
 
       <main className="flex-1 py-10 sm:py-24 px-4 sm:px-8 max-w-4xl mx-auto w-full space-y-10 sm:space-y-12">
-        {/* Header */}
         <div className="text-center space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10">
             <Shield className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -101,7 +100,6 @@ export default async function PrivacyPolicyPage() {
           </p>
         </div>
 
-        {/* Content Cards */}
         <div className="space-y-4 sm:space-y-6">
           {sections.map((sec, idx) => (
             <div
@@ -121,7 +119,6 @@ export default async function PrivacyPolicyPage() {
           ))}
         </div>
 
-        {/* Commitment Badge */}
         <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-4 text-emerald-300 text-xs sm:text-sm">
           <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
           <p>

@@ -185,7 +185,6 @@ export default function MyBookingsClientView({
         }}
       />
 
-      {/* Header Banner with Parallax */}
       <section className="relative overflow-hidden py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5">
         <ParallaxHeroBg
           src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop"
@@ -231,7 +230,6 @@ export default function MyBookingsClientView({
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-8">
 
-        {/* Status Notification */}
         {statusMsg && (
           <div
             className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2.5 border transition-all ${
@@ -249,9 +247,7 @@ export default function MyBookingsClientView({
           </div>
         )}
 
-        {/* Filter Pills Bar & Date Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/5">
-          {/* Status Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <div className="flex items-center gap-1.5 text-xs text-neutral-400 mr-1 shrink-0">
               <Filter className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -281,7 +277,6 @@ export default function MyBookingsClientView({
             ))}
           </div>
 
-          {/* Date Picker Filter on the right using @date-picker-6 (Range Mode) */}
           <div className="w-full sm:w-auto shrink-0">
             <DatePicker6
               mode="range"
@@ -294,7 +289,6 @@ export default function MyBookingsClientView({
           </div>
         </div>
 
-        {/* Reservations Content */}
         {isLoading && reservations.length === 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {[1, 2].map((i) => (
@@ -370,7 +364,6 @@ export default function MyBookingsClientView({
                 className="bg-gradient-to-b from-[#131520] to-[#0c0e15] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-8 hover:border-[#ffbe33]/40 transition-all duration-300 flex flex-col justify-between shadow-2xl group relative"
               >
                 <div className="space-y-4 sm:space-y-6">
-                  {/* Header: Ref #, Zone & Status */}
                   <div className="flex items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-mono text-neutral-300 font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/5 border border-white/10">
@@ -390,7 +383,6 @@ export default function MyBookingsClientView({
                     {getStatusBadge(res.status)}
                   </div>
 
-                  {/* Title & Party Size Badges */}
                   <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 pt-1">
                     <div>
                       <h4 className="font-extrabold text-xl sm:text-3xl text-white tracking-tight">
@@ -418,7 +410,6 @@ export default function MyBookingsClientView({
                     </div>
                   </div>
 
-                  {/* Booking Details Box */}
                   <div className="space-y-3.5 sm:space-y-4 p-3.5 sm:p-6 rounded-xl sm:rounded-2xl bg-[#080a10]/90 border border-white/5 text-xs sm:text-sm text-neutral-300">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
                       <div className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/5 text-neutral-200">
@@ -471,7 +462,6 @@ export default function MyBookingsClientView({
                   </div>
                 </div>
 
-                {/* Card footer actions */}
                 <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/10 flex flex-col gap-3 sm:gap-4 text-xs text-neutral-500">
                   <div className="flex items-center justify-between">
                     <span className="text-neutral-200 font-bold text-xs sm:text-sm">{res.customer_name}</span>
@@ -479,7 +469,6 @@ export default function MyBookingsClientView({
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                    {/* Primary actions */}
                     <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                       {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
                         <AddToCalendarButton
@@ -520,7 +509,6 @@ export default function MyBookingsClientView({
                       )}
                     </div>
 
-                    {/* Modification actions */}
                     {res.status !== "CANCELLED" && !isReservationPast(res.reservation_date, res.reservation_slots?.start_time) && (
                       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-end sm:self-auto">
                         <button
@@ -548,7 +536,6 @@ export default function MyBookingsClientView({
           </div>
         )}
 
-        {/* Alter Reservation Modal */}
         <EditReservationModal
           isOpen={!!editingReservation}
           reservation={editingReservation}
@@ -558,7 +545,6 @@ export default function MyBookingsClientView({
           }}
         />
 
-        {/* Dining Review & Star Rating Modal */}
         <DiningReviewModal
           isOpen={!!reviewingReservation}
           reservation={reviewingReservation}
@@ -568,7 +554,6 @@ export default function MyBookingsClientView({
           }}
         />
 
-        {/* Cancellation Confirmation Modal */}
         {confirmCancelModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative w-full max-w-md bg-[#12141d] border border-red-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">

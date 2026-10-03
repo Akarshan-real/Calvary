@@ -23,7 +23,6 @@ export default async function ReservePage() {
 
   return (
     <div className="min-h-screen bg-[#090b0e] text-white flex flex-col selection:bg-[#ffbe33] selection:text-neutral-950">
-      {/* Top Navigation */}
       <Navbar
         user={
           authData?.user
@@ -38,7 +37,6 @@ export default async function ReservePage() {
         }
       />
 
-      {/* Hero Header with Parallax */}
       <section className="relative overflow-hidden py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/5">
         <ParallaxHeroBg
           src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1600&auto=format&fit=crop"
@@ -71,10 +69,8 @@ export default async function ReservePage() {
       </section>
 
       <main className="flex-1 py-10 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-10">
-        {/* Master Interactive Reservation Scheduling Component */}
         <RevealOnScroll direction="up" delay={150}>
           <div className="relative">
-            {/* Ambient Glows */}
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#ffbe33]/10 rounded-full blur-[140px] pointer-events-none" />
 
             <CoachSchedulingCard
@@ -94,7 +90,6 @@ export default async function ReservePage() {
         </RevealOnScroll>
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

@@ -4,8 +4,6 @@ import { useState, useRef, useEffect, useMemo, useId } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// ── Utilities ────────────────────────────────────────────────────────────────
-
 function detectUnsupportedBrowser(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent.toLowerCase();
@@ -26,8 +24,6 @@ function useDebounce<T>(value: T, delay: number): T {
   }, [value, delay]);
   return debouncedValue;
 }
-
-// ── Animation variants ───────────────────────────────────────────────────────
 
 const buttonMotionVariants = {
   step1: { x: 0, width: 100 },
@@ -52,8 +48,6 @@ const getResultTransition = (index: number) => ({
   bounce: 0.35,
   filter: { ease: "easeInOut" },
 });
-
-// ── Private sub-components ───────────────────────────────────────────────────
 
 function SearchSvgIcon({ isUnsupported }: { isUnsupported: boolean }) {
   return (
@@ -136,28 +130,16 @@ function InfoSvgIcon({ index }: { index: number }) {
   );
 }
 
-// ── Public types ─────────────────────────────────────────────────────────────
-
 export interface GooeySearchProps {
-  /** Strings to search locally. Ignored when `onSearch` is provided. */
   items?: string[];
-  /** Async/sync custom search function for external data sources. */
   onSearch?: (query: string) => Promise<string[]> | string[];
-  /** Input placeholder text. */
   placeholder?: string;
-  /** Label shown on the collapsed button. */
   buttonLabel?: string;
-  /** Called when the user clicks a result item. */
   onSelect?: (item: string) => void;
-  /** Extra class names for the outermost wrapper. */
   className?: string;
-  /** Input debounce delay in ms. Defaults to 500. */
   debounceMs?: number;
-  /** Maximum number of results to render. Defaults to 5. */
   maxResults?: number;
 }
-
-// ── Component ────────────────────────────────────────────────────────────────
 
 export function GooeySearch({
   items = [],
@@ -181,8 +163,6 @@ export function GooeySearch({
   const isUnsupported = useMemo(() => detectUnsupportedBrowser(), []);
   const debouncedQuery = useDebounce(searchText, debounceMs);
 
-  // Step only ever advances 1 -> 2, so the effect's sole job is to focus the
-  // freshly-mounted input. Nothing to reset here.
   useEffect(() => {
     if (step === 2) inputRef.current?.focus();
   }, [step]);
@@ -190,8 +170,6 @@ export function GooeySearch({
   useEffect(() => {
     let cancelled = false;
 
-    // All state writes live inside the async closure so none run synchronously
-    // in the effect body (keeps React from cascading renders).
     const run = async () => {
       if (!debouncedQuery) {
         setResults([]);
@@ -225,7 +203,6 @@ export function GooeySearch({
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>
-      {/* Keyframe injection for loading spinner */}
       <style>{`
         .gooey-search-loading {
           animation: gooeySearchSpin 0.5s linear infinite;
@@ -235,7 +212,6 @@ export function GooeySearch({
         .gooey-search-input::placeholder { color: var(--background); opacity: 0.55; }
       `}</style>
 
-      {/* SVG gooey filter — zero size, no layout impact */}
       <svg aria-hidden="true" style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
         <defs>
           <filter id={filterId}>
@@ -251,7 +227,6 @@ export function GooeySearch({
         </defs>
       </svg>
 
-      {/* Gooey container — this is where the morphing magic happens */}
       <div
         style={{
           filter: isUnsupported ? "none" : `url(#${filterId})`,
@@ -260,7 +235,6 @@ export function GooeySearch({
           position: "relative",
         }}
       >
-        {/* Results — z-index -1 so they live "behind" the button until animated out */}
         <AnimatePresence mode="popLayout">
           <motion.div
             key="results-wrapper"
@@ -313,7 +287,6 @@ export function GooeySearch({
           </motion.div>
         </AnimatePresence>
 
-        {/* Morphing search button */}
         <motion.div
           variants={buttonMotionVariants}
           initial="step1"
@@ -370,7 +343,6 @@ export function GooeySearch({
           )}
         </motion.div>
 
-        {/* Floating icon bubble */}
         <AnimatePresence mode="wait">
           {step === 2 && (
             <motion.div

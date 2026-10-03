@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   const authData = await getCurrentUser();
 
-  // If already logged in, redirect to home
   if (authData?.user) {
     redirect("/");
   }

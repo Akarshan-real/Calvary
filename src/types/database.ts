@@ -36,7 +36,7 @@ export interface RestaurantSettings {
 
 export interface RestaurantHours {
   id: number
-  day_of_week: number // 0 = Sunday, 1 = Monday, etc.
+  day_of_week: number
   is_closed: boolean
   open_time: string | null
   close_time: string | null
@@ -140,7 +140,6 @@ export interface Reservation {
   status: ReservationStatus
   created_at: string
   updated_at: string
-  // Joined relation types
   restaurant_tables?: RestaurantTable
   reservation_slots?: ReservationSlot
 }

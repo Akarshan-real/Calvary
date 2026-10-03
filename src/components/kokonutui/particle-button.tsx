@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * @author: @dorianbaffier
- * @description: Particle Button (Enhanced with luxury gold/red theme particles & customizable icon)
- * @version: 1.1.0
- * @website: https://kokonutui.com
- */
-
 import { AnimatePresence, motion } from "motion/react";
 import { type RefObject, useRef, useState } from "react";
 import { cn } from "@/lib/utils";

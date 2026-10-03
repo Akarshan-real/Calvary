@@ -65,7 +65,6 @@ export function FaqAccordion({
                 onClick={() => toggleItem(index)}
                 aria-expanded={isActive}
               >
-                {/* Plus/Minus Icon */}
                 <span 
                   className={cn(
                     "absolute left-3.5 sm:left-5 top-1/2 -translate-y-1/2 transition-all duration-200 leading-none select-none",
@@ -77,7 +76,6 @@ export function FaqAccordion({
                 
                 <span className="pr-6 sm:pr-8 leading-snug">{item.question}</span>
                 
-                {/* Chevron */}
                 <span 
                   className={cn(
                     "absolute right-4 sm:right-6 block w-2 h-2 border-t-2 border-r-2 transition-transform duration-200 ease-in-out shrink-0",

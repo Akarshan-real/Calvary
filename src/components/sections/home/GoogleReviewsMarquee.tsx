@@ -64,7 +64,6 @@ function ReviewCard({ review }: { review: GoogleReview }) {
 export default function GoogleReviewsMarquee() {
   return (
     <section className="py-12 sm:py-16 overflow-hidden relative">
-      {/* Ambient glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-[#ffbe33]/5 blur-3xl pointer-events-none" />
 
       <RevealOnScroll direction="up" duration={700}>
@@ -89,9 +88,7 @@ export default function GoogleReviewsMarquee() {
         </div>
       </RevealOnScroll>
 
-      {/* Marquee Row 1 - Forward */}
       <div className="relative w-full overflow-hidden">
-        {/* Edge Fade Gradients */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-24 bg-gradient-to-r from-[#0b0c0f] to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-24 bg-gradient-to-l from-[#0b0c0f] to-transparent z-10" />
 
@@ -101,7 +98,6 @@ export default function GoogleReviewsMarquee() {
           ))}
         </Marquee>
 
-        {/* Marquee Row 2 - Reverse */}
         <Marquee reverse pauseOnHover className="[--duration:40s] py-3">
           {reviewsRow2.map((review, idx) => (
             <ReviewCard key={idx} review={review} />

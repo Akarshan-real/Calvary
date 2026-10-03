@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface BirthdayPickerProps {
-  value?: string; // YYYY-MM-DD
+  value?: string;
   onChange: (value: string) => void;
   className?: string;
 }
@@ -42,7 +42,6 @@ export function BirthdayCalendar({
     return selectedDate ? selectedDate.getMonth() : 0;
   });
 
-  // Keep view in sync if external value changes
   React.useEffect(() => {
     if (selectedDate) {
       setYearState(selectedDate.getFullYear());
@@ -50,7 +49,6 @@ export function BirthdayCalendar({
     }
   }, [value]);
 
-  // Year options: past 100 years up to current year
   const yearOptions = useMemo(() => {
     const years: number[] = [];
     for (let y = currentYear; y >= currentYear - 100; y--) {
@@ -59,7 +57,6 @@ export function BirthdayCalendar({
     return years;
   }, [currentYear]);
 
-  // Calendar cells calculation
   const calendarCells = useMemo(() => {
     const firstDayIndex = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -71,7 +68,6 @@ export function BirthdayCalendar({
       isSelected: boolean;
     }> = [];
 
-    // Blank leading slots
     for (let i = 0; i < firstDayIndex; i++) {
       cells.push({
         dayNumber: 0,
@@ -81,7 +77,6 @@ export function BirthdayCalendar({
       });
     }
 
-    // Days in current month
     for (let d = 1; d <= daysInMonth; d++) {
       const monthStr = String(month + 1).padStart(2, "0");
       const dayStr = String(d).padStart(2, "0");
@@ -132,10 +127,8 @@ export function BirthdayCalendar({
         className
       )}
     >
-      {/* Month and Year Quick Select Dropdowns */}
       <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-3 pb-3 border-b border-white/10">
         <div className="flex items-center gap-1 sm:gap-1.5 flex-1 min-w-0">
-          {/* Month Select */}
           <select
             aria-label="Select month"
             value={month}
@@ -149,7 +142,6 @@ export function BirthdayCalendar({
             ))}
           </select>
 
-          {/* Year Select */}
           <select
             aria-label="Select year"
             value={year}
@@ -164,7 +156,6 @@ export function BirthdayCalendar({
           </select>
         </div>
 
-        {/* Prev / Next Month arrow navigation */}
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -185,7 +176,6 @@ export function BirthdayCalendar({
         </div>
       </div>
 
-      {/* Weekday Header */}
       <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
         {DAY_LABELS.map((d) => (
           <div
@@ -197,7 +187,6 @@ export function BirthdayCalendar({
         ))}
       </div>
 
-      {/* Days Grid */}
       <div className="grid grid-cols-7 gap-1">
         {calendarCells.map((cell, idx) => {
           if (!cell.isCurrentMonth) {
@@ -222,7 +211,6 @@ export function BirthdayCalendar({
         })}
       </div>
 
-      {/* Selected Indicator Footer */}
       {selectedDate && (
         <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-neutral-400">
           <span>Selected Birthday:</span>

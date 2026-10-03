@@ -43,10 +43,8 @@ const GLOBE_DARK_CONFIG: COBEOptions = {
 export default function GlobalRootsSection() {
   return (
     <section className="py-14 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto w-full relative overflow-hidden">
-      {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[#ffbe33]/10 rounded-full blur-[160px] pointer-events-none" />
 
-      {/* Header */}
       <RevealOnScroll direction="up" duration={700}>
         <div className="text-center max-w-xl mx-auto space-y-3 mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
@@ -67,13 +65,10 @@ export default function GlobalRootsSection() {
         </div>
       </RevealOnScroll>
 
-      {/* 2-Column Grid: Globe Left with Glowing Outline, Details on the Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
         
-        {/* Left Column: 3D Globe with Glowing Outline Ring (No Dragging) */}
         <RevealOnScroll direction="left" delay={100} duration={900} className="lg:col-span-6 flex items-center justify-center">
           <div className="relative w-full max-w-[280px] xs:max-w-[340px] sm:max-w-[480px] aspect-square flex items-center justify-center pointer-events-none select-none">
-            {/* Glowing Outline Ring */}
             <div className="absolute inset-0 rounded-full ring-2 ring-[#ffbe33]/40 shadow-[0_0_80px_rgba(255,190,51,0.25)] pointer-events-none" />
 
             <Globe
@@ -83,9 +78,7 @@ export default function GlobalRootsSection() {
           </div>
         </RevealOnScroll>
 
-        {/* Right Column: Luxury Country Provenance Cards */}
         <RevealOnScroll direction="right" delay={200} duration={800} className="lg:col-span-6">
-          {/* Active Origins Header Bar */}
           <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
             <div className="flex items-center gap-2.5">
               <span className="relative flex h-2 w-2">
@@ -107,7 +100,6 @@ export default function GlobalRootsSection() {
                 key={place.name}
                 className="p-3.5 rounded-2xl bg-gradient-to-br from-[#141724]/90 via-[#0f1118]/90 to-[#12141c]/90 border border-white/10 flex items-center gap-3.5 shadow-md"
               >
-                {/* Country Flag Crest */}
                 <div className="relative w-10 h-7 rounded-lg overflow-hidden shrink-0 ring-1 ring-white/20 shadow-md bg-black/40">
                   <img
                     src={`https://flagcdn.com/w80/${place.code}.png`}

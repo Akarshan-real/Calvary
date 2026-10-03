@@ -3,19 +3,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface AnimatedCounterProps {
-  /** Target number to count to */
   to: number;
-  /** Optional prefix (e.g. "$", "#") */
   prefix?: string;
-  /** Optional suffix (e.g. "+", "%", "k") */
   suffix?: string;
-  /** Duration of the count-up animation in ms */
   duration?: number;
-  /** Easing: "linear" | "easeOut" (default) */
   easing?: "linear" | "easeOut";
-  /** Additional class on the wrapper span */
   className?: string;
-  /** Decimal places to show (default 0) */
   decimals?: number;
 }
 

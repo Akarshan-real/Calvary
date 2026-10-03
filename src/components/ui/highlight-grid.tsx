@@ -4,45 +4,21 @@ import * as React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-/**
- * Highlight Grid
- *
- * A grid of labelled cells with a single coloured highlight that glides to sit
- * behind whichever cell the cursor is over — morphing its position, size and
- * colour with a smooth transition. Each cell carries its own accent colour, and
- * rows can hold any number of cells.
- *
- * Ported 1:1 from the vanilla "CodeGrid Direction-Aware Hover" experiment into
- * a single, self-contained, prop-driven React component. No animation library —
- * the highlight is a CSS transition driven by pointer events.
- */
-
 export interface HighlightItem {
   label?: string;
-  /** Accent colour for this cell. Falls back to the cycled `colors` palette. */
   color?: string;
-  /** Custom content element to render inside this cell */
   content?: React.ReactNode;
 }
 
 export interface HighlightGridProps {
-  /** Optional flat list of items. If provided, renders a responsive CSS grid. */
   items?: HighlightItem[];
-  /** Columns class for CSS grid mode. Defaults to "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5". */
   columnsClassName?: string;
-  /** Rows of cells. Each row can hold a different number of cells. */
   rows?: HighlightItem[][];
-  /** Palette cycled for cells without an explicit `color`. */
   colors?: string[];
-  /** Highlight transition duration in ms. Defaults to 250. */
   transitionDuration?: number;
-  /** Park the highlight on the first cell on mount. Defaults to false when used for items, true for rows. */
   highlightFirst?: boolean;
-  /** Extra classes for the root element. */
   className?: string;
-  /** Extra classes for the inner grid box. */
   gridClassName?: string;
-  /** Extra classes for individual cells */
   cellClassName?: string;
 }
 
@@ -79,7 +55,6 @@ export function HighlightGrid({
   const activeRef = useRef<{ gi: number; color: string } | null>(null);
   const [active, setActive] = useState<number | null>(highlightFirst ? 0 : null);
 
-  // If flat items are provided, map them directly.
   const flatGridItems = useMemo(() => {
     if (!items) return null;
     return items.map((item, idx) => ({
@@ -90,7 +65,6 @@ export function HighlightGrid({
     }));
   }, [items, colors]);
 
-  // Otherwise flatten rows into cells with running global index + resolved colour.
   const gridRows = useMemo(() => {
     if (items) return null;
     const effectiveRows = rows || DEFAULT_ROWS;
@@ -123,7 +97,6 @@ export function HighlightGrid({
     activeRef.current = { gi, color };
   }, []);
 
-  // Park on the first cell initially if highlightFirst is true.
   useEffect(() => {
     const first = flatGridItems ? flatGridItems[0] : gridRows?.[0]?.[0];
     if (highlightFirst && first) {
@@ -174,7 +147,6 @@ export function HighlightGrid({
           gridClassName
         )}
       >
-        {/* Sliding highlight — solid accent with radiant gradient sheen */}
         <div
           ref={highlightRef}
           aria-hidden
@@ -191,7 +163,6 @@ export function HighlightGrid({
           }}
         />
 
-        {/* 1. Flat items responsive grid mode */}
         {flatGridItems &&
           flatGridItems.map((cell) => {
             const isActive = active === cell.gi;
@@ -236,7 +207,6 @@ export function HighlightGrid({
             );
           })}
 
-        {/* 2. Explicit Rows mode */}
         {!flatGridItems &&
           gridRows &&
           gridRows.map((row, r) => (

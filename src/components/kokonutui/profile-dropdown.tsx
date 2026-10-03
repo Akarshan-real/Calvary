@@ -98,14 +98,12 @@ export default function ProfileDropdown({
               />
             }
           >
-            {/* User name only (visible on desktop) */}
             <div className="flex-1 text-left hidden md:block">
               <div className="font-semibold text-xs sm:text-sm text-zinc-100 leading-tight tracking-tight">
                 {displayName}
               </div>
             </div>
 
-            {/* Circular Avatar with Luxury Gradient Ring */}
             <div className="relative">
               <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-[#ffbe33] via-[#ff6b35] to-[#e60000] p-[2px] shadow-sm">
                 <div className="h-full w-full overflow-hidden rounded-full bg-[#0b0c0f] flex items-center justify-center">
@@ -127,7 +125,6 @@ export default function ProfileDropdown({
             </div>
           </DropdownMenuTrigger>
 
-          {/* Kokonut UI Bending Line Indicator on the Right */}
           <div
             className={cn(
               "absolute top-1/2 -right-3 -translate-y-1/2 transition-all duration-200 pointer-events-none",

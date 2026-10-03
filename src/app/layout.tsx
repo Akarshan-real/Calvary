@@ -26,7 +26,6 @@ const cinzelFont = localFont({
   display: "swap",
 });
 
-// PT Serif Caption from local public/fonts
 const ptSerifFont = localFont({
   src: [
     {
@@ -44,7 +43,6 @@ const ptSerifFont = localFont({
   display: "swap",
 });
 
-// Huninn from local public/fonts
 const huninnFont = localFont({
   src: "../../public/fonts/Huninn/Huninn-Regular.ttf",
   variable: "--font-huninn",

@@ -13,25 +13,20 @@ interface HeroSectionProps {
 export default function HeroSection({ settings }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-[#0b0c0f] border-b border-white/10 pt-12 sm:pt-16 pb-16 sm:pb-24 lg:py-32">
-      {/* Parallax Background Image */}
       {settings?.cover_image_url ? (
         <ParallaxHeroBg
           src={settings.cover_image_url}
           alt={settings.name || "Restaurant Ambience"}
         />
       ) : (
-        /* Fallback static gradient if no image */
         <div className="absolute inset-0 bg-gradient-to-br from-[#12141a] via-[#0b0c0f] to-[#0b0c0f] pointer-events-none" />
       )}
 
-      {/* Ambient glow spots */}
       <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-[#ffbe33]/15 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#e60000]/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-        {/* Left Column: Headline & Content */}
         <div className="lg:col-span-7 space-y-6 sm:space-y-8 z-10">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm animate-fade-in">
             <Star className="w-3.5 h-3.5 text-[#ffbe33] fill-[#ffbe33]" />
             <span className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#ffbe33]">
@@ -39,7 +34,6 @@ export default function HeroSection({ settings }: HeroSectionProps) {
             </span>
           </div>
 
-          {/* Display Headline */}
           <div className="space-y-3">
             <h1
               className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight sm:leading-none text-white tracking-tight drop-shadow-lg"
@@ -57,7 +51,6 @@ export default function HeroSection({ settings }: HeroSectionProps) {
               "Experience artisan fire-grilled burgers, delicate truffle pastas, and handcrafted desserts crafted fresh with ethically sourced, seasonal ingredients."}
           </p>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
             <Link href="/menu" className="w-full sm:w-auto">
               <InteractiveHoverButton
@@ -77,7 +70,6 @@ export default function HeroSection({ settings }: HeroSectionProps) {
             </Link>
           </div>
 
-          {/* Animated Trust Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 pt-6 border-t border-white/15">
             <div className="space-y-0.5">
               <div className="text-xl sm:text-2xl font-black text-white drop-shadow tracking-tight">
@@ -114,9 +106,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           </div>
         </div>
 
-        {/* Right Column: Hero Graphic */}
         <div className="lg:col-span-5 flex justify-center items-center relative z-10">
-          {/* Decorative glow ring behind the dish */}
           <div className="absolute w-56 h-56 sm:w-80 sm:h-80 rounded-full bg-[#ffbe33]/20 blur-[60px] pointer-events-none" />
 
           <div className="relative w-full max-w-[280px] xs:max-w-[340px] sm:max-w-[440px] lg:max-w-[540px] aspect-square">

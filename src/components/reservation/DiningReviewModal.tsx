@@ -90,7 +90,6 @@ export default function DiningReviewModal({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-md bg-[#12141d] border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-8 max-h-[92vh] overflow-y-auto shadow-2xl space-y-5 sm:space-y-6 text-white">
-        {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-4">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#ffbe33]/15 border border-[#ffbe33]/30 text-[#ffbe33] text-[10px] font-extrabold uppercase tracking-wider">
@@ -117,9 +116,7 @@ export default function DiningReviewModal({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Star Rating Selector */}
           <div className="text-center space-y-3 p-4 rounded-2xl bg-[#090b0e] border border-white/5">
             <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
               How was your evening at Calvary?
@@ -155,7 +152,6 @@ export default function DiningReviewModal({
             </p>
           </div>
 
-          {/* Comment input */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-neutral-300 flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -170,7 +166,6 @@ export default function DiningReviewModal({
             />
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-2">
             <button
               type="button"

@@ -67,7 +67,6 @@ interface AdminReservationManagementProps {
 export default function AdminReservationManagement({
   initialReservations,
 }: AdminReservationManagementProps) {
-  // Helper to check if reservation date & slot time has already passed
   const isReservationPast = (resDate: string, startTime?: string | null, durationMinutes: number = 90) => {
     try {
       const [y, m, d] = resDate.split("-").map(Number);
@@ -75,7 +74,6 @@ export default function AdminReservationManagement({
       const timeParts = (startTime || "00:00").split(":").map(Number);
       const hours = timeParts[0] || 0;
       const minutes = timeParts[1] || 0;
-      // Consider completed if the dining session (start + duration) has concluded
       const slotEnd = new Date(y, m - 1, d, hours, minutes + durationMinutes, 0);
       return slotEnd.getTime() <= Date.now();
     } catch {
@@ -93,7 +91,6 @@ export default function AdminReservationManagement({
   const [dateRangeFilter, setDateRangeFilter] = useState<DateRange | undefined>(undefined);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
-  // Filter calculations
   const pendingCount = reservations.filter(
     (r) => r.status === "PENDING" && !isReservationPast(r.reservation_date, r.reservation_slots?.start_time, r.reservation_slots?.duration_minutes)
   ).length;
@@ -134,7 +131,6 @@ export default function AdminReservationManagement({
       if (r.status !== "CANCELLED") return false;
     }
 
-    // Date Range filtering
     if (dateRangeFilter?.from) {
       const resDateStr = r.reservation_date;
       const fromStr = format(dateRangeFilter.from, "yyyy-MM-dd");
@@ -158,7 +154,6 @@ export default function AdminReservationManagement({
     return true;
   });
 
-  // Action: Approve & Lock Table
   const handleApprove = async (id: string) => {
     try {
       await approveMutation.mutateAsync(id);
@@ -203,7 +198,6 @@ export default function AdminReservationManagement({
     message: "",
   });
 
-  // Action: Open Reply Email Modal
   const handleOpenReplyModal = (item: ReservationWithRelations) => {
     const tableName = item.restaurant_tables?.table_number
       ? `Table ${item.restaurant_tables.table_number}`
@@ -216,7 +210,6 @@ export default function AdminReservationManagement({
     });
   };
 
-  // Action: Confirm Send Email Message
   const handleConfirmSendReply = async () => {
     if (!replyModal.reservation) return;
     const item = replyModal.reservation;
@@ -256,9 +249,7 @@ export default function AdminReservationManagement({
     }
   };
 
-  // Action: Open Decline Modal
   const handleOpenDeclineModal = (item: ReservationWithRelations) => {
-    // Check if table is already confirmed
     if (item.status === "CONFIRMED") {
       toast.error("Action not permitted", {
         description: "Admin cannot decline a reservation after the table has been booked & confirmed.",
@@ -273,7 +264,6 @@ export default function AdminReservationManagement({
     });
   };
 
-  // Action: Confirm Reject with Optional Message
   const handleConfirmReject = async () => {
     if (!declineModal.reservation) return;
     const item = declineModal.reservation;
@@ -298,7 +288,6 @@ export default function AdminReservationManagement({
     }
   };
 
-  // Time format helper
   const formatTime = (timeStr?: string) => {
     if (!timeStr) return "";
     const parts = timeStr.split(":");
@@ -317,7 +306,6 @@ export default function AdminReservationManagement({
     setMounted(true);
   }, []);
 
-  // Lock scroll when decline modal or reply modal is open
   useEffect(() => {
     if (declineModal.isOpen || replyModal.isOpen) {
       document.body.style.overflow = "hidden";
@@ -332,7 +320,6 @@ export default function AdminReservationManagement({
   const declineModalContent = declineModal.isOpen && declineModal.reservation ? (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
       <div className="relative bg-[#141724] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
@@ -357,7 +344,6 @@ export default function AdminReservationManagement({
           </button>
         </div>
 
-        {/* Reservation Summary */}
         <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1.5 text-xs text-neutral-300">
           <div className="flex justify-between">
             <span className="text-neutral-500">Date & Slot:</span>
@@ -379,7 +365,6 @@ export default function AdminReservationManagement({
           </div>
         </div>
 
-        {/* Decline Reason Input (Optional) */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center justify-between">
             <span>Reason / Message to Guest</span>
@@ -397,7 +382,6 @@ export default function AdminReservationManagement({
           </p>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
           <button
             type="button"
@@ -423,7 +407,6 @@ export default function AdminReservationManagement({
   const replyModalContent = replyModal.isOpen && replyModal.reservation ? (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
       <div className="relative bg-[#141724] border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-5 shadow-2xl shadow-black/90 animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shrink-0">
@@ -448,7 +431,6 @@ export default function AdminReservationManagement({
           </button>
         </div>
 
-        {/* Reservation Summary */}
         <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1.5 text-xs text-neutral-300">
           <div className="flex justify-between">
             <span className="text-neutral-500">Date & Slot:</span>
@@ -470,7 +452,6 @@ export default function AdminReservationManagement({
           )}
         </div>
 
-        {/* Email Subject */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
             Email Subject
@@ -484,7 +465,6 @@ export default function AdminReservationManagement({
           />
         </div>
 
-        {/* Message Input */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
             Message Content
@@ -501,7 +481,6 @@ export default function AdminReservationManagement({
           </p>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
           <button
             type="button"
@@ -526,9 +505,7 @@ export default function AdminReservationManagement({
 
   return (
     <div className="space-y-8">
-      {/* Metric Counters Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* Pending Approvals */}
         <div
           onClick={() => setFilterTab("PENDING")}
           className={cn(
@@ -550,7 +527,6 @@ export default function AdminReservationManagement({
           <p className="text-[11px] text-neutral-400 mt-1">Requires admin review & email approval</p>
         </div>
 
-        {/* Confirmed & Locked */}
         <div
           onClick={() => setFilterTab("CONFIRMED")}
           className={cn(
@@ -572,7 +548,6 @@ export default function AdminReservationManagement({
           <p className="text-[11px] text-neutral-400 mt-1">Officially locked tables</p>
         </div>
 
-        {/* Today's Bookings */}
         <div className="p-5 rounded-2xl border border-white/10 bg-[#131622]/80">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[#ffbe33]">
@@ -586,7 +561,6 @@ export default function AdminReservationManagement({
           <p className="text-[11px] text-neutral-400 mt-1">{todayStr}</p>
         </div>
 
-        {/* Total Registered */}
         <div
           onClick={() => setFilterTab("ALL")}
           className={cn(
@@ -609,7 +583,6 @@ export default function AdminReservationManagement({
         </div>
       </div>
 
-      {/* Success Notification Banner */}
       {actionSuccessMessage && (
         <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5 text-emerald-300 text-xs shadow-md">
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
@@ -617,9 +590,7 @@ export default function AdminReservationManagement({
         </div>
       )}
 
-      {/* Search & Filter Controls */}
       <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
-        {/* Filter Tabs - Single Line (Non-wrapping) */}
         <div className="flex items-center flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-[#12141e] p-1.5 rounded-2xl border border-white/10 shrink-0">
           {(["ALL", "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"] as const).map((tab) => (
             <button
@@ -652,9 +623,7 @@ export default function AdminReservationManagement({
           ))}
         </div>
 
-        {/* Right side: Search Input & DatePicker6 Range Filter */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-          {/* Search Input */}
           <div className="relative flex-1 sm:w-52 lg:w-60">
             <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -666,7 +635,6 @@ export default function AdminReservationManagement({
             />
           </div>
 
-          {/* DateRange Filter using DatePicker6 */}
           <div className="w-full sm:w-52 lg:w-60">
             <DatePicker6
               mode="range"
@@ -680,7 +648,6 @@ export default function AdminReservationManagement({
         </div>
       </div>
 
-      {/* Reservation Requests List */}
       <div className="space-y-4">
         {isLoading && reservations.length === 0 ? (
           <div className="space-y-4">
@@ -748,14 +715,12 @@ export default function AdminReservationManagement({
                     "bg-[#0d0f14]/80 border-white/5 opacity-60"
                 )}
               >
-                {/* Left: Customer & Table Details */}
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <span className="text-base sm:text-lg font-extrabold text-white">
                       {item.customer_name}
                     </span>
 
-                    {/* Status Badge */}
                     {isCompleted && (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-blue-500/15 border border-blue-500/30 text-blue-400">
                         <CheckCircle2 className="w-3 h-3" />
@@ -788,7 +753,6 @@ export default function AdminReservationManagement({
                     </span>
                   </div>
 
-                  {/* Booking Coordinates */}
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-300">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -814,7 +778,6 @@ export default function AdminReservationManagement({
                     </div>
                   </div>
 
-                  {/* Customer Contact Coordinates */}
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-400 pt-1">
                     <a
                       href={`mailto:${item.customer_email}`}
@@ -833,7 +796,6 @@ export default function AdminReservationManagement({
                     </a>
                   </div>
 
-                  {/* Special Dining Request (Guest Notes) */}
                   {item.special_request && (
                     <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-300 mt-2 max-w-xl flex items-start gap-2">
                       <span className="font-bold text-[#ffbe33] shrink-0">Special Notes:</span>
@@ -841,7 +803,6 @@ export default function AdminReservationManagement({
                     </div>
                   )}
 
-                  {/* Decline / Cancellation Reason */}
                   {item.cancellation_reason && (
                     <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-300 mt-2 max-w-xl flex items-start gap-2">
                       <span className="font-bold text-rose-400 shrink-0">Decline Reason:</span>
@@ -850,9 +811,7 @@ export default function AdminReservationManagement({
                   )}
                 </div>
 
-                {/* Right: Admin Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 w-full lg:w-auto justify-start sm:justify-end">
-                  {/* Reply Email Action (Opens interactive in-app modal like Decline) */}
                   <button
                     type="button"
                     disabled={isPending}
@@ -863,7 +822,6 @@ export default function AdminReservationManagement({
                     <span>Reply to Email</span>
                   </button>
 
-                  {/* Approve / Lock Table Button */}
                   {isPendingItem && (
                     <button
                       type="button"
@@ -876,7 +834,6 @@ export default function AdminReservationManagement({
                     </button>
                   )}
 
-                  {/* Cancel / Decline Action: ONLY allowed for PENDING reservations (Admin cannot decline after table is booked/confirmed) */}
                   {isPendingItem && (
                     <button
                       type="button"
@@ -895,7 +852,6 @@ export default function AdminReservationManagement({
         )}
       </div>
 
-      {/* Render modals directly into document.body to prevent parent translation offsets */}
       {mounted && declineModalContent && createPortal(declineModalContent, document.body)}
       {mounted && replyModalContent && createPortal(replyModalContent, document.body)}
     </div>

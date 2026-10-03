@@ -32,11 +32,9 @@ export default function AdminGalleryManagement({
   const [items, setItems] = useState<GalleryItem[]>(initialItems);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
 
-  // Modal State for Add & Edit
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
 
-  // Form State
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<GalleryItem["category"]>("dishes");
   const [tag, setTag] = useState("Artisanal Showcase");
@@ -98,9 +96,7 @@ export default function AdminGalleryManagement({
 
     try {
       if (editingItem) {
-        // UPDATE Existing
         if (!editingItem.isCustom) {
-          // Static base photo fallback in UI state
           setItems((prev) =>
             prev.map((i) =>
               i.id === editingItem.id
@@ -149,7 +145,6 @@ export default function AdminGalleryManagement({
           }
         }
       } else {
-        // CREATE New
         if (imageMode === "upload") {
           if (!selectedFile) {
             setStatusMsg({ type: "error", text: "Please select an image file to upload." });
@@ -239,7 +234,6 @@ export default function AdminGalleryManagement({
 
   return (
     <div className="space-y-6">
-      {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -261,7 +255,6 @@ export default function AdminGalleryManagement({
         </button>
       </div>
 
-      {/* Category Pills & Count */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div className="flex flex-wrap items-center gap-2">
           {[
@@ -291,7 +284,6 @@ export default function AdminGalleryManagement({
         </span>
       </div>
 
-      {/* Feedback Banner */}
       {statusMsg && (
         <div
           className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2.5 border transition-all ${
@@ -309,7 +301,6 @@ export default function AdminGalleryManagement({
         </div>
       )}
 
-      {/* Gallery Cards Grid */}
       <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
         {filteredItems.map((item) => (
           <div
@@ -369,7 +360,6 @@ export default function AdminGalleryManagement({
         ))}
       </div>
 
-      {/* Unified Add / Edit Modal */}
       {mounted &&
         createPortal(
           <AnimatePresence>
@@ -405,7 +395,6 @@ export default function AdminGalleryManagement({
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-                    {/* Photo Title */}
                     <div className="space-y-1">
                       <label className="text-neutral-400 font-semibold block">Photo Title *</label>
                       <input
@@ -418,7 +407,6 @@ export default function AdminGalleryManagement({
                       />
                     </div>
 
-                    {/* Category & Tag & Aspect Ratio */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="space-y-1">
                         <label className="text-neutral-400 font-semibold block">Category</label>
@@ -460,7 +448,6 @@ export default function AdminGalleryManagement({
                       </div>
                     </div>
 
-                    {/* Dual Option Image Selector: File Upload vs URL */}
                     <div className="p-3 sm:p-3.5 rounded-2xl bg-[#090b10] border border-white/10 space-y-2.5">
                       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-1">
                         <label className="text-neutral-300 font-semibold block text-xs">
@@ -495,7 +482,6 @@ export default function AdminGalleryManagement({
                       </div>
 
                       <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 pt-1">
-                        {/* Preview Thumbnail */}
                         <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-black/60 border border-white/15 shrink-0 flex items-center justify-center">
                           {imageUrl ? (
                             <Image

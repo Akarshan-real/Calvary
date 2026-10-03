@@ -10,7 +10,6 @@ import HomeCtaBanner from "@/components/sections/home/HomeCtaBanner";
 import { getMenuItems, getRestaurantSettings } from "@/lib/db-server";
 import { getCurrentUser } from "@/lib/auth-server";
 
-/** Elegant gradient divider between sections */
 function SectionDivider({ variant = "default" }: { variant?: "default" | "red" | "gold" }) {
   const gradients: Record<string, string> = {
     default: "from-transparent via-white/8 to-transparent",
@@ -31,7 +30,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-[#0b0c0f] text-white flex flex-col selection:bg-[#e60000] selection:text-white">
-      {/* Dynamic Navbar */}
       <Navbar
         user={
           authData?.user
@@ -47,41 +45,33 @@ export default async function Home() {
       />
 
       <main className="flex-1">
-        {/* 1. Hero Section */}
         <HeroSection settings={settings} />
 
         <SectionDivider variant="gold" />
 
-        {/* 2. Signature Dishes Highlights */}
         <FeaturedDishesSection items={items} />
 
         <SectionDivider />
 
-        {/* 3. About / Culinary Story */}
         <AboutSection />
 
         <SectionDivider variant="gold" />
 
-        {/* 4. Global Culinary Provenance (3D Globe) */}
         <GlobalRootsSection />
 
         <SectionDivider />
 
-        {/* 5. Frequently Asked Questions */}
         <HomeFaqSection />
 
         <SectionDivider variant="gold" />
 
-        {/* 6. Google Reviews Marquee */}
         <GoogleReviewsMarquee />
 
         <SectionDivider />
 
-        {/* 7. Reservation CTA Banner */}
         <HomeCtaBanner />
       </main>
 
-      {/* Interactive Hover Footer */}
       <Footer />
     </div>
   );

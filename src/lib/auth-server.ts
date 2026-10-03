@@ -2,9 +2,6 @@ import { createClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import type { User } from '@supabase/supabase-js'
 
-/**
- * Retrieve current logged-in user + profile row (for Server Components / Pages)
- */
 export async function getCurrentUser(): Promise<{ user: User; profile: Profile } | null> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -16,7 +13,6 @@ export async function getCurrentUser(): Promise<{ user: User; profile: Profile }
     .eq('id', user.id)
     .maybeSingle()
 
-  // If no profile row exists for this authenticated user, create one on the fly
   if (!profile) {
     const userEmail = user.email || (user.user_metadata?.email as string) || ''
     const newProfile = {

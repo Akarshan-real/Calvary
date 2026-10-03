@@ -55,7 +55,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
-    // Auto-acknowledgement email
     try {
       await sendEmail({
         to: email.trim(),

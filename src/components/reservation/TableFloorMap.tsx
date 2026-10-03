@@ -11,7 +11,6 @@ interface TableFloorMapProps {
   onSelectTable: (table: RestaurantTableInfo | null) => void;
 }
 
-// Zone metadata for Calvary luxury dining layout
 interface ZoneConfig {
   id: string;
   name: string;
@@ -58,7 +57,6 @@ export default function TableFloorMap({
 }: TableFloorMapProps) {
   const [activeZoneFilter, setActiveZoneFilter] = useState<string>("all");
 
-  // Map tables to zones
   const getZoneForTable = (tbl: RestaurantTableInfo): string => {
     if (tbl.zone_slug) {
       return tbl.zone_slug;
@@ -69,7 +67,6 @@ export default function TableFloorMap({
         return z.id;
       }
     }
-    // Default fallback based on numeric index if not matched
     const num = parseInt(cleanNum.replace(/\D/g, "") || "1", 10);
     if (num <= 3) return "window";
     if (num <= 8) return "main";
@@ -77,14 +74,12 @@ export default function TableFloorMap({
     return "patio";
   };
 
-  // Only consider zones that actually have available tables for the chosen slot
   const populatedZones = ZONES.filter((zone) =>
     availableTables.some((t) => getZoneForTable(t) === zone.id)
   );
 
   return (
     <div className="space-y-6">
-      {/* Floor Plan Zone Filter Navigation */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <button
           type="button"
@@ -125,9 +120,7 @@ export default function TableFloorMap({
         })}
       </div>
 
-      {/* Architectural Visual Layout Area */}
       <div className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#141724] to-[#0d0f17] border border-white/15 p-4 sm:p-8 overflow-hidden shadow-2xl">
-        {/* Stage / Kitchen Reference Header in Floor Map */}
         <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 pb-3.5 sm:pb-4 border-b border-white/10 text-xs text-neutral-400">
           <div className="flex items-center gap-2">
             <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-400 animate-ping" />
@@ -148,7 +141,6 @@ export default function TableFloorMap({
           </div>
         </div>
 
-        {/* Zones Container */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
           {populatedZones.map((zone) => {
             const tablesInZone = availableTables.filter((t) => getZoneForTable(t) === zone.id);
@@ -165,7 +157,6 @@ export default function TableFloorMap({
                     : "bg-[#0a0c13]/60 border-white/10 hover:border-white/20"
                 )}
               >
-                {/* Zone Label */}
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -178,7 +169,6 @@ export default function TableFloorMap({
                   </div>
                 </div>
 
-                {/* Table nodes in this zone */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
                     {tablesInZone.map((tbl) => {
                       const isSelected = selectedTable?.id === tbl.id;

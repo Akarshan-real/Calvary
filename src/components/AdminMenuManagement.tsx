@@ -69,7 +69,6 @@ export default function AdminMenuManagement({
     setMounted(true);
   }, []);
 
-  // Lock body scroll and prevent viewport drift when modal opens
   useEffect(() => {
     if (editingItem) {
       document.body.style.overflow = "hidden";
@@ -82,16 +81,13 @@ export default function AdminMenuManagement({
   }, [editingItem]);
 
   const filteredItems = items.filter((item) => {
-    // 1. Category filter
     if (selectedCategory !== "ALL" && item.category_id !== selectedCategory) {
       return false;
     }
-    // 2. Dietary / Featured filter
     if (dietaryFilter === "VEG" && !item.is_vegetarian) return false;
     if (dietaryFilter === "NON_VEG" && item.is_vegetarian) return false;
     if (dietaryFilter === "FEATURED" && !item.is_featured) return false;
 
-    // 3. Search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchName = item.name.toLowerCase().includes(q);
@@ -274,7 +270,6 @@ export default function AdminMenuManagement({
 
   return (
     <div className="space-y-6">
-      {/* Header & Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -313,9 +308,7 @@ export default function AdminMenuManagement({
         </div>
       )}
 
-      {/* Category Pills, Dietary Badges & Live Search Filter Bar */}
       <div className="space-y-3 border-b border-white/10 pb-4">
-        {/* Top Row: Category Pills and Dish Count */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -353,9 +346,7 @@ export default function AdminMenuManagement({
           </span>
         </div>
 
-        {/* Second Row: Search Field & Dietary Badges */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-          {/* Quick Search */}
           <div className="relative flex-1 max-w-sm">
             <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -376,7 +367,6 @@ export default function AdminMenuManagement({
             )}
           </div>
 
-          {/* Dietary Filters */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
             {[
               { key: "ALL", label: "Any Type" },
@@ -401,7 +391,6 @@ export default function AdminMenuManagement({
         </div>
       </div>
 
-      {/* Dishes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredItems.map((item) => (
           <motion.div
@@ -465,7 +454,6 @@ export default function AdminMenuManagement({
               </div>
             </div>
 
-            {/* Item Actions */}
             <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2">
               <button
                 type="button"
@@ -502,7 +490,6 @@ export default function AdminMenuManagement({
         ))}
       </div>
 
-      {/* Expandable Edit / Create Item Modal */}
       {mounted &&
         createPortal(
           <AnimatePresence>
@@ -516,7 +503,6 @@ export default function AdminMenuManagement({
                   className="fixed inset-0 bg-black/85 backdrop-blur-md cursor-pointer"
                 />
 
-                {/* Card Container with Expandable Layout Animation */}
                 <motion.div
                   layoutId={editingItem.id ? `menu-dish-${editingItem.id}` : undefined}
                   initial={{ opacity: 0, scale: 0.94, y: 16 }}
@@ -542,7 +528,6 @@ export default function AdminMenuManagement({
                   </div>
 
                   <form onSubmit={handleSaveItem} className="space-y-3.5 text-xs">
-                    {/* Dish Title */}
                     <div className="space-y-1">
                       <label className="text-neutral-400 font-semibold block">Dish Title *</label>
                       <input
@@ -555,7 +540,6 @@ export default function AdminMenuManagement({
                       />
                     </div>
 
-                    {/* Price in INR and Category */}
                     <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 items-end">
                       <div className="space-y-1">
                         <label className="text-neutral-400 font-semibold block text-xs">
@@ -609,7 +593,6 @@ export default function AdminMenuManagement({
                       </div>
                     </div>
 
-                    {/* Portion Size & Description */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="space-y-1">
                         <label className="text-neutral-400 font-semibold block">Portion / Weight</label>
@@ -633,9 +616,6 @@ export default function AdminMenuManagement({
                       </div>
                     </div>
 
-                    {/* ========================================================= */}
-                    {/* FOOD MACRONUTRIENTS & MICRONUTRIENTS SECTION */}
-                    {/* ========================================================= */}
                     <div className="p-3.5 rounded-2xl bg-[#090b10] border border-white/10 space-y-2.5">
                       <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
                         <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
@@ -645,9 +625,7 @@ export default function AdminMenuManagement({
                         <span className="text-[10px] text-neutral-400">Values per serving</span>
                       </div>
 
-                      {/* Calories & 4 Major Macros without placeholders */}
                       <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-2.5">
-                        {/* Calories */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-amber-400/60 transition-colors">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 text-center">
                             Calories
@@ -671,7 +649,6 @@ export default function AdminMenuManagement({
                           </div>
                         </div>
 
-                        {/* Protein */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-[#ff2d55]/60 transition-colors">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#ff2d55] text-center">
                             Protein
@@ -695,7 +672,6 @@ export default function AdminMenuManagement({
                           </div>
                         </div>
 
-                        {/* Carbs */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-[#a3f900]/60 transition-colors">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#a3f900] text-center">
                             Carbs
@@ -719,7 +695,6 @@ export default function AdminMenuManagement({
                           </div>
                         </div>
 
-                        {/* Fats */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-[#04c7dd]/60 transition-colors">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#04c7dd] text-center">
                             Fats
@@ -743,7 +718,6 @@ export default function AdminMenuManagement({
                           </div>
                         </div>
 
-                        {/* Fiber */}
                         <div className="bg-[#12141d] border border-white/10 rounded-xl p-2 space-y-1 focus-within:border-purple-400/60 transition-colors col-span-2 xs:col-span-1">
                           <div className="text-[10px] font-extrabold uppercase tracking-wider text-purple-400 text-center">
                             Fiber
@@ -768,7 +742,6 @@ export default function AdminMenuManagement({
                         </div>
                       </div>
 
-                      {/* Allergens & Micronutrient / Advisory tags without placeholder */}
                       <div className="space-y-1 pt-0.5">
                         <label className="text-[11px] font-semibold text-neutral-300 flex items-center justify-between">
                           <span className="flex items-center gap-1.5">
@@ -786,15 +759,11 @@ export default function AdminMenuManagement({
                       </div>
                     </div>
 
-                    {/* ========================================================= */}
-                    {/* DUAL OPTION IMAGE SELECTOR: FILE UPLOAD OR URL */}
-                    {/* ========================================================= */}
                     <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-[#090b10] border border-white/10">
                       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-1">
                         <label className="text-neutral-300 font-semibold block text-xs">
                           Dish Image
                         </label>
-                        {/* Two options tabs */}
                         <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-white/10">
                           <button
                             type="button"
@@ -824,7 +793,6 @@ export default function AdminMenuManagement({
                       </div>
 
                       <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3.5 pt-1">
-                        {/* Image Preview Thumbnail */}
                         <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-black/60 border border-white/15 shrink-0 flex items-center justify-center">
                           {editingItem.image_url ? (
                             <Image
@@ -839,7 +807,6 @@ export default function AdminMenuManagement({
                           )}
                         </div>
 
-                        {/* Option 1: File Upload */}
                         {imageMode === "upload" ? (
                           <div className="flex-1 space-y-1">
                             <input
@@ -856,7 +823,6 @@ export default function AdminMenuManagement({
                             )}
                           </div>
                         ) : (
-                          /* Option 2: Image URL */
                           <div className="flex-1 space-y-1">
                             <input
                               type="url"
@@ -871,7 +837,6 @@ export default function AdminMenuManagement({
                       </div>
                     </div>
 
-                    {/* Checkboxes */}
                     <div className="flex flex-wrap items-center gap-4 pt-1">
                       <label className="flex items-center gap-2 cursor-pointer text-neutral-300">
                         <input

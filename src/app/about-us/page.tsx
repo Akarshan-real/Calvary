@@ -54,7 +54,6 @@ export default async function AboutPage() {
 
   return (
     <div className="min-h-screen bg-[#090b0e] text-white flex flex-col selection:bg-[#ffbe33] selection:text-neutral-950">
-      {/* Dynamic Navbar */}
       <Navbar
         user={
           authData?.user
@@ -70,9 +69,6 @@ export default async function AboutPage() {
       />
 
       <main className="flex-1 space-y-24 sm:space-y-32 pb-24">
-        {/* ============================================================ */}
-        {/* HERO SECTION WITH PARALLAX BACKGROUND */}
-        {/* ============================================================ */}
         <section className="relative overflow-hidden pt-16 sm:pt-32 pb-14 sm:pb-20 px-4 sm:px-8 border-b border-white/10">
           <ParallaxHeroBg
             src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop"
@@ -80,7 +76,6 @@ export default async function AboutPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/75 to-[#090b0e]" />
 
-          {/* Ambient Glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#ffbe33]/15 via-[#e60000]/10 to-transparent rounded-full blur-[160px] pointer-events-none" />
 
           <div className="relative z-10 space-y-4 sm:space-y-6 max-w-3xl mx-auto text-center">
@@ -113,9 +108,6 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/* TIMELINE / HISTORY */}
-        {/* ============================================================ */}
         <section className="px-6 sm:px-8 max-w-7xl mx-auto w-full">
           <RevealOnScroll direction="up" duration={600}>
             <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
@@ -146,9 +138,6 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/* MEET THE CULINARY ARTISTS */}
-        {/* ============================================================ */}
         <section className="px-6 sm:px-8 max-w-7xl mx-auto w-full">
           <RevealOnScroll direction="up" duration={600}>
             <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
@@ -192,13 +181,9 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/* OUR ETHOS - MORPHING TEXT SHOWCASE */}
-        {/* ============================================================ */}
         <section className="px-4 sm:px-8 max-w-5xl mx-auto w-full text-center py-4 sm:py-6">
           <RevealOnScroll direction="up" duration={700}>
             <div className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 p-5 sm:p-14 overflow-hidden shadow-2xl">
-              {/* Ambient gold glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[250px] bg-[#ffbe33]/10 rounded-full blur-[100px] pointer-events-none" />
 
               <div className="relative space-y-3 sm:space-y-4">
@@ -232,9 +217,6 @@ export default async function AboutPage() {
           </RevealOnScroll>
         </section>
 
-        {/* ============================================================ */}
-        {/* INVITATION CALL TO ACTION */}
-        {/* ============================================================ */}
         <section className="px-4 sm:px-8 max-w-5xl mx-auto w-full">
           <RevealOnScroll direction="up" duration={700}>
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-[#12141a] via-[#1a1714] to-[#12141a] border border-[#ffbe33]/30 p-6 sm:p-14 text-center space-y-4 sm:space-y-6 shadow-2xl">
@@ -272,7 +254,6 @@ export default async function AboutPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

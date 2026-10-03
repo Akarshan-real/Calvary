@@ -41,7 +41,6 @@ export default function MenuClientCatalog({
   const [searchQuery, setSearchQuery] = useState("");
   const [favoriteIds, setFavoriteIds] = useState<Set<string | number>>(new Set());
 
-  // Load favorites from localStorage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem("feane_favorites");
@@ -51,7 +50,6 @@ export default function MenuClientCatalog({
     } catch {}
   }, []);
 
-  // Toggle favorite dish
   const toggleFavorite = (id: string | number) => {
     setFavoriteIds((prev) => {
       const next = new Set(prev);
@@ -67,21 +65,17 @@ export default function MenuClientCatalog({
     });
   };
 
-  // Filtered dishes
   const filteredItems = useMemo(() => {
     return items.filter((dish) => {
-      // Category filter or Favorites filter
       if (selectedCategory === "favorites") {
         if (!favoriteIds.has(dish.id)) return false;
       } else if (selectedCategory !== "all" && dish.category_id !== selectedCategory) {
         return false;
       }
 
-      // Veg / Non-Veg filter
       if (selectedDiet === "veg" && !dish.is_vegetarian) return false;
       if (selectedDiet === "non-veg" && dish.is_vegetarian) return false;
 
-      // Text search
       if (searchQuery.trim()) {
         const query = searchQuery.trim().toLowerCase();
         const matchesName = dish.name.toLowerCase().includes(query);
@@ -93,7 +87,6 @@ export default function MenuClientCatalog({
     });
   }, [items, selectedCategory, selectedDiet, searchQuery, favoriteIds]);
 
-  // Group items by category for divided display
   const categorizedSections = useMemo(() => {
     if (selectedCategory === "favorites") {
       return [
@@ -124,7 +117,6 @@ export default function MenuClientCatalog({
       .filter((sec) => sec.dishes.length > 0);
   }, [categories, filteredItems, selectedCategory]);
 
-  // Uncategorized items (if any category_id didn't match)
   const uncategorizedItems = useMemo(() => {
     if (selectedCategory === "favorites") return [];
     const knownCatIds = new Set(categories.map((c) => c.id));
@@ -133,11 +125,7 @@ export default function MenuClientCatalog({
 
   return (
     <div className="space-y-12">
-      {/* ======================================================== */}
-      {/* 1. FILTER STRIP: NORMAL SEARCH & DIETARY PILLS */}
-      {/* ======================================================== */}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 bg-[#12141c] border border-white/10 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl">
-        {/* Left: Normal sleek search input with clearly visible grey placeholder */}
         <div className="w-full lg:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-1">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-neutral-400 shrink-0">
             <Filter className="w-4 h-4 text-[#ffbe33]" />
@@ -175,7 +163,6 @@ export default function MenuClientCatalog({
           )}
         </div>
 
-        {/* Right: Pure Veg vs Non-Veg Toggle Filter */}
         <div className="flex items-center gap-1 sm:gap-2 bg-black/40 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-white/10 w-full sm:w-auto justify-between sm:justify-start shrink-0">
           <button
             type="button"
@@ -215,11 +202,7 @@ export default function MenuClientCatalog({
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* 2. CATEGORY HIGHLIGHT FILTER BUTTONS + FAVOURITES TO THE RIGHT */}
-      {/* ======================================================== */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
-        {/* Left: Scrollable Categories */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 sm:pb-2 scrollbar-none flex-1 -mx-4 px-4 sm:mx-0 sm:px-0">
           <button
             type="button"
@@ -253,7 +236,6 @@ export default function MenuClientCatalog({
           })}
         </div>
 
-        {/* Right: Favourites Filter Button */}
         <button
           type="button"
           onClick={() =>
@@ -276,9 +258,6 @@ export default function MenuClientCatalog({
         </button>
       </div>
 
-      {/* ======================================================== */}
-      {/* 3. CATEGORIZED MENU SECTIONS WITH HIGHLIGHT GRID */}
-      {/* ======================================================== */}
       <div className="space-y-14">
         {isLoading && items.length === 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 pt-4">
@@ -290,7 +269,6 @@ export default function MenuClientCatalog({
 
         {categorizedSections.map(({ category, dishes }) => (
           <section key={category.id} className="space-y-6">
-            {/* Category Header */}
             <div className="border-b border-white/10 pb-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -311,7 +289,6 @@ export default function MenuClientCatalog({
               </span>
             </div>
 
-            {/* Food Cards inside HighlightGrid */}
             <HighlightGrid
               items={dishes.map((dish, idx) => ({
                 color: FOOD_ACCENT_COLORS[idx % FOOD_ACCENT_COLORS.length],
@@ -330,7 +307,6 @@ export default function MenuClientCatalog({
           </section>
         ))}
 
-        {/* Uncategorized section fallback if any */}
         {uncategorizedItems.length > 0 && selectedCategory === "all" && (
           <section className="space-y-6">
             <div className="border-b border-white/10 pb-4">
@@ -356,7 +332,6 @@ export default function MenuClientCatalog({
           </section>
         )}
 
-        {/* Empty State: Favourites */}
         {selectedCategory === "favorites" && filteredItems.length === 0 && (
           <div className="text-center py-20 bg-[#141722] rounded-3xl border border-white/10 text-neutral-400 space-y-3">
             <Heart className="w-12 h-12 mx-auto text-red-500/40 animate-pulse" />
@@ -367,7 +342,6 @@ export default function MenuClientCatalog({
           </div>
         )}
 
-        {/* Empty State: Normal Search / Filter */}
         {selectedCategory !== "favorites" && filteredItems.length === 0 && (
           <div className="text-center py-20 bg-[#141722] rounded-3xl border border-white/10 text-neutral-400 space-y-3">
             <Utensils className="w-12 h-12 mx-auto text-white/20" />

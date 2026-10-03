@@ -2,21 +2,15 @@ export interface CalendarEventData {
   title: string;
   description: string;
   location?: string;
-  startDate: string; // YYYY-MM-DD
-  startTime: string; // HH:MM:SS or HH:MM
+  startDate: string;
+  startTime: string;
   durationMinutes?: number;
 }
 
-/**
- * Format a Date object to iCal/Google string: YYYYMMDDTHHMMSSZ (in UTC)
- */
 function formatUtcIso(date: Date): string {
   return date.toISOString().replace(/-|:|\.\d+/g, "");
 }
 
-/**
- * Parse local date and time strings into a UTC Date object.
- */
 function parseLocalDateTime(dateStr: string, timeStr: string): Date {
   const [year, month, day] = dateStr.split("-").map(Number);
   const timeClean = timeStr.trim();
@@ -24,9 +18,6 @@ function parseLocalDateTime(dateStr: string, timeStr: string): Date {
   return new Date(year, (month || 1) - 1, day || 1, hours || 0, minutes || 0, 0);
 }
 
-/**
- * Generates a direct Google Calendar web event URL
- */
 export function generateGoogleCalendarUrl(event: CalendarEventData): string {
   const start = parseLocalDateTime(event.startDate, event.startTime);
   const duration = event.durationMinutes || 90;
@@ -46,9 +37,6 @@ export function generateGoogleCalendarUrl(event: CalendarEventData): string {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-/**
- * Generates and triggers download of an .ics iCalendar file for Apple Calendar, Outlook, etc.
- */
 export function downloadIcsFile(event: CalendarEventData, filename?: string): void {
   const start = parseLocalDateTime(event.startDate, event.startTime);
   const duration = event.durationMinutes || 90;

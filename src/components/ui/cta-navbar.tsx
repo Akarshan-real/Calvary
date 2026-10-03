@@ -20,7 +20,6 @@ const Navbar = () => {
     <nav className="relative z-20 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between bg-white px-2 py-2 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 sm:gap-10">
-          {/* hamburger menu or cross icon */}
           <button onClick={handleShowNav} aria-label="Toggle Menu" className="md:hidden">
             {showNav ? (
               <XIcon color="#202020" strokeWidth={3} size={25} />
@@ -28,7 +27,6 @@ const Navbar = () => {
               <MenuIcon color="#202020" strokeWidth={3} size={25} />
             )}
           </button>
-          {/* logo */}
           <a href="https://codevertiser.vercel.app/" className="flex items-center gap-3">
             <img
               src="https://res.cloudinary.com/dyvkdwzcj/image/upload/v1709055594/logo-1_vo1dni.png"
@@ -39,7 +37,6 @@ const Navbar = () => {
               BestTech
             </span>
           </a>
-          {/* nav links */}
           <div
             className={`absolute right-0 left-0 -z-10 flex w-full flex-col gap-3 bg-white p-3 shadow transition-all duration-300 ease-in-out md:relative md:top-auto md:right-auto md:left-0 md:z-auto md:flex-row md:shadow-none ${showNav ? 'top-[54px]' : 'top-[-165px]'}`}
           >
@@ -54,7 +51,6 @@ const Navbar = () => {
             ))}
           </div>
         </div>
-        {/* CTA button */}
         <div>
           <button
             type="button"

@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * @author: @kokonut-labs
- * @description: Slide Text Button with animated vertical text transition
- * @version: 1.0.0
- * @date: 2025-11-02
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import { motion } from "motion/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -54,13 +44,11 @@ export default function SlideTextButton({
       {...props}
     >
       <div className="relative flex flex-col items-center justify-center">
-        {/* Default text - slides up and out */}
         <span className="flex items-center gap-2 whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-7 group-hover:opacity-0">
           {icon}
           <span>{text}</span>
         </span>
 
-        {/* Hover text - slides in from bottom to center */}
         <span className="absolute flex items-center gap-2 whitespace-nowrap translate-y-7 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100">
           {icon}
           <span>{slideText}</span>

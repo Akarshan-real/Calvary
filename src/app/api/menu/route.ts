@@ -26,7 +26,7 @@ export async function GET() {
           items: (items as MenuItem[]) || [],
         };
       },
-      300 // 5 minutes cache
+      300
     );
 
     return NextResponse.json({ success: true, ...data });
@@ -78,7 +78,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // Invalidate cached menu catalog
     invalidateCache("menu:catalog");
 
     return NextResponse.json({

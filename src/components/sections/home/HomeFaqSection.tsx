@@ -12,7 +12,6 @@ export default function HomeFaqSection() {
 
   return (
     <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
-      {/* Subtle ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#ffbe33]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <RevealOnScroll direction="up" duration={700}>

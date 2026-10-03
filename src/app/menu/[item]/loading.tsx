@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function MenuItemLoading() {
   return (
     <div className="min-h-screen bg-[#0b0c0f] text-white flex flex-col selection:bg-[#e60000]">
-      {/* Navbar Placeholder */}
       <header className="fixed top-0 inset-x-0 z-50 h-20 bg-[#0b0c0f]/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <Skeleton className="h-10 w-28 rounded-xl" />
@@ -19,15 +18,12 @@ export default function MenuItemLoading() {
       </header>
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-28 sm:pt-36 pb-16">
-        {/* Back Link Skeleton */}
         <div className="mb-8">
           <Skeleton className="h-4 w-36" />
         </div>
 
-        {/* Dish Showcase Card Skeleton */}
         <div className="bg-[#141722] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center p-4 xs:p-6 sm:p-10">
-            {/* Visual Hero Skeleton */}
             <div className="md:col-span-6 flex justify-center">
               <Skeleton
                 variant="card"
@@ -35,7 +31,6 @@ export default function MenuItemLoading() {
               />
             </div>
 
-            {/* Info & Details Skeleton */}
             <div className="md:col-span-6 space-y-6">
               <div className="space-y-3">
                 <Skeleton variant="gold" className="h-5 w-28 rounded-full" />
@@ -52,7 +47,6 @@ export default function MenuItemLoading() {
                 <Skeleton className="h-4 w-2/3 opacity-70" />
               </div>
 
-              {/* Nutritional Breakdown Skeleton */}
               <div className="space-y-3 pt-2">
                 <Skeleton className="h-4 w-48 opacity-60" />
                 <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 sm:gap-2.5">

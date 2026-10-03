@@ -15,7 +15,6 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
       }
 
-      // Check admin role
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
@@ -36,7 +35,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: true, reservations: data || [] });
     }
 
-    // Standard user reservations
     if (!user) {
       return NextResponse.json({ success: true, reservations: [] });
     }
@@ -85,7 +83,6 @@ export async function POST(req: Request) {
       special_request,
     } = body;
 
-    // Email verification
     const cleanEmail = customer_email?.trim().toLowerCase();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!cleanEmail || !emailRegex.test(cleanEmail)) {
@@ -95,7 +92,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Collision check
     const { data: collision } = await supabase
       .from("reservations")
       .select("id")
@@ -115,7 +111,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate slot time has not passed
     const { data: slotRecord } = await supabase
       .from("reservation_slots")
       .select("start_time")
@@ -134,7 +129,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // Insert reservation
     const insertPayload = {
       table_id,
       slot_id,
@@ -151,7 +145,6 @@ export async function POST(req: Request) {
     let reservationData: any;
 
     if (user) {
-      // Authenticated user: insert + select in one call (RLS allows read-back)
       const { data, error } = await supabase
         .from("reservations")
         .insert(insertPayload)
@@ -163,8 +156,6 @@ export async function POST(req: Request) {
       }
       reservationData = data;
     } else {
-      // Anonymous guest: insert without .select() to avoid RLS SELECT denial,
-      // then build response from the known payload
       const { error: insertError } = await supabase
         .from("reservations")
         .insert(insertPayload);
@@ -173,7 +164,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error: insertError.message }, { status: 400 });
       }
 
-      // Build response from known data (we can't read back due to RLS)
       reservationData = {
         ...insertPayload,
         id: "guest-booking",
@@ -184,7 +174,6 @@ export async function POST(req: Request) {
       };
     }
 
-    // Send confirmation email asynchronously
     try {
       const tableName = reservationData.restaurant_tables?.table_number
         ? `Table ${reservationData.restaurant_tables.table_number}`

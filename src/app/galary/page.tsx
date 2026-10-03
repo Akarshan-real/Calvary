@@ -36,7 +36,6 @@ export default async function GalleryPage() {
         }
       />
 
-      {/* Hero Banner with Parallax */}
       <section className="relative overflow-hidden py-14 sm:py-28 px-4 sm:px-8 border-b border-white/5">
         <ParallaxHeroBg
           src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1600&auto=format&fit=crop"
@@ -72,7 +71,6 @@ export default async function GalleryPage() {
       </section>
 
       <main className="flex-1 py-10 sm:py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-10 sm:space-y-12">
-        {/* Interactive Filterable Gallery Client Component */}
         <RevealOnScroll direction="up" delay={200}>
           <GalleryClientView items={galleryItems} />
         </RevealOnScroll>

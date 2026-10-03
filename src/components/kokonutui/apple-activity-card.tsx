@@ -1,19 +1,11 @@
 "use client";
 
-/**
- * @author: @kokonutui
- * @description: Apple Activity Card with dynamic nutritional macronutrient rings
- * @version: 1.1.0
- * @license: MIT
- * @website: https://kokonutui.com
- */
-
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export interface ActivityData {
   label: string;
-  value: number; // 0 to 100 percentage
+  value: number;
   color: string;
   size: number;
   current: number;
@@ -102,7 +94,6 @@ const CircleProgress = ({ data, index }: CircleProgressProps) => {
             </linearGradient>
           </defs>
 
-          {/* Background circle track */}
           <circle
             className="text-white/10 dark:text-white/10"
             cx={data.size / 2}
@@ -113,7 +104,6 @@ const CircleProgress = ({ data, index }: CircleProgressProps) => {
             strokeWidth={strokeWidth}
           />
 
-          {/* Animated progress circle */}
           <motion.circle
             animate={{ strokeDashoffset: progress }}
             cx={data.size / 2}
@@ -208,10 +198,8 @@ export default function AppleActivityCard({
         </div>
 
         <div className="flex items-center justify-around w-full gap-2">
-          {/* Concentric Progress Rings (Compact 140px) */}
           <div className="relative h-[135px] w-[135px] flex items-center justify-center shrink-0">
             {currentActivities.map((activity, index) => {
-              // Scale down ring sizes proportionally for compact mode
               const compactScale = 130 / 190;
               const compactData = {
                 ...activity,
@@ -227,7 +215,6 @@ export default function AppleActivityCard({
             })}
           </div>
 
-          {/* Micro Stats List */}
           <div className="flex flex-col gap-2">
             {currentActivities.map((activity) => (
               <div key={activity.label} className="flex items-center gap-2">
@@ -280,7 +267,6 @@ export default function AppleActivityCard({
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12 w-full py-2">
-          {/* Concentric Progress Rings */}
           <div className="relative h-[210px] w-[210px] flex items-center justify-center shrink-0">
             {currentActivities.map((activity, index) => (
               <CircleProgress
@@ -291,7 +277,6 @@ export default function AppleActivityCard({
             ))}
           </div>
 
-          {/* Detailed Macronutrient Breakdown */}
           <DetailedActivityInfo data={currentActivities} />
         </div>
       </div>

@@ -29,7 +29,6 @@ export function Calendar({
   minDate = new Date(),
   maxDays = 45,
 }: ReservationCalendarProps) {
-  // Normalize today's date (local midnight)
   const today = useMemo(() => {
     const d = new Date(minDate);
     d.setHours(0, 0, 0, 0);
@@ -42,7 +41,6 @@ export function Calendar({
     return d;
   }, [today, maxDays]);
 
-  // Current view month & year state
   const [viewDate, setViewDate] = useState(() => {
     if (selectedDate) {
       const parts = selectedDate.split("-");
@@ -56,7 +54,6 @@ export function Calendar({
   const viewYear = viewDate.getFullYear();
   const viewMonth = viewDate.getMonth();
 
-  // Navigation handlers
   const handlePrevMonth = () => {
     setViewDate(new Date(viewYear, viewMonth - 1, 1));
   };
@@ -74,7 +71,6 @@ export function Calendar({
     return nextMonthFirst > maxAllowedDate;
   }, [viewYear, viewMonth, maxAllowedDate]);
 
-  // Generate grid matrix for the calendar month
   const calendarCells = useMemo(() => {
     const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
@@ -90,7 +86,6 @@ export function Calendar({
       isSelectable: boolean;
     }> = [];
 
-    // Empty lead slots before month starts
     for (let i = 0; i < firstDayIndex; i++) {
       cells.push({
         dateStr: "",
@@ -103,7 +98,6 @@ export function Calendar({
       });
     }
 
-    // Days of current month
     for (let day = 1; day <= daysInMonth; day++) {
       const cellDate = new Date(viewYear, viewMonth, day);
       cellDate.setHours(0, 0, 0, 0);
@@ -145,7 +139,6 @@ export function Calendar({
         className
       )}
     >
-      {/* Month & Year Header with Navigation */}
       <div className="flex items-center justify-between border-b border-white/10 pb-3.5 sm:pb-4">
         <div className="space-y-0.5 sm:space-y-1">
           <h3 className="text-base sm:text-xl font-extrabold text-white tracking-tight">
@@ -179,7 +172,6 @@ export function Calendar({
         </div>
       </div>
 
-      {/* Days of week header */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
         {DAY_LABELS.map((dayName) => (
           <div
@@ -191,7 +183,6 @@ export function Calendar({
         ))}
       </div>
 
-      {/* Month Days Matrix */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2.5">
         {calendarCells.map((cell, idx) => {
           if (!cell.isCurrentMonth) {
@@ -203,7 +194,6 @@ export function Calendar({
           const isClosed = cell.densityInfo?.isClosed || density === "closed";
           const isFull = density === "full";
 
-          // Tooltip/label text
           let statusLabel = "Low Bookings";
           if (isClosed) statusLabel = cell.densityInfo?.reason || "Closed";
           else if (isFull) statusLabel = "Fully Booked";
@@ -220,23 +210,17 @@ export function Calendar({
               className={cn(
                 "relative group/cell h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl flex flex-col items-center justify-center transition-all duration-200",
                 "border text-xs sm:text-sm font-bold select-none",
-                // Base state for disabled / unselectable
                 !cell.isSelectable &&
                   "opacity-35 cursor-not-allowed bg-neutral-900/40 border-transparent text-neutral-500",
-                // Available states
                 cell.isSelectable &&
                   !isSelected &&
                   "bg-[#151822]/80 border-white/5 hover:border-white/25 hover:scale-[1.04] text-neutral-200 cursor-pointer shadow-sm",
-                // Selected state
                 isSelected &&
                   "bg-gradient-to-b from-[#ffbe33] to-[#e5a822] text-neutral-950 border-[#ffbe33] shadow-[0_0_20px_rgba(255,190,51,0.45)] scale-[1.05] z-10",
-                // High density border hint if selectable
                 cell.isSelectable && density === "high" && !isSelected && "border-rose-500/30 bg-rose-950/20",
-                // Medium density border hint if selectable
                 cell.isSelectable && density === "medium" && !isSelected && "border-amber-500/25 bg-amber-950/15"
               )}
             >
-              {/* Day Number */}
               <span
                 className={cn(
                   "leading-none",
@@ -247,7 +231,6 @@ export function Calendar({
                 {cell.dayNumber}
               </span>
 
-              {/* Status Indicator Icon or Dot */}
               <div className="mt-0.5 sm:mt-1 flex items-center justify-center">
                 {isClosed ? (
                   <Ban className="w-2 sm:w-2.5 h-2 sm:h-2.5 text-neutral-500" aria-hidden="true" />
@@ -281,7 +264,6 @@ export function Calendar({
         })}
       </div>
 
-      {/* Clear Intuitive Color Legend */}
       <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-center sm:justify-between gap-2 sm:gap-2.5 text-[9.5px] sm:text-[10.5px] font-semibold text-neutral-300">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30" />

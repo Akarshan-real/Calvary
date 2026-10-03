@@ -15,10 +15,6 @@ export interface StorageImageFile {
   path: string
 }
 
-/**
- * Uploads an image file to the Supabase 'images' bucket.
- * Supports overwrite/upsert if requested.
- */
 export async function uploadImage(
   folder: ImageFolder,
   file: File,
@@ -54,10 +50,6 @@ export async function uploadImage(
   }
 }
 
-/**
- * Lists all image files in a specific folder ('items' or 'displayAssets') with their public URLs.
- * Gives admin a full media gallery view.
- */
 export async function listImages(folder: ImageFolder): Promise<{ images: StorageImageFile[]; error: string | null }> {
   const supabase = await createClient()
 
@@ -71,7 +63,6 @@ export async function listImages(folder: ImageFolder): Promise<{ images: Storage
     return { images: [], error: error.message }
   }
 
-  // Filter out placeholder directories if any, and map to full image items
   const images: StorageImageFile[] = (data || [])
     .filter((item) => item.name && item.id)
     .map((file) => {
@@ -87,17 +78,12 @@ export async function listImages(folder: ImageFolder): Promise<{ images: Storage
   return { images, error: null }
 }
 
-/**
- * Renames or moves an image file within the bucket.
- * e.g., renameImage('items/123_burger.jpg', 'items/signature_wagyu_burger.jpg')
- */
 export async function renameImage(
   fromPath: string,
   toPath: string
 ): Promise<{ success: boolean; newUrl: string | null; error: string | null }> {
   const supabase = await createClient()
 
-  // Clean bucket prefixes if provided
   const cleanFrom = fromPath.replace(`${BUCKET_NAME}/`, '')
   const cleanTo = toPath.replace(`${BUCKET_NAME}/`, '')
 
@@ -111,9 +97,6 @@ export async function renameImage(
   return { success: true, newUrl: data.publicUrl, error: null }
 }
 
-/**
- * Updates/replaces an existing image file in-place (same path) with a new file.
- */
 export async function replaceImage(
   targetPath: string,
   newFile: File
@@ -134,9 +117,6 @@ export async function replaceImage(
   return { success: true, url: data.publicUrl, error: null }
 }
 
-/**
- * Deletes an image from the Supabase 'images' bucket given its path or full public URL.
- */
 export async function deleteImage(publicUrlOrPath: string): Promise<{ success: boolean; error: string | null }> {
   const supabase = await createClient()
 

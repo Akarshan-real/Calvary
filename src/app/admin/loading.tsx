@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function AdminLoading() {
   return (
     <div className="min-h-screen bg-[#090b0e] text-white flex flex-col selection:bg-[#ffbe33] selection:text-neutral-950">
-      {/* Navbar Placeholder */}
       <header className="fixed top-0 inset-x-0 z-50 h-20 bg-[#090b0e]/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <Skeleton className="h-10 w-28 rounded-xl" />
@@ -19,7 +18,6 @@ export default function AdminLoading() {
       </header>
 
       <main className="flex-1 pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
-        {/* Header Strip Skeleton */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div className="space-y-2">
             <Skeleton variant="gold" className="h-6 w-48 rounded-full" />
@@ -32,7 +30,6 @@ export default function AdminLoading() {
           </div>
         </div>
 
-        {/* Master Tab Bar Skeleton */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/10">
           <Skeleton variant="gold" className="h-10 w-44 rounded-xl" />
           <Skeleton className="h-10 w-36 rounded-xl" />
@@ -40,7 +37,6 @@ export default function AdminLoading() {
           <Skeleton className="h-10 w-40 rounded-xl" />
         </div>
 
-        {/* Metric Counters Strip Skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div
@@ -57,7 +53,6 @@ export default function AdminLoading() {
           ))}
         </div>
 
-        {/* Search & Filter Bar Skeleton */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -70,7 +65,6 @@ export default function AdminLoading() {
           </div>
         </div>
 
-        {/* Reservations Items List Skeleton */}
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div

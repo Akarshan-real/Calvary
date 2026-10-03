@@ -7,15 +7,12 @@ import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 export default function HomeCtaBanner() {
   return (
     <section className="relative overflow-hidden py-14 sm:py-20 px-4 sm:px-6">
-      {/* Background: Bold red with layered depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#cc0000] via-[#e60000] to-[#b30000]" />
 
-      {/* Decorative floating circles */}
       <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
       <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
       <div className="absolute top-8 right-1/3 w-24 h-24 rounded-full bg-[#ffbe33]/20 blur-2xl pointer-events-none" />
 
-      {/* Fork & Knife decorative icons */}
       <div className="absolute left-8 top-1/2 -translate-y-1/2 opacity-10 hidden lg:block pointer-events-none">
         <UtensilsCrossed className="w-28 h-28 text-white" strokeWidth={0.8} />
       </div>
@@ -42,7 +39,6 @@ export default function HomeCtaBanner() {
             groups up to 30.
           </p>
 
-          {/* Mini trust indicators */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-center md:justify-start pt-2">
             <div className="flex items-center gap-1.5 sm:gap-2 text-white/80 text-xs font-semibold">
               <CalendarCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe33]" />

@@ -10,8 +10,6 @@ import {
 } from '@/types/database'
 import galleryData from '@/data/gallery.json'
 
-// ==================== MENU & CATEGORIES ====================
-
 export async function getMenuCategories(): Promise<MenuCategory[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -51,8 +49,6 @@ export async function getMenuItemById(idOrSlug: string | number): Promise<MenuIt
   return data
 }
 
-// ==================== SETTINGS & HOURS ====================
-
 export async function getRestaurantSettings(): Promise<RestaurantSettings | null> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -75,8 +71,6 @@ export async function getRestaurantHours(): Promise<RestaurantHours[]> {
   if (error) throw new Error(error.message)
   return data || []
 }
-
-// ==================== RESERVATIONS ====================
 
 export async function getReservationCalendarData(daysAhead: number = 45) {
   const supabase = await createClient()
@@ -229,8 +223,6 @@ export async function getAllReservationsAdmin() {
   return data || []
 }
 
-// ==================== GALLERY ====================
-
 export async function getGalleryItems(): Promise<GalleryItem[]> {
   try {
     const supabase = await createClient()
@@ -280,8 +272,6 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
     return galleryData as GalleryItem[]
   }
 }
-
-// ==================== CONTACT MESSAGES ====================
 
 export async function getContactMessages(): Promise<ContactMessage[]> {
   const supabase = await createClient()

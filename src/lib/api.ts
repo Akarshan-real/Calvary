@@ -7,7 +7,6 @@ export const api = axios.create({
   },
 });
 
-// Helper to extract clean error messages from Axios responses
 export function getApiErrorMessage(error: unknown, fallback = "An unexpected error occurred."): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data;

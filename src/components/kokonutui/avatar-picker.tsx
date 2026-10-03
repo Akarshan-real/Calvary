@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * @author: @dorianbaffier
- * @description: Avatar Picker
- * @version: 2.0.0
- * @date: 2026-02-22
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import { Check, ChevronRight, User2 } from "lucide-react";
 import type { Variants } from "motion/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -26,7 +16,6 @@ interface Avatar {
   alt: string;
 }
 
-// RGB values for the per-avatar color ring on the stage
 const AVATAR_RGB: Record<number, string> = {
   1: "255, 0, 91",
   2: "255, 125, 16",
@@ -350,7 +339,6 @@ export default function ProfileSetup({
     >
       <CardContent className="p-8">
         <div className="space-y-8">
-          {/* Header */}
           <div className="space-y-1 text-center">
             <h2 className="font-semibold text-xl tracking-tight">
               Pick Your Avatar
@@ -360,16 +348,8 @@ export default function ProfileSetup({
             </p>
           </div>
 
-          {/* Avatar Stage */}
           <div className="flex flex-col items-center gap-4">
-            {/*
-             * Two-div approach: outer div holds the animated color ring
-             * (no overflow-hidden so box-shadow renders cleanly),
-             * inner div clips the avatar SVG.
-             * scale-[4] fills the 160px circle with the avatar's background.
-             */}
             <div className="relative h-40 w-40">
-              {/* Animated per-avatar color ring */}
               <motion.div
                 animate={{
                   boxShadow: `0 0 0 2px rgba(${rgb}, 0.55), 0 6px 24px rgba(${rgb}, 0.18)`,
@@ -383,7 +363,6 @@ export default function ProfileSetup({
                 }
               />
 
-              {/* Avatar circle — clips content */}
               <div className="relative h-full w-full overflow-hidden rounded-full">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -398,7 +377,6 @@ export default function ProfileSetup({
                         : { duration: 0.2, ease: "easeOut" }
                     }
                   >
-                    {/* scale-[4]: 40px SVG × 4 = 160px, fills the circle */}
                     <div className="scale-[4] transform">
                       {selectedAvatar.svg}
                     </div>
@@ -407,7 +385,6 @@ export default function ProfileSetup({
               </div>
             </div>
 
-            {/* Avatar name — fades with selection */}
             <AnimatePresence mode="wait">
               <motion.span
                 animate={{ opacity: 1 }}
@@ -425,7 +402,6 @@ export default function ProfileSetup({
               </motion.span>
             </AnimatePresence>
 
-            {/* Thumbnail strip */}
             <motion.div
               animate="animate"
               className="flex gap-3"
@@ -468,7 +444,6 @@ export default function ProfileSetup({
             </motion.div>
           </div>
 
-          {/* Username field */}
           <div className="space-y-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">

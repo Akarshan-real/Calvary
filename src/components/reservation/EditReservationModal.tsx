@@ -48,7 +48,6 @@ export default function EditReservationModal({
   const alterReservationMutation = useAlterReservation();
   const isSubmitting = alterReservationMutation.isPending;
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -60,7 +59,6 @@ export default function EditReservationModal({
     };
   }, [isOpen]);
 
-  // Initialize form state when modal opens
   useEffect(() => {
     if (isOpen && reservation) {
       setSelectedDate(reservation.reservation_date);
@@ -71,7 +69,6 @@ export default function EditReservationModal({
     }
   }, [isOpen, reservation]);
 
-  // Auto-clear invalid slot or table on date change
   useEffect(() => {
     if (!isOpen || !selectedDate) return;
     if (selectedSlotId && slotsData.length > 0) {
@@ -87,16 +84,13 @@ export default function EditReservationModal({
 
   if (!isOpen || !reservation) return null;
 
-  // Find currently selected slot data
   const currentSlotObj = slotsData.find((s) => s.slot.id === selectedSlotId);
-  // Eligible tables for this slot that fit party size, or the table currently assigned to this reservation
   const availableTables = currentSlotObj
     ? currentSlotObj.availableTables.filter(
         (t: any) => t.capacity >= partySize
       )
     : [];
 
-  // If the current reservation already has a table on this slot & date, allow keeping it
   const isOriginalSlotAndDate =
     selectedDate === reservation.reservation_date &&
     selectedSlotId === reservation.slot_id;
@@ -165,7 +159,6 @@ export default function EditReservationModal({
   const modalMarkup = (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
       <div className="relative bg-[#131622] border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-7 max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl shadow-black/95 animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
         <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-[#ffbe33]/15 border border-[#ffbe33]/30 flex items-center justify-center text-[#ffbe33] shrink-0">
@@ -190,9 +183,7 @@ export default function EditReservationModal({
           </button>
         </div>
 
-        {/* Form Body - Scrollable */}
         <div className="space-y-5 text-left overflow-y-auto pr-1 flex-1 py-1">
-          {/* 1. Date Selection */}
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
               <CalendarIcon className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -211,7 +202,6 @@ export default function EditReservationModal({
             />
           </div>
 
-          {/* 2. Party Size Selection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
@@ -242,7 +232,6 @@ export default function EditReservationModal({
             </div>
           </div>
 
-          {/* 3. Slot Picker */}
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[#ffbe33]" />
@@ -293,7 +282,6 @@ export default function EditReservationModal({
             )}
           </div>
 
-          {/* 4. Table Selection */}
           {selectedSlotId && (
             <div className="space-y-2 pt-1">
               <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
@@ -344,7 +332,6 @@ export default function EditReservationModal({
             </div>
           )}
 
-          {/* 5. Note / Message to Admin & Concierge */}
           <div className="space-y-2 pt-1">
             <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
@@ -366,7 +353,6 @@ export default function EditReservationModal({
           </div>
         </div>
 
-        {/* Footer Actions */}
         <div className="flex items-center gap-3 pt-4 border-t border-white/10 shrink-0">
           <button
             type="button"

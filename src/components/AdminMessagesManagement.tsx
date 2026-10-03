@@ -78,7 +78,6 @@ export default function AdminMessagesManagement({
   };
 
   const openMailtoReply = (msg: ContactMessage) => {
-    // Automatically mark as read
     if (msg.status === "UNREAD") {
       handleMarkStatus(msg.id, "READ");
     }
@@ -129,7 +128,6 @@ export default function AdminMessagesManagement({
         </div>
       )}
 
-      {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
           {(["ALL", "UNREAD", "READ"] as const).map((st) => (
@@ -160,7 +158,6 @@ export default function AdminMessagesManagement({
         </div>
       </div>
 
-      {/* Messages List */}
       {filteredMessages.length === 0 ? (
         <div className="bg-[#12141d] border border-white/10 rounded-3xl p-12 text-center space-y-3">
           <MessageSquare className="w-10 h-10 text-neutral-600 mx-auto" />
@@ -224,7 +221,6 @@ export default function AdminMessagesManagement({
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center md:flex-col gap-2 shrink-0 pt-2 md:pt-0 w-full sm:w-auto">
                 <button
                   type="button"

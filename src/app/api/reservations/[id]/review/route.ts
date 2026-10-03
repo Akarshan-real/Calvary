@@ -53,7 +53,6 @@ export async function POST(
       })
       .eq("id", reservationId);
 
-    // Fallback if feedback columns are absent
     if (updateErr && updateErr.message?.toLowerCase().includes("feedback_rating")) {
       const existingReq = res.special_request || "";
       const feedbackTag = `[Guest Review ${rating}★]: ${comment?.trim() || "No comment"}`;

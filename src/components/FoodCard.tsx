@@ -9,27 +9,20 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * Extracts clean weight (e.g., "250g", "160g", "350ml") from verbose portion strings
- * such as "250g / Serves 1-2" or "4 Pieces / 160g"
- */
 function extractWeightPortion(raw?: string | null): string | null {
   if (!raw) return null;
   const str = raw.trim();
 
-  // Match pattern like 250g, 450ml, 1.5kg, 350 ml
   const weightMatch = str.match(/(\d+(?:\.\d+)?\s*(?:g|gm|gms|gram|grams|ml|l|kg))\b/i);
   if (weightMatch) {
     return weightMatch[1].replace(/\s+/g, "").toLowerCase();
   }
 
-  // If pieces or slices (e.g., "2 Pieces", "4 Slices")
   const pcsMatch = str.match(/(\d+\s*(?:pcs|pieces|slices|pc))\b/i);
   if (pcsMatch) {
     return pcsMatch[1].toLowerCase();
   }
 
-  // If generic "Standard Chef Serving" or similar long text, omit to keep card minimal
   if (str.toLowerCase().includes("standard") || str.toLowerCase().includes("chef")) {
     return null;
   }
@@ -86,16 +79,13 @@ export default function FoodCard({
   const [localIsLiked, setLocalIsLiked] = useState(false);
   const isLiked = isFavorite !== undefined ? isFavorite : localIsLiked;
 
-  // Determine food classification
   const isVeg =
     item.food_type === "veg" ||
     (item.food_type === undefined && item.is_vegetarian === true);
   const isVegan = item.food_type === "vegan";
 
-  // Resolved image url
   const displayImageUrl = item.image_url || item.media_assets?.public_url || null;
 
-  // Resolved nutrition data
   const nutrition = item.menu_item_nutrition || {};
   const protein = item.protein_g ?? nutrition.protein_g ?? (isVeg ? 14 : 32);
   const carbs = item.carbs_g ?? nutrition.carbs_g ?? (isVeg ? 48 : 22);
@@ -104,13 +94,10 @@ export default function FoodCard({
   const calories = item.calories ?? nutrition.calories ?? (isVeg ? 340 : 480);
   const allergens = item.allergens ?? nutrition.allergens ?? [];
 
-  // Clean, minimal weight string for cards (e.g., "250g", "160g", "380g")
   const displayWeight = extractWeightPortion(item.portion_size || item.quantity);
 
-  // Tooltip content displayed on hover (Desktop)
   const tooltipContent = (
     <div className="space-y-3.5 text-left w-full">
-      {/* Header: Title & Calories */}
       <div className="flex items-center justify-between border-b border-white/10 pb-2.5 gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full bg-[#ffbe33] shrink-0" />
@@ -124,7 +111,6 @@ export default function FoodCard({
         </span>
       </div>
 
-      {/* Description */}
       <div>
         <p className="text-xs sm:text-[13px] text-neutral-300 leading-relaxed line-clamp-3">
           {item.description ||
@@ -132,7 +118,6 @@ export default function FoodCard({
         </p>
       </div>
 
-      {/* Portion Size Info Pill in Tooltip */}
       {(item.portion_size || item.quantity) && (
         <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 text-xs">
           <div className="flex items-center gap-2">
@@ -144,7 +129,6 @@ export default function FoodCard({
         </div>
       )}
 
-      {/* Macronutrient Grid */}
       <div className="grid grid-cols-3 gap-2 text-center">
         <div className="bg-white/5 border border-white/10 rounded-xl p-2 sm:p-2.5 shadow-sm">
           <div className="text-[10px] uppercase font-bold tracking-wider text-[#ff2d55]">Protein</div>
@@ -160,7 +144,6 @@ export default function FoodCard({
         </div>
       </div>
 
-      {/* Dietary & Allergens footer */}
       <div className="pt-1.5 border-t border-white/10 flex items-center justify-between flex-wrap gap-2 text-[10px]">
         <span className="text-neutral-400 font-semibold flex items-center gap-1">
           <span>Dietary:</span>
@@ -205,9 +188,6 @@ export default function FoodCard({
           className
         )}
       >
-        {/* ======================================================== */}
-        {/* 1. TOP: COMPACT IMAGE BANNER WITH OVERLAYS */}
-        {/* ======================================================== */}
         <div className="relative w-full h-32 sm:h-36 bg-[#0c0e14] overflow-hidden">
           {displayImageUrl ? (
             <Image
@@ -226,12 +206,9 @@ export default function FoodCard({
             </div>
           )}
 
-          {/* Luxury vignette gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#12141e] via-transparent to-black/40 pointer-events-none" />
 
-          {/* Top Floating Food Type Pill & Heart button */}
           <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-10">
-            {/* Food Type Pill (Top Left) */}
             <div className="shadow-md">
               {isVegan ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md border border-emerald-500/40 text-emerald-400">
@@ -251,7 +228,6 @@ export default function FoodCard({
               )}
             </div>
 
-            {/* Heart / Favorite Button (Top Right) */}
             <button
               type="button"
               onClick={(e) => {
@@ -288,7 +264,6 @@ export default function FoodCard({
             </button>
           </div>
 
-          {/* Bottom Weight badge over image if available */}
           {displayWeight && (
             <div className="absolute bottom-2 right-2.5 z-10">
               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider bg-black/80 backdrop-blur-md border border-white/15 text-neutral-300 shadow-sm">
@@ -298,9 +273,6 @@ export default function FoodCard({
           )}
         </div>
 
-        {/* ======================================================== */}
-        {/* 2. MIDDLE AREA: CLEAN BALANCED TITLE */}
-        {/* ======================================================== */}
         <div className="p-3.5 flex-1 flex flex-col justify-between space-y-3">
           <div className="text-center">
             <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-snug line-clamp-1 group-hover:text-[#ffbe33] transition-colors duration-200">
@@ -308,9 +280,6 @@ export default function FoodCard({
             </h3>
           </div>
 
-          {/* ======================================================== */}
-          {/* 3. BOTTOM BAR: PRICE & LUXURY DETAILS BUTTON */}
-          {/* ======================================================== */}
           <div className="pt-2.5 border-t border-white/10 flex items-center justify-between w-full">
             <div className="flex flex-col">
               <span className="text-[9px] font-semibold uppercase tracking-wider text-neutral-400">
@@ -321,7 +290,6 @@ export default function FoodCard({
               </span>
             </div>
 
-            {/* Dedicated Details Button */}
             <Link
               href={`/menu/${item.id}`}
               onClick={(e) => {

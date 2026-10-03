@@ -11,12 +11,10 @@ export default function BackToTop() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Check if page height actually exceeds screen height
       const pageHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
       const hasExcessHeight = pageHeight > windowHeight + 100;
 
-      // Only show after user scrolls down past window height (screen height)
       if (hasExcessHeight && window.scrollY > windowHeight * 0.8) {
         setIsVisible(true);
       } else {

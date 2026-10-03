@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function MyBookingsLoading() {
   return (
     <div className="min-h-screen bg-[#0b0c0f] text-white flex flex-col selection:bg-[#e60000]">
-      {/* Navbar Placeholder */}
       <header className="fixed top-0 inset-x-0 z-50 h-20 bg-[#0b0c0f]/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <Skeleton className="h-10 w-28 rounded-xl" />
@@ -19,7 +18,6 @@ export default function MyBookingsLoading() {
       </header>
 
       <main className="flex-1 pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
-        {/* Header Skeleton */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-6">
           <div className="space-y-2">
             <Skeleton variant="gold" className="h-6 w-36 rounded-full" />
@@ -29,7 +27,6 @@ export default function MyBookingsLoading() {
           <Skeleton className="h-11 w-44 rounded-xl" />
         </div>
 
-        {/* Filter Controls Skeleton */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             <Skeleton className="h-9 w-20 rounded-xl" />
@@ -40,7 +37,6 @@ export default function MyBookingsLoading() {
           <Skeleton className="h-10 w-full sm:w-60 rounded-xl" />
         </div>
 
-        {/* 2-Column Booking Cards Skeleton Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {[1, 2, 3, 4].map((i) => (
             <div

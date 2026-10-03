@@ -11,7 +11,6 @@ export const metadata = {
 export default async function ProfilePage() {
   const authData = await getCurrentUser();
 
-  // If not authenticated, redirect to login
   if (!authData?.user) {
     redirect('/login');
   }
