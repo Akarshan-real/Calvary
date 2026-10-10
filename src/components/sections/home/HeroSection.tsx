@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { UtensilsCrossed, Star, Award, Users } from "lucide-react";
+import { UtensilsCrossed, Users } from "lucide-react";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { ParallaxHeroBg } from "./ParallaxHeroBg";
@@ -27,12 +27,6 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
         <div className="lg:col-span-7 space-y-6 sm:space-y-8 z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm animate-fade-in">
-            <Star className="w-3.5 h-3.5 text-[#ffbe33] fill-[#ffbe33]" />
-            <span className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#ffbe33]">
-              Award-Winning Fine Dining
-            </span>
-          </div>
 
           <div className="space-y-3">
             <h1
@@ -111,7 +105,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
           <div className="relative w-full max-w-[280px] xs:max-w-[340px] sm:max-w-[440px] lg:max-w-[540px] aspect-square">
             <Image
-              src="https://ccxaezlmosukvtevnrne.supabase.co/storage/v1/object/public/images/displayAssets/hero.png"
+              src="/assets/images/dishes/home.png"
               alt={settings?.name || "Calvary Culinary Hero"}
               fill
               priority
